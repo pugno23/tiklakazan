@@ -68,6 +68,7 @@
             document.getElementById('clickButton').innerText = clickCount;
             if (clickCount % 100 === 0) {
                 document.getElementById('adModal').style.display = "block";
+                (adsbygoogle = window.adsbygoogle || []).push({});
             }
             if (clickCount === 10000) {
                 document.getElementById('paymentModal').style.display = "block";
@@ -77,19 +78,20 @@
             document.getElementById(modalId).style.display = "none";
         }
     </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6303659917298079" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen relative">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
-    <img src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
+    <img src="https://storage.googleapis.com/a1aa/image/CWeK9vloHtTlJ6zvoqKEUfJEVSyHWS4itALNOfN8wGQw2aRoA.jpg" alt="Falling gold coin" class="falling">
     <div class="relative bg-white p-8 rounded-lg shadow-lg text-center z-10">
-        <img alt="Background image of a gold coin" class="absolute inset-0 w-full h-full object-cover opacity-20 rounded-lg" height="200" src="https://storage.googleapis.com/a1aa/image/nY6NCEJmHFYiNlL4P9nnoUv3rdr6metfRN1Jw5sm1Xr2brIUA.jpg" width="300"/>
+        <img alt="Background image of a gold coin" class="absolute inset-0 w-full h-full object-cover opacity-20 rounded-lg" height="200" src="https://storage.googleapis.com/a1aa/image/NPVD5e8QfTvU70h42ImRhu6QGm2haIZwJokpy3naRB6ZbtIUA.jpg" width="300">
         <div class="relative z-10">
             <h1 class="text-3xl font-bold mb-4">Tikla Kazan</h1>
             <p class="text-gray-700 mb-6">10.000 kere tıkla 5 Euro kazan!</p>
@@ -102,15 +104,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('adModal')">&times;</span>
             <p>Bu bir reklamdır!</p>
-            <!-- AdSense ad placeholder -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                 data-ad-slot="XXXXXXXXXX"
-                 data-ad-format="auto"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6303659917298079" data-ad-slot="XXXXXXXXXX" data-ad-format="auto"></ins>
         </div>
     </div>
     <div id="paymentModal" class="modal">
@@ -135,4 +129,3 @@
                 </div>
                 <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-full text-lg font-semibold hover:bg-blue-600 transition duration-300">Ödemeyi Al</button>
             </form>
-        </div>
