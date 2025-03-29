@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tıkla Kazan Sistemi - Giriş</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e6f7ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        #usernameInput {
+            padding: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            width: 250px;
+            border-radius: 5px;
+            border: 2px solid #ccc;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .error {
+            color: red;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tıkla Kazan Sistemi</h1>
+    <input type="text" id="usernameInput" placeholder="Kullanıcı Adınızı Girin" />
+    <button onclick="login()">Giriş Yap</button>
+    <div id="errorMessage" class="error"></div>
+
+    <script>
+        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
+        const registeredUsers = [];
+
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Eğer kullanıcı adı boşsa hata mesajı ver
+            if (username === '') {
+                errorMessage.innerText = 'Lütfen geçerli bir kullanıcı adı girin!';
+                return;
+            }
+
+            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
+            if (registeredUsers.includes(username)) {
+                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
+                return;
+            }
+
+            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
+            registeredUsers.push(username); 
+
+            // Kullanıcı adını localStorage'a kaydet
+            localStorage.setItem('username', username);
+
+            // Giriş yaptıktan sonra oyun sayfasına yönlendir
+            window.location.href = 'game.html';  // Burada game.html, oyun sayfasının ismi olacak
+        }
+    </script>
+
+</body>
+</html>

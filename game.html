@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tıkla Kazan Sistemi</title>
+    <script>
+        let clickCount = 0;
+        const rewardLimit = 10000;
+        let totalEarnings = 0;
+        const rewardPer10kClicks = 20; // 10.000 tıklamaya 20 TL ödül
+        const users = []; // En yüksek kazananları tutmak için
+
+        // Kullanıcı doğrulama
+        if (!localStorage.getItem('username')) {
+            alert("Lütfen giriş yapın!");
+            window.location.href = 'index.html';  // Eğer giriş yapılmamışsa, kullanıcıyı giriş sayfasına yönlendir
+        }
+
+        function handleClick() {
+            clickCount++;
+            document.getElementById('clickCount').innerText = clickCount;
+
+            if (clickCount % 50 === 0) {
+                document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
+                document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
+                alert('Reklam izleyerek devam edebilirsiniz!');
+            }
+
+            if (clickCount >= rewardLimit) {
+                totalEarnings += rewardPer10kClicks;
+                document.getElementById('totalEarnings').innerText = totalEarnings + " TL";
+                alert(`Tebrikler! ${rewardPer10kClicks} TL kazandınız! Toplam kazancınız: ${totalEarnings} TL`);
+                updateLeaderboard();
+            }
+        }
+
+        function watchAd() {
+            document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
+            document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
+            alert('Reklam izleniyor... (Buraya reklam kodu ekleyin)');
+        }
+
+        function requestPayment() {
+            document.getElementById('paymentModal').style.display = 'block'; // Ödeme modalını göster
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
+        }
+
+        function updateLeaderboard() {
+            users.push({ clicks: clickCount, earnings: totalEarnings });
+            users.sort((a, b) => b.earnings - a.earnings); // En yüksek kazançlara göre sırala
+            let leaderboard = document.getElementById('leaderboardList');
+            leaderboard.innerHTML = '';
+            users.slice(0, 5).forEach(user => { // İlk 5 kullanıcıyı göster
+                let li = document.createElement('li');
+                li.textContent = `Kazanç: ${user.earnings} TL - Tıklama: ${user.clicks}`;
+                leaderboard.appendChild(li);
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f4f9;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #mainButton { background-color: #4CAF50; color: white; }
+        #adButton { background-color: #f0ad4e; color: white; display: none; }
+
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        #leaderboard li { margin: 10px; font-size: 1.2rem; }
+
+        #paymentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .paymentContent {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .paymentContent input {
+            padding: 10px;
+            margin: 10px;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .paymentContent button {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tıkla Kazan Sistemi</h1>
+    <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
+    <h3>Toplam Kazanç: <span id="totalEarnings">0 TL</span></h3>
+
+    <button id="mainButton" onclick="handleClick()">Tıkla</button>
+    <button id="adButton" onclick="watchAd()">Reklam İzle</button>
+
+    <button onclick="requestPayment()">Para Talep Et</button>
+
+    <div id="leaderboard">
+        <h3>En Çok Kazananlar</h3>
+        <ul id="leaderboardList"></ul>
+    </div>
+
+    <div id="paymentModal">
+        <div class="paymentContent">
+            <h3>Ödeme Talebi</h3>
+            <input type="text" placeholder="Papara, IBAN veya PayPal Adresi">
+            <button onclick="closePaymentModal()">Gönder</button>
+        </div>
+    </div>
+
+</body>
+</html>
