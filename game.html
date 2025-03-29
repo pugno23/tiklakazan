@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi</title>
+
+    <!-- Adsterra reklam kodu -->
     <script type='text/javascript' src='//pl26248593.effectiveratecpm.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'></script>
+
     <script>
         let clickCount = 0;
         const rewardLimit = 10000;
@@ -33,7 +36,10 @@
         function watchAd() {
             document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
             document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
-            alert('Reklam izleniyor... (Reklam kodu entegre edildi)');
+            alert('Reklam izleniyor...');
+
+            // Popunder reklamını tetikleyen kod
+            window.open('https://pl26248593.effectiveratecpm.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'); // Adsterra popunder reklam bağlantısı
         }
 
         function requestPayment() {
@@ -56,6 +62,7 @@
             });
         }
     </script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
