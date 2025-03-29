@@ -3,95 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tıkla Kazan Sistemi - Giriş</title>
+    <title>Tıkla Kazan Sistemi</title>
+    <script type='text/javascript' src='//pl26248593.effectiveratecpm.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'></script>
+    <script>
+        let clickCount = 0;
+        const rewardLimit = 10000;
+        let totalEarnings = 0;
+        const rewardPer10kClicks = 20; // 10.000 tıklamaya 20 TL ödül
+        const users = []; // En yüksek kazananları tutmak için
+
+        function handleClick() {
+            clickCount++;
+            document.getElementById('clickCount').innerText = clickCount;
+
+            if (clickCount % 50 === 0) {
+                document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
+                document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
+                alert('Reklam izleyerek devam edebilirsiniz!');
+            }
+
+            if (clickCount >= rewardLimit) {
+                totalEarnings += rewardPer10kClicks;
+                document.getElementById('totalEarnings').innerText = totalEarnings + " TL";
+                alert(`Tebrikler! ${rewardPer10kClicks} TL kazandınız! Toplam kazancınız: ${totalEarnings} TL`);
+                updateLeaderboard();
+            }
+        }
+
+        function watchAd() {
+            document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
+            document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
+            alert('Reklam izleniyor... (Reklam kodu entegre edildi)');
+        }
+
+        function requestPayment() {
+            document.getElementById('paymentModal').style.display = 'block'; // Ödeme modalını göster
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
+        }
+
+        function updateLeaderboard() {
+            users.push({ clicks: clickCount, earnings: totalEarnings });
+            users.sort((a, b) => b.earnings - a.earnings); // En yüksek kazançlara göre sırala
+            let leaderboard = document.getElementById('leaderboardList');
+            leaderboard.innerHTML = '';
+            users.slice(0, 3).forEach(user => { // İlk 3 kullanıcıyı göster
+                let li = document.createElement('li');
+                li.textContent = `Kullanıcı: User${user.clicks} - Kazanç: ${user.earnings} TL`;
+                leaderboard.appendChild(li);
+            });
+        }
+    </script>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #e6f7ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f4f9;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 {
-            font-size: 3rem;
-            color: #4CAF50;
-            margin-bottom: 20px;
+        /* Arka Plan Coin Animasyonu */
+        .coin {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-image: url('https://img.icons8.com/ios/50/ffd700/coin.png');
+            background-size: cover;
+            animation: fall 5s infinite;
         }
 
-        #usernameInput {
-            padding: 10px;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            width: 250px;
-            border-radius: 5px;
-            border: 2px solid #ccc;
+        @keyframes fall {
+            0% { top: -60px; left: 10%; }
+            50% { top: 80vh; left: 50%; }
+            100% { top: 100vh; left: 90%; }
         }
 
+        /* Butonlar */
         button {
             padding: 15px 30px;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin: 10px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
+        }
+
+        #mainButton { background-color: #4CAF50; color: white; }
+        #adButton { background-color: #f0ad4e; color: white; display: none; }
+
+        /* Leaderboard */
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        #leaderboard li { margin: 10px; font-size: 1.2rem; }
+
+        /* Ödeme Modalı */
+        #paymentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .paymentContent {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .paymentContent input {
+            padding: 10px;
+            margin: 10px;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .paymentContent button {
             background-color: #4CAF50;
             color: white;
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .error {
-            color: red;
-            font-size: 1.1rem;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Arka planda düşen coinler -->
+    <div class="coin" style="animation-delay: 0s;"></div>
+    <div class="coin" style="animation-delay: 2s;"></div>
+    <div class="coin" style="animation-delay: 4s;"></div>
+
     <h1>Tıkla Kazan Sistemi</h1>
-    <input type="text" id="usernameInput" placeholder="Kullanıcı Adınızı Girin" />
-    <button onclick="login()">Giriş Yap</button>
-    <div id="errorMessage" class="error"></div>
+    <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
+    <h3>Toplam Kazanç: <span id="totalEarnings">0 TL</span></h3>
 
-    <script>
-        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
-        const registeredUsers = [];
+    <button id="mainButton" onclick="handleClick()">Tıkla</button>
+    <button id="adButton" onclick="watchAd()">Reklam İzle</button>
 
-        function login() {
-            const username = document.getElementById('usernameInput').value.trim();
-            const errorMessage = document.getElementById('errorMessage');
+    <button onclick="requestPayment()">Para Talep Et</button>
 
-            // Eğer kullanıcı adı boşsa hata mesajı ver
-            if (username === '') {
-                errorMessage.innerText = 'Lütfen geçerli bir kullanıcı adı girin!';
-                return;
-            }
+    <!-- Kazananlar Listesi -->
+    <div id="leaderboard">
+        <h3>En Çok Kazananlar</h3>
+        <ul id="leaderboardList"></ul>
+    </div>
 
-            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
-            if (registeredUsers.includes(username)) {
-                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
-                return;
-            }
-
-            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
-            registeredUsers.push(username); 
-
-            // Kullanıcı adını localStorage'a kaydet
-            localStorage.setItem('username', username);
-
-            // Giriş yaptıktan sonra oyun sayfasına yönlendir
-            window.location.href = 'game.html';  // Burada game.html, oyun sayfasının ismi olacak
-        }
-    </script>
+    <!-- Ödeme Modalı -->
+    <div id="paymentModal">
+        <div class="paymentContent">
+            <h3>Ödeme Talebi</h3>
+            <input type="text" placeholder="Papara, IBAN veya PayPal Adresi">
+            <button onclick="closePaymentModal()">Gönder</button>
+        </div>
+    </div>
 
 </body>
 </html>
