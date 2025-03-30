@@ -13,7 +13,6 @@
         const rewardLimit = 10000;
         let totalEarnings = 0;
         const rewardPer10kClicks = 20; // 10.000 tıklamaya 20 TL ödül
-        const users = []; // En yüksek kazananları tutmak için
 
         function handleClick() {
             clickCount++;
@@ -29,7 +28,6 @@
                 totalEarnings += rewardPer10kClicks;
                 document.getElementById('totalEarnings').innerText = totalEarnings + " TL";
                 alert(`Tebrikler! ${rewardPer10kClicks} TL kazandınız! Toplam kazancınız: ${totalEarnings} TL`);
-                updateLeaderboard();
             }
         }
 
@@ -49,18 +47,6 @@
         function closePaymentModal() {
             document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
         }
-
-        function updateLeaderboard() {
-            users.push({ clicks: clickCount, earnings: totalEarnings });
-            users.sort((a, b) => b.earnings - a.earnings); // En yüksek kazançlara göre sırala
-            let leaderboard = document.getElementById('leaderboardList');
-            leaderboard.innerHTML = '';
-            users.slice(0, 3).forEach(user => { // İlk 3 kullanıcıyı göster
-                let li = document.createElement('li');
-                li.textContent = `Kullanıcı: User${user.clicks} - Kazanç: ${user.earnings} TL`;
-                leaderboard.appendChild(li);
-            });
-        }
     </script>
 
     <style>
@@ -71,6 +57,8 @@
             padding: 20px;
             position: relative;
             overflow: hidden;
+            margin: 0;
+            color: #333;
         }
 
         /* Arka Plan Coin Animasyonu */
@@ -97,25 +85,26 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            transition: background-color 0.3s;
+            width: 80%; /* Buttons take 80% of the width */
+            max-width: 400px; /* Limit button width */
         }
 
-        #mainButton { background-color: #4CAF50; color: white; }
-        #adButton { background-color: #f0ad4e; color: white; display: none; }
-
-        /* Leaderboard */
-        #leaderboard {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            max-height: 250px;
-            overflow-y: auto;
+        #mainButton { 
+            background-color: #4CAF50; 
+            color: white; 
+        }
+        #adButton { 
+            background-color: #f0ad4e; 
+            color: white; 
+            display: none; 
         }
 
-        #leaderboard li { margin: 10px; font-size: 1.2rem; }
+        #mainButton:hover, #adButton:hover {
+            background-color: #45a049;
+        }
+
+        /* Leaderboard kısmı kaldırıldı */
 
         /* Ödeme Modalı */
         #paymentModal {
@@ -134,7 +123,8 @@
             background-color: white;
             padding: 30px;
             border-radius: 10px;
-            width: 300px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
         }
 
@@ -143,11 +133,58 @@
             margin: 10px;
             width: 100%;
             font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         .paymentContent button {
             background-color: #4CAF50;
             color: white;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+        }
+
+        /* Mobil uyumluluk için düzenlemeler */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2, h3 {
+                font-size: 1.2rem;
+            }
+
+            button {
+                width: 100%;
+                font-size: 1.2rem;
+                padding: 12px;
+            }
+
+            .coin {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Daha küçük ekranlar için daha fazla iyileştirme */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2, h3 {
+                font-size: 1rem;
+            }
+
+            .paymentContent {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -166,12 +203,6 @@
     <button id="adButton" onclick="watchAd()">Reklam İzle</button>
 
     <button onclick="requestPayment()">Para Talep Et</button>
-
-    <!-- Kazananlar Listesi -->
-    <div id="leaderboard">
-        <h3>En Çok Kazananlar</h3>
-        <ul id="leaderboardList"></ul>
-    </div>
 
     <!-- Ödeme Modalı -->
     <div id="paymentModal">
