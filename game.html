@@ -10,14 +10,31 @@
         const rewardLimit = 10000;
         let totalEarnings = 0;
         const rewardPer10kClicks = 20; // 10.000 tıklamaya 20 TL ödül
+        let adButtonCount = 0; // Reklam butonlarının sayısını takip eder
+
+        const directLinks = [
+            "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d",
+            "https://anotherlink.com/your_second_link", // Buraya farklı directlinkler ekleyebilirsiniz
+            "https://thirdlink.com/your_third_link"
+        ];
 
         function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
 
             if (clickCount % 50 === 0) {
-                document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
-                document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
+                // Yeni reklam izleme butonu oluştur
+                if (adButtonCount < directLinks.length) {
+                    const adButton = document.createElement('button');
+                    adButton.innerHTML = "Reklam İzle";
+                    adButton.style.display = 'inline-block';
+                    adButton.onclick = function() {
+                        window.location.href = directLinks[adButtonCount]; // Directlink'e yönlendir
+                        watchAd();
+                    };
+                    document.body.appendChild(adButton);
+                    adButtonCount++; // Buton sayısını arttır
+                }
                 alert('Reklam izleyerek devam edebilirsiniz!');
             }
 
@@ -29,9 +46,8 @@
         }
 
         function watchAd() {
-            document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
-            document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
             alert('Reklam izleniyor...');
+            // Başka bir işlem yapmak isterseniz burada yapabilirsiniz
         }
 
         function requestPayment() {
@@ -192,7 +208,6 @@
     <h3>Toplam Kazanç: <span id="totalEarnings">0 TL</span></h3>
 
     <button id="mainButton" onclick="handleClick()">Tıkla</button>
-    <button id="adButton" onclick="watchAd()">Reklam İzle</button>
 
     <button onclick="requestPayment()">Para Talep Et</button>
 
