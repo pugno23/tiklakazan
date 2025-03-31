@@ -84,15 +84,8 @@
             max-width: 400px; /* Limit button width */
         }
 
-        #mainButton { 
-            background-color: #4CAF50; 
-            color: white; 
-        }
-        #adButton { 
-            background-color: #f0ad4e; 
-            color: white; 
-            display: none; 
-        }
+        #mainButton { background-color: #4CAF50; color: white; }
+        #adButton { background-color: #f0ad4e; color: white; display: none; }
 
         #mainButton:hover, #adButton:hover {
             background-color: #45a049;
@@ -147,45 +140,10 @@
             h1 {
                 font-size: 1.8rem;
             }
-
-            h2, h3 {
-                font-size: 1.2rem;
-            }
-
-            button {
-                width: 100%;
-                font-size: 1.2rem;
-                padding: 12px;
-            }
-
-            .coin {
-                width: 40px;
-                height: 40px;
-            }
-        }
-
-        /* Daha küçük ekranlar için daha fazla iyileştirme */
-        @media (max-width: 400px) {
-            h1 {
-                font-size: 1.6rem;
-            }
-
-            h2, h3 {
-                font-size: 1rem;
-            }
-
-            .paymentContent {
-                padding: 20px;
-            }
         }
     </style>
 </head>
 <body>
-
-    <!-- Arka planda düşen coinler -->
-    <div class="coin" style="animation-delay: 0s;"></div>
-    <div class="coin" style="animation-delay: 2s;"></div>
-    <div class="coin" style="animation-delay: 4s;"></div>
 
     <h1>Tıkla Kazan Sistemi</h1>
     <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
@@ -193,10 +151,8 @@
 
     <button id="mainButton" onclick="handleClick()">Tıkla</button>
     <button id="adButton" onclick="watchAd()">Reklam İzle</button>
-
     <button onclick="requestPayment()">Para Talep Et</button>
 
-    <!-- Ödeme Modalı -->
     <div id="paymentModal">
         <div class="paymentContent">
             <h3>Ödeme Talebi</h3>
@@ -204,6 +160,9 @@
             <button onclick="closePaymentModal()">Gönder</button>
         </div>
     </div>
+
+    <!-- Adsterra Social Bar Reklam Kodu -->
+    <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
 
 </body>
 </html>
