@@ -7,26 +7,16 @@
 
     <script>
         let clickCount = 0;
-        const rewardLimit = 10000;
-        let totalEarnings = 0;
-        const rewardPer10kClicks = 20; // 10.000 tıklamaya 20 TL ödül
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
-        let adButtonClicked = false; // Reklam İzle butonuna tıklanıp tıklanmadığını kontrol et
 
         function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
 
-            if (clickCount % 50 === 0 && !adButtonClicked) {
+            if (clickCount % 50 === 0) {
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
                 document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
                 alert('Reklam izleyerek devam edebilirsiniz!');
-            }
-
-            if (clickCount >= rewardLimit) {
-                totalEarnings += rewardPer10kClicks;
-                document.getElementById('totalEarnings').innerText = totalEarnings + " TL";
-                alert(`Tebrikler! ${rewardPer10kClicks} TL kazandınız! Toplam kazancınız: ${totalEarnings} TL`);
             }
         }
 
@@ -37,7 +27,6 @@
             // Reklam izlendi, Tıkla butonunu tekrar göster
             document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
             document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
-            adButtonClicked = true; // Reklam butonuna tıklama durumu güncelleniyor
         }
 
         function requestPayment() {
