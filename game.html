@@ -5,6 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi</title>
 
+    <script>
+        let clickCount = 0;
+        const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
+
+        function handleClick() {
+            clickCount++;
+            document.getElementById('clickCount').innerText = clickCount;
+
+            if (clickCount % 50 === 0) {
+                document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
+                document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
+                alert('Reklam izleyerek devam edebilirsiniz!');
+            }
+        }
+
+        function watchAd() {
+            // DirectLink'e git
+            window.open(directLink, '_blank');
+            
+            // Reklam izlendi, Tıkla butonunu tekrar göster
+            document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
+            document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
+        }
+
+        function requestPayment() {
+            document.getElementById('paymentModal').style.display = 'block'; // Ödeme modalını göster
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
+        }
+    </script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,6 +50,22 @@
             color: #333;
         }
 
+        /* Arka Plan Coin Animasyonu */
+        .coin {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-image: url('https://img.icons8.com/ios/50/ffd700/coin.png');
+            background-size: cover;
+            animation: fall 5s infinite;
+        }
+
+        @keyframes fall {
+            0% { top: -60px; left: 10%; }
+            50% { top: 80vh; left: 50%; }
+            100% { top: 100vh; left: 90%; }
+        }
+
         /* Butonlar */
         button {
             padding: 15px 30px;
@@ -26,8 +75,8 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
-            width: 80%;
-            max-width: 400px;
+            width: 80%; /* Buttons take 80% of the width */
+            max-width: 400px; /* Limit button width */
         }
 
         #mainButton { 
@@ -93,11 +142,13 @@
         }
     </style>
 
+    <script type='text/javascript' src='//anvilgruelmarrying.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'></script>
 </head>
 <body>
 
     <h1>Tıkla Kazan Sistemi</h1>
     <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
+    <h3>10.000 kere tıkla 10 Euro kazan</h3>
     <h3>Toplam Kazanç: <span id="totalEarnings">0 Euro</span></h3>
 
     <button id="mainButton" onclick="handleClick()">Tıkla</button>
@@ -122,108 +173,6 @@
 
     <!-- Sosyal Bar Kodunu Buraya Ekledik -->
     <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
-            authDomain: "tiklakazan-5f61a.firebaseapp.com",
-            databaseURL: "https://tiklakazan-5f61a-default-rtdb.firebaseio.com",
-            projectId: "tiklakazan-5f61a",
-            storageBucket: "tiklakazan-5f61a.appspot.com",
-            messagingSenderId: "867213315462",
-            appId: "1:867213315462:web:287c994f0feaa3658a3007",
-            measurementId: "G-19F7L7X2HH"
-        };
-
-        // Firebase başlatma
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let clickCount = 0;
-        let username = "misafir_" + Math.floor(Math.random() * 100000); // Geçici kullanıcı adı oluştur
-
-        // Sayfa yüklendiğinde
-        window.onload = function() {
-            // Firebase'den kullanıcı verisini al ve yönlendir
-            const userRef = ref(db, 'users/' + username);
-            get(userRef).then(snapshot => {
-                if (snapshot.exists()) {
-                    const savedClicks = snapshot.val().clicks;
-                    clickCount = savedClicks;
-                    document.getElementById('clickCount').innerText = clickCount;
-                    updateLeaderboard();
-                } else {
-                    alert("Kullanıcı bulunamadı.");
-                }
-            });
-        }
-
-        // Tıklama işlemi
-        function handleClick() {
-            clickCount++;
-            document.getElementById('clickCount').innerText = clickCount;
-
-            // Firebase'e tıklama sayısını kaydet
-            const userRef = ref(db, 'users/' + username);
-            update(userRef, {
-                clicks: clickCount
-            });
-
-            // Tıklama sayısı 50'ye ulaştığında reklam izleme butonunu göster
-            if (clickCount % 50 === 0) {
-                document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
-                document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
-                alert('Reklam izleyerek devam edebilirsiniz!');
-            }
-        }
-
-        // Reklam izleme işlemi
-        function watchAd() {
-            const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // Reklam linki
-            window.open(directLink, '_blank');
-            
-            // Reklam izlendi, Tıkla butonunu tekrar göster
-            document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
-            document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
-        }
-
-        // Para talep etme işlemi
-        function requestPayment() {
-            document.getElementById('paymentModal').style.display = 'block'; // Ödeme modalını göster
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
-        }
-
-        // Lider tablosu güncelleme
-        function updateLeaderboard() {
-            const usersRef = ref(db, 'users');
-            
-            // Firebase'teki kullanıcı verilerini al
-            get(usersRef).then(snapshot => {
-                if (snapshot.exists()) {
-                    let sortedUsers = Object.entries(snapshot.val())
-                        .sort((a, b) => b[1].clicks - a[1].clicks)
-                        .slice(0, 5);
-
-                    let table = document.getElementById('leaderboard');
-                    table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
-
-                    sortedUsers.forEach(([username, data]) => {
-                        let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
-                        table.innerHTML += row;
-                    });
-                } else {
-                    console.log("Veri yok");
-                }
-            });
-        }
-    </script>
 
 </body>
 </html>
