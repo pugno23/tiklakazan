@@ -54,7 +54,6 @@
             margin-top: 10px;
         }
 
-        /* Sıralama Tablosu */
         h2 {
             margin-top: 40px;
             font-size: 2rem;
@@ -87,16 +86,34 @@
     <div id="errorMessage" class="error"></div>
 
     <h2>En Yüksek 5 Kullanıcı</h2>
-    <table border="1" id="leaderboard">
+    <table id="leaderboard">
         <tr>
             <th>Kullanıcı</th>
             <th>Tıklama Sayısı</th>
         </tr>
     </table>
 
-    <script>
-        let users = JSON.parse(localStorage.getItem('users')) || {};
-        
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
+            authDomain: "tiklakazan-5f61a.firebaseapp.com",
+            databaseURL: "https://tiklakazan-5f61a-default-rtdb.firebaseio.com",
+            projectId: "tiklakazan-5f61a",
+            storageBucket: "tiklakazan-5f61a.appspot.com",
+            messagingSenderId: "867213315462",
+            appId: "1:867213315462:web:287c994f0feaa3658a3007",
+            measurementId: "G-19F7L7X2HH"
+        };
+
+        // Firebase başlatma
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Kullanıcı giriş fonksiyonu
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
@@ -106,28 +123,43 @@
                 return;
             }
 
-            if (!users[username]) {
-                users[username] = { clicks: 0 };
-            }
+            // Kullanıcıyı Firebase Realtime Database'e kaydet
+            const userRef = ref(db, 'users/' + username);
+            set(userRef, {
+                clicks: 0
+            });
 
+            // Kullanıcı adı LocalStorage'a kaydet
             localStorage.setItem('username', username);
-            localStorage.setItem('users', JSON.stringify(users));
+
+            // Lider tablosunu güncelle
             updateLeaderboard();
             
-            window.location.href = 'game.html'; 
+            // Oyun sayfasına yönlendir
+            window.location.href = 'game.html';
         }
 
+        // Lider tablosunu güncelleme fonksiyonu
         function updateLeaderboard() {
-            let sortedUsers = Object.entries(users)
-                .sort((a, b) => b[1].clicks - a[1].clicks)
-                .slice(0, 5);
+            const usersRef = ref(db, 'users');
+            
+            // Firebase'teki kullanıcı verilerini al
+            get(usersRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    let sortedUsers = Object.entries(snapshot.val())
+                        .sort((a, b) => b[1].clicks - a[1].clicks)
+                        .slice(0, 5);
+                    
+                    let table = document.getElementById('leaderboard');
+                    table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
 
-            let table = document.getElementById('leaderboard');
-            table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
-
-            sortedUsers.forEach(([username, data]) => {
-                let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
-                table.innerHTML += row;
+                    sortedUsers.forEach(([username, data]) => {
+                        let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
+                        table.innerHTML += row;
+                    });
+                } else {
+                    console.log("Veri yok");
+                }
             });
         }
 
@@ -135,6 +167,5 @@
             updateLeaderboard();
         };
     </script>
-
 </body>
 </html>
