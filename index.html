@@ -135,10 +135,10 @@
             // Lider tablosunu güncelle
             updateLeaderboard();
             
-            // Yönlendirme işlemi
+            // Yönlendirme işlemi (veri kaydının tamamlanması için biraz gecikme ekleyelim)
             setTimeout(function() {
                 window.location.href = 'game.html'; // Oyun sayfasına yönlendir
-            }, 500); // Yönlendirmeyi biraz geciktiriyoruz, böylece veri kaydetme işlemi tamamlanabilir
+            }, 500); // 500ms gecikme
         }
 
         // Lider tablosunu güncelleme fonksiyonu
