@@ -12,6 +12,10 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214678385916003"
      crossorigin="anonymous"></script>
 
+    <!-- Firebase SDK'sı -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"></script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -71,10 +75,22 @@
     <div id="errorMessage" class="error"></div>
 
     <script>
-        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
-        const registeredUsers = [];
+        // Firebase yapılandırma
+        const firebaseConfig = {
+            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
+            authDomain: "tiklakazan-5f61a.firebaseapp.com",
+            projectId: "tiklakazan-5f61a",
+            storageBucket: "tiklakazan-5f61a.appspot.com",
+            messagingSenderId: "867213315462",
+            appId: "1:867213315462:web:287c994f0feaa3658a3007",
+            measurementId: "G-19F7L7X2HH"
+        };
 
-        function login() {
+        // Firebase başlatma
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        async function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
 
@@ -84,16 +100,22 @@
                 return;
             }
 
-            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
-            if (registeredUsers.includes(username)) {
-                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
-                return;
+            // Firestore'dan kullanıcı verisini kontrol et
+            const userRef = db.collection('users').doc(username);
+            const doc = await userRef.get();
+
+            if (doc.exists) {
+                // Kullanıcı zaten var, hata mesajı yok
+                errorMessage.innerText = '';
+            } else {
+                // Kullanıcı yoksa, veritabanına yeni kullanıcı ekle
+                await userRef.set({
+                    username: username,
+                    clickCount: 0
+                });
             }
 
-            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
-            registeredUsers.push(username); 
-
-            // Kullanıcı adını localStorage'a kaydet
+            // Kullanıcı adı localStorage'a kaydediliyor
             localStorage.setItem('username', username);
 
             // Giriş yaptıktan sonra oyun sayfasına yönlendir
