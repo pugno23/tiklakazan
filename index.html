@@ -135,8 +135,10 @@
             // Lider tablosunu güncelle
             updateLeaderboard();
             
-            // Oyun sayfasına yönlendir
-            window.location.href = 'game.html';
+            // Yönlendirme işlemi
+            setTimeout(function() {
+                window.location.href = 'game.html'; // Oyun sayfasına yönlendir
+            }, 500); // Yönlendirmeyi biraz geciktiriyoruz, böylece veri kaydetme işlemi tamamlanabilir
         }
 
         // Lider tablosunu güncelleme fonksiyonu
