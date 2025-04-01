@@ -26,41 +26,27 @@
         const db = getFirestore(app);
 
         // Kullanıcı adı alımı
-        let username = prompt("Lütfen kullanıcı adınızı girin:"); // Kullanıcıdan isim alıyoruz.
+        let username = "";
 
-        // Kullanıcı verisi Firestore'dan alınır
-        async function getUserData() {
+        // Kullanıcı adını al ve oyun sayfasına yönlendir
+        function handleUserNameInput() {
+            username = document.getElementById("usernameInput").value.trim();
             if (username) {
-                const userRef = doc(db, "users", username);
-                const docSnap = await getDoc(userRef);
-
-                if (docSnap.exists()) {
-                    // Kullanıcı zaten var, verileri alabiliriz.
-                    console.log("Kullanıcı verisi bulundu.");
-                } else {
-                    // Kullanıcı verisi bulunmazsa yeni bir kullanıcı kaydet
-                    console.log("Kullanıcı verisi bulunamadı, yeni kullanıcı oluşturulacak.");
-                    await setDoc(doc(db, "users", username), {
-                        clickCount: 0, // Başlangıçtaki clickCount
-                        totalEarnings: 0 // Başlangıçtaki kazanç
-                    });
-                }
-
-                // Firebase'e kullanıcı adı ve bilgilerini kaydetmek tamamlandığında yönlendirme işlemi
-                window.location.href = 'game.html'; // Oyun sayfasına yönlendirme
+                // Kullanıcı adını kaydet ve oyun sayfasına yönlendir
+                localStorage.setItem('username', username);
+                window.location.href = 'game.html'; // Oyun sayfasına yönlendir
+            } else {
+                alert("Lütfen geçerli bir kullanıcı adı girin.");
             }
         }
-
-        // Sayfa yüklendiğinde kullanıcı verisini al ve yönlendirme yap
-        window.onload = function() {
-            getUserData();
-        };
     </script>
 </head>
 <body>
     <h1>Tıkla Kazan Sistemi - Giriş</h1>
-    <p>Uygulamayı kullanabilmek için lütfen kullanıcı adınızı girin.</p>
+    <h2>Uygulamayı kullanabilmek için lütfen kullanıcı adınızı girin.</h2>
+    
+    <input type="text" id="usernameInput" placeholder="Kullanıcı Adınızı Girin">
+    <button onclick="handleUserNameInput()">Giriş Yap</button>
 
-    <p id="loadingMessage">Yükleniyor...</p> <!-- Yükleniyor mesajı gösterilecektir -->
 </body>
 </html>
