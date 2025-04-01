@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi - Giriş</title>
-
-    <!-- Google AdSense Doğrulama Kodu -->
-    <meta name="google-site-verification" content="DOĞRULAMA_KODUNUZ">
-
-    <!-- Google AdSense Script -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214678385916003"
-     crossorigin="anonymous"></script>
-
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -103,47 +95,35 @@
     </table>
 
     <script>
-        // Kullanıcı adı veritabanı ve tıklama sayıları
         let users = JSON.parse(localStorage.getItem('users')) || {};
-
+        
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
 
-            // Eğer kullanıcı adı boşsa hata mesajı ver
             if (username === '') {
                 errorMessage.innerText = 'Lütfen geçerli bir kullanıcı adı girin!';
                 return;
             }
 
-            // Eğer kullanıcı adı daha önce kaydedilmişse uyarı ver
-            if (users[username]) {
-                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
-                return;
+            if (!users[username]) {
+                users[username] = { clicks: 0 };
             }
 
-            // Kullanıcıyı kaydet
-            users[username] = { clicks: 0 };
-
-            // Kullanıcı adını ve verilerini localStorage'a kaydet
             localStorage.setItem('username', username);
             localStorage.setItem('users', JSON.stringify(users));
-
-            // Giriş yaptıktan sonra sıralama tablosunu güncelle
             updateLeaderboard();
-
-            // Oyun sayfasına yönlendir
-            window.location.href = 'game.html';  // Burada game.html, oyun sayfasının ismi olacak
+            
+            window.location.href = 'game.html'; 
         }
 
-        // Sıralama tablosunu güncelleyen fonksiyon
         function updateLeaderboard() {
             let sortedUsers = Object.entries(users)
                 .sort((a, b) => b[1].clicks - a[1].clicks)
-                .slice(0, 5); // İlk 5 kullanıcıyı al
+                .slice(0, 5);
 
             let table = document.getElementById('leaderboard');
-            table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>'; // Başlıkları ekle
+            table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
 
             sortedUsers.forEach(([username, data]) => {
                 let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
@@ -151,7 +131,6 @@
             });
         }
 
-        // Sayfa yüklendiğinde sıralama tablosunu güncelle
         window.onload = function() {
             updateLeaderboard();
         };
