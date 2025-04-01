@@ -9,22 +9,15 @@
         let clickCount = 0;
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
 
-        // Firebase Firestore bağlantısı
-        const db = firebase.firestore(); // Firebase Firestore bağlantısı
-        const username = localStorage.getItem('username'); // Kullanıcı adı localStorage'dan alınıyor
-
-        // Kullanıcı verisini güncelleme
-        async function updateClickCount(clickCount) {
-            const userRef = db.collection('users').doc(username);
-            await userRef.update({
-                clickCount: clickCount
-            });
+        // Kullanıcının ismini localStorage'dan al
+        const username = localStorage.getItem('username');
+        if (!username) {
+            // Eğer kullanıcı adı yoksa, giriş sayfasına yönlendir
+            window.location.href = 'index.html';
         }
 
-        // Oyun sayfasında tıklama işlemi
         function handleClick() {
             clickCount++;
-            updateClickCount(clickCount); // Veritabanını güncelle
             document.getElementById('clickCount').innerText = clickCount;
 
             if (clickCount % 50 === 0) {
@@ -161,6 +154,7 @@
 <body>
 
     <h1>Tıkla Kazan Sistemi</h1>
+    <h2>Merhaba, <span id="usernameDisplay"></span></h2> <!-- Kullanıcı adını burada göstereceğiz -->
     <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
     <h3>10.000 kere tıkla 10 Euro kazan</h3>
     <h3>Toplam Kazanç: <span id="totalEarnings">0 Euro</span></h3>
@@ -187,6 +181,11 @@
 
     <!-- Sosyal Bar Kodunu Buraya Ekledik -->
     <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
+
+    <script>
+        // Kullanıcı adı display kısmını güncelle
+        document.getElementById('usernameDisplay').innerText = username;
+    </script>
 
 </body>
 </html>
