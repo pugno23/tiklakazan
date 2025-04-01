@@ -109,7 +109,7 @@
 
           if (!querySnapshot.empty) {
               // Kullanıcı adı bulunduysa, giriş başarılıdır, oyun sayfasına yönlendir
-              window.location.href = 'game.html'; 
+              window.location.href = 'https://tiklakazanbypugno.com/game.html'; 
           } else {
               // Kullanıcı adı yoksa, yeni bir kullanıcı oluştur
               try {
@@ -121,7 +121,7 @@
                   });
 
                   // Yeni kullanıcı başarıyla oluşturuldu, oyun sayfasına yönlendir
-                  window.location.href = 'game.html'; 
+                  window.location.href = 'https://tiklakazanbypugno.com/game.html'; 
               } catch (e) {
                   console.error("Hata oluştu: ", e);
                   errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
