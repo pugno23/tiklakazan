@@ -72,11 +72,11 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-      // Import the necessary Firebase functions
+      // Firebase SDK'dan gerekli fonksiyonları import et
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
       import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
       
-      // Your Firebase Configuration
+      // Firebase Konfigürasyonu
       const firebaseConfig = {
         apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
         authDomain: "tiklakazan-5f61a.firebaseapp.com",
@@ -87,7 +87,7 @@
         measurementId: "G-19F7L7X2HH"
       };
 
-      // Initialize Firebase
+      // Firebase'i başlat
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
@@ -107,22 +107,24 @@
           const querySnapshot = await getDocs(q);
 
           if (!querySnapshot.empty) {
-              errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
-              return;
-          }
-
-          // Kullanıcı adını Firestore'a ekle
-          try {
-              await addDoc(usersRef, {
-                  username: username,
-                  createdAt: new Date()
-              });
-
-              // Kullanıcı başarılı bir şekilde giriş yaptıktan sonra oyun sayfasına yönlendir
+              // Kullanıcı adı bulunduysa, giriş başarılıdır, oyun sayfasına yönlendir
               window.location.href = 'game.html'; 
-          } catch (e) {
-              console.error("Hata oluştu: ", e);
-              errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
+          } else {
+              // Kullanıcı adı yoksa, yeni bir kullanıcı oluştur
+              try {
+                  await addDoc(usersRef, {
+                      username: username,
+                      createdAt: new Date(),
+                      clicks: 0, // Başlangıç tıklama sayısı
+                      earnings: 0 // Başlangıç kazanç miktarı
+                  });
+
+                  // Yeni kullanıcı başarıyla oluşturuldu, oyun sayfasına yönlendir
+                  window.location.href = 'game.html'; 
+              } catch (e) {
+                  console.error("Hata oluştu: ", e);
+                  errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
+              }
           }
       }
     </script>
