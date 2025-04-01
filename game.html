@@ -144,25 +144,34 @@
         const db = getDatabase(app);
 
         let clickCount = 0;
-        const username = localStorage.getItem('username'); // Kullanıcı adı
+        const username = localStorage.getItem('username'); // Kullanıcı adı Firebase ile kontrol edilecek
 
+        // Sayfa yüklendiğinde
         window.onload = function() {
-            // LocalStorage'dan tıklama sayısını al
-            const savedClicks = localStorage.getItem('clickCount');
-            if (savedClicks) {
-                clickCount = parseInt(savedClicks);
-                document.getElementById('clickCount').innerText = clickCount;
+            if (!username) {
+                alert("Lütfen önce giriş yapın!");
+                window.location.href = 'index.html'; // Giriş sayfasına yönlendir
+            } else {
+                // Firebase'den kullanıcı verisini al ve yönlendir
+                const userRef = ref(db, 'users/' + username);
+                get(userRef).then(snapshot => {
+                    if (snapshot.exists()) {
+                        const savedClicks = snapshot.val().clicks;
+                        clickCount = savedClicks;
+                        document.getElementById('clickCount').innerText = clickCount;
+                        updateLeaderboard();
+                    } else {
+                        alert("Kullanıcı bulunamadı. Lütfen tekrar giriş yapın.");
+                        window.location.href = 'index.html';
+                    }
+                });
             }
-            updateLeaderboard(); // Sayfa yüklendiğinde lider tablosunu güncelle
         }
 
         // Tıklama işlemi
         function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
-
-            // Tıklama sayısını localStorage'a kaydet
-            localStorage.setItem('clickCount', clickCount);
 
             // Firebase'e tıklama sayısını kaydet
             const userRef = ref(db, 'users/' + username);
