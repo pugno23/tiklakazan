@@ -95,7 +95,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -123,22 +123,22 @@
                 return;
             }
 
-            // Kullanıcıyı Firebase Realtime Database'e kaydet
+            // Firebase'teki kullanıcı verisini kontrol et
             const userRef = ref(db, 'users/' + username);
-            set(userRef, {
-                clicks: 0
+            get(userRef).then(snapshot => {
+                if (!snapshot.exists()) {
+                    // Kullanıcı verisi yoksa, yeni kullanıcı ekle
+                    set(userRef, {
+                        clicks: 0
+                    }).then(() => {
+                        // Yönlendirme işlemi
+                        window.location.href = 'game.html?username=' + username;
+                    });
+                } else {
+                    // Kullanıcı zaten varsa, direkt yönlendir
+                    window.location.href = 'game.html?username=' + username;
+                }
             });
-
-            // Kullanıcı adı LocalStorage'a kaydet
-            localStorage.setItem('username', username);
-
-            // Lider tablosunu güncelle
-            updateLeaderboard();
-            
-            // Yönlendirme işlemi (veri kaydının tamamlanması için biraz gecikme ekleyelim)
-            setTimeout(function() {
-                window.location.href = 'game.html'; // Oyun sayfasına yönlendir
-            }, 500); // 500ms gecikme
         }
 
         // Lider tablosunu güncelleme fonksiyonu
