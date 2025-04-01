@@ -133,13 +133,16 @@
                     }).then(() => {
                         // Yönlendirme işlemi
                         window.location.href = 'https://tiklakazanbypugno.com/game.html?username=' + username; // Oyun sayfasına yönlendir
+                    }).catch(error => {
+                        console.error("Yeni kullanıcı eklerken bir hata oluştu: ", error);
+                        errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
                     });
                 } else {
                     // Kullanıcı zaten varsa, direkt yönlendir
                     window.location.href = 'https://tiklakazanbypugno.com/game.html?username=' + username; // Oyun sayfasına yönlendir
                 }
             }).catch(error => {
-                console.error(error);
+                console.error("Firebase veri okuma hatası: ", error);
                 errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
             });
         }
@@ -164,7 +167,12 @@
                     });
                 } else {
                     console.log("Veri yok");
+                    // Eğer veri yoksa, boş bir lider tablosu gösterilebilir
+                    let table = document.getElementById('leaderboard');
+                    table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
                 }
+            }).catch(error => {
+                console.error("Lider tablosu güncellenirken bir hata oluştu: ", error);
             });
         }
 
