@@ -132,12 +132,17 @@
                         clicks: 0
                     }).then(() => {
                         // Yönlendirme işlemi
-                        window.location.href = 'game.html?username=' + username;
+                        localStorage.setItem('username', username); // Kullanıcı adını localStorage'a kaydet
+                        window.location.href = 'game.html?username=' + username; // Oyun sayfasına yönlendir
                     });
                 } else {
                     // Kullanıcı zaten varsa, direkt yönlendir
-                    window.location.href = 'game.html?username=' + username;
+                    localStorage.setItem('username', username); // Kullanıcı adını localStorage'a kaydet
+                    window.location.href = 'game.html?username=' + username; // Oyun sayfasına yönlendir
                 }
+            }).catch(error => {
+                console.error(error);
+                errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
             });
         }
 
