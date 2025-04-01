@@ -41,7 +41,12 @@
                     clickCount = docSnap.data().clickCount || 0; // Eğer veri varsa, clickCount'u al
                     document.getElementById('clickCount').innerText = clickCount; // Ekranda göster
                 } else {
-                    console.log("Kullanıcı verisi bulunamadı!");
+                    // Kullanıcı verisi bulunmazsa yeni bir kullanıcı kaydet
+                    console.log("Kullanıcı verisi bulunamadı, yeni kullanıcı oluşturulacak.");
+                    await setDoc(doc(db, "users", username), {
+                        clickCount: clickCount,
+                    });
+                    document.getElementById('clickCount').innerText = clickCount; // Başlangıçta 0 göster
                 }
             }
         }
