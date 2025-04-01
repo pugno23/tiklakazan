@@ -5,13 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi</title>
 
+    <!-- Firebase SDK'sı -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"></script>
+
     <script>
+        // Firebase yapılandırma
+        const firebaseConfig = {
+            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
+            authDomain: "tiklakazan-5f61a.firebaseapp.com",
+            projectId: "tiklakazan-5f61a",
+            storageBucket: "tiklakazan-5f61a.appspot.com",
+            messagingSenderId: "867213315462",
+            appId: "1:867213315462:web:287c994f0feaa3658a3007",
+            measurementId: "G-19F7L7X2HH"
+        };
+
+        // Firebase başlatma
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
         let clickCount = 0;
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
 
-        function handleClick() {
+        // Kullanıcıyı localStorage'dan al
+        const username = localStorage.getItem('username');
+
+        if (!username) {
+            alert("Lütfen giriş yapın!");
+            window.location.href = 'index.html';  // Giriş sayfasına yönlendir
+        }
+
+        // Firestore'dan kullanıcı verisini al ve clickCount'u güncelle
+        async function updateClickCount() {
+            const userRef = db.collection('users').doc(username);
+            const doc = await userRef.get();
+
+            if (doc.exists) {
+                const userData = doc.data();
+                clickCount = userData.clickCount;
+                document.getElementById('clickCount').innerText = clickCount;
+            }
+        }
+
+        // Her tıklamada clickCount'u güncelle ve Firestore'a kaydet
+        async function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
+
+            const userRef = db.collection('users').doc(username);
+            await userRef.update({
+                clickCount: clickCount
+            });
 
             if (clickCount % 50 === 0) {
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
@@ -36,6 +81,8 @@
         function closePaymentModal() {
             document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
         }
+
+        window.onload = updateClickCount;  // Sayfa yüklendiğinde clickCount'u güncelle
     </script>
 
     <style>
