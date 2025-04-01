@@ -9,10 +9,23 @@
         let clickCount = 0;
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
 
+        // LocalStorage'dan tıklama sayısını al
+        window.onload = function() {
+            const savedClicks = localStorage.getItem('clickCount');
+            if (savedClicks) {
+                clickCount = parseInt(savedClicks);
+                document.getElementById('clickCount').innerText = clickCount;
+            }
+        }
+
         function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
 
+            // Tıklama sayısını localStorage'a kaydet
+            localStorage.setItem('clickCount', clickCount);
+
+            // Tıklama sayısı 50'ye ulaştığında reklam izleme butonunu göster
             if (clickCount % 50 === 0) {
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
                 document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
@@ -36,6 +49,34 @@
         function closePaymentModal() {
             document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
         }
+
+        // Kullanıcı tıklama verisini sıralama tablosuna eklemek için
+        function updateLeaderboard() {
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+            const username = localStorage.getItem('username');
+
+            // Eğer kullanıcı adı mevcutsa tıklama sayısını güncelle
+            if (username) {
+                users[username] = users[username] || { clicks: 0 };
+                users[username].clicks = clickCount;  // Kullanıcının tıklama sayısını güncelle
+
+                // LocalStorage'a tekrar kaydet
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+
+            let sortedUsers = Object.entries(users).sort((a, b) => b[1].clicks - a[1].clicks).slice(0, 5);
+            let table = document.getElementById('leaderboard');
+            table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
+
+            sortedUsers.forEach(([username, data]) => {
+                let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        window.onload = function() {
+            updateLeaderboard(); // Sayfa yüklendiğinde lider tablosunu güncelle
+        };
     </script>
 
     <style>
@@ -142,7 +183,6 @@
         }
     </style>
 
-    <script type='text/javascript' src='//anvilgruelmarrying.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'></script>
 </head>
 <body>
 
