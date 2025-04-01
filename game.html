@@ -5,64 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi</title>
 
-    <script type="module">
-        // Firebase SDK importları
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-        // Firebase yapılandırma
-        const firebaseConfig = {
-            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
-            authDomain: "tiklakazan-5f61a.firebaseapp.com",
-            projectId: "tiklakazan-5f61a",
-            storageBucket: "tiklakazan-5f61a.firebasestorage.app",
-            messagingSenderId: "867213315462",
-            appId: "1:867213315462:web:287c994f0feaa3658a3007",
-            measurementId: "G-19F7L7X2HH"
-        };
-
-        // Firebase'i başlat
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
+    <script>
         let clickCount = 0;
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
 
-        // Kullanıcı adı alımı
-        let username = prompt("Lütfen kullanıcı adınızı girin:"); // Kullanıcıdan isim alıyoruz.
-
-        // Kullanıcı verisi Firestore'dan alınır
-        async function getUserData() {
-            if (username) {
-                const userRef = doc(db, "users", username);
-                const docSnap = await getDoc(userRef);
-
-                if (docSnap.exists()) {
-                    clickCount = docSnap.data().clickCount || 0; // Eğer veri varsa, clickCount'u al
-                    document.getElementById('clickCount').innerText = clickCount; // Ekranda göster
-                } else {
-                    console.log("Kullanıcı verisi bulunamadı!");
-                }
-            }
-        }
-
-        // Kullanıcı verisini güncelle
-        async function updateUserData() {
-            if (username) {
-                const userRef = doc(db, "users", username);
-                await setDoc(userRef, {
-                    clickCount: clickCount,
-                });
-            }
-        }
-
-        // Tıklama işlemi
         function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
-
-            // Firebase'e kaydet
-            updateUserData();
 
             if (clickCount % 50 === 0) {
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
@@ -71,7 +20,6 @@
             }
         }
 
-        // Reklam izleme işlemi
         function watchAd() {
             // DirectLink'e git
             window.open(directLink, '_blank');
@@ -81,20 +29,13 @@
             document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
         }
 
-        // Para talep etme işlemi
         function requestPayment() {
             document.getElementById('paymentModal').style.display = 'block'; // Ödeme modalını göster
         }
 
-        // Ödeme modalını kapatma
         function closePaymentModal() {
             document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
         }
-
-        // Sayfa yüklendiğinde kullanıcı verisini al
-        window.onload = function() {
-            getUserData();
-        };
     </script>
 
     <style>
