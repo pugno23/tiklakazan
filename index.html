@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi - Giriş</title>
+
+    <!-- Google AdSense Doğrulama Kodu -->
+    <meta name="google-site-verification" content="DOĞRULAMA_KODUNUZ">
+
+    <!-- Google AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214678385916003"
+     crossorigin="anonymous"></script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -53,29 +61,6 @@
             font-size: 1.1rem;
             margin-top: 10px;
         }
-
-        h2 {
-            margin-top: 40px;
-            font-size: 2rem;
-            color: #333;
-        }
-
-        table {
-            margin-top: 20px;
-            width: 80%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -85,100 +70,35 @@
     <button onclick="login()">Giriş Yap</button>
     <div id="errorMessage" class="error"></div>
 
-    <h2>En Yüksek 5 Kullanıcı</h2>
-    <table id="leaderboard">
-        <tr>
-            <th>Kullanıcı</th>
-            <th>Tıklama Sayısı</th>
-        </tr>
-    </table>
+    <script>
+        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
+        const registeredUsers = [];
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
-            authDomain: "tiklakazan-5f61a.firebaseapp.com",
-            databaseURL: "https://tiklakazan-5f61a-default-rtdb.firebaseio.com",
-            projectId: "tiklakazan-5f61a",
-            storageBucket: "tiklakazan-5f61a.appspot.com",
-            messagingSenderId: "867213315462",
-            appId: "1:867213315462:web:287c994f0feaa3658a3007",
-            measurementId: "G-19F7L7X2HH"
-        };
-
-        // Firebase başlatma
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // Kullanıcı giriş fonksiyonu
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
 
+            // Eğer kullanıcı adı boşsa hata mesajı ver
             if (username === '') {
                 errorMessage.innerText = 'Lütfen geçerli bir kullanıcı adı girin!';
                 return;
             }
 
-            // Firebase'teki kullanıcı verisini kontrol et
-            const userRef = ref(db, 'users/' + username);
-            get(userRef).then(snapshot => {
-                if (!snapshot.exists()) {
-                    // Kullanıcı verisi yoksa, yeni kullanıcı ekle
-                    set(userRef, {
-                        clicks: 0
-                    }).then(() => {
-                        // Yönlendirme işlemi
-                        window.location.href = 'https://tiklakazanbypugno.com/game.html?username=' + username; // Oyun sayfasına yönlendir
-                    }).catch(error => {
-                        console.error("Yeni kullanıcı eklerken bir hata oluştu: ", error);
-                        errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
-                    });
-                } else {
-                    // Kullanıcı zaten varsa, direkt yönlendir
-                    window.location.href = 'https://tiklakazanbypugno.com/game.html?username=' + username; // Oyun sayfasına yönlendir
-                }
-            }).catch(error => {
-                console.error("Firebase veri okuma hatası: ", error);
-                errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
-            });
+            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
+            if (registeredUsers.includes(username)) {
+                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
+                return;
+            }
+
+            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
+            registeredUsers.push(username); 
+
+            // Kullanıcı adını localStorage'a kaydet
+            localStorage.setItem('username', username);
+
+            // Giriş yaptıktan sonra oyun sayfasına yönlendir
+            window.location.href = 'game.html';  // Burada game.html, oyun sayfasının ismi olacak
         }
-
-        // Lider tablosunu güncelleme fonksiyonu
-        function updateLeaderboard() {
-            const usersRef = ref(db, 'users');
-            
-            // Firebase'teki kullanıcı verilerini al
-            get(usersRef).then(snapshot => {
-                if (snapshot.exists()) {
-                    let sortedUsers = Object.entries(snapshot.val())
-                        .sort((a, b) => b[1].clicks - a[1].clicks)
-                        .slice(0, 5);
-                    
-                    let table = document.getElementById('leaderboard');
-                    table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
-
-                    sortedUsers.forEach(([username, data]) => {
-                        let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
-                        table.innerHTML += row;
-                    });
-                } else {
-                    console.log("Veri yok");
-                    // Eğer veri yoksa, boş bir lider tablosu gösterilebilir
-                    let table = document.getElementById('leaderboard');
-                    table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>';
-                }
-            }).catch(error => {
-                console.error("Lider tablosu güncellenirken bir hata oluştu: ", error);
-            });
-        }
-
-        window.onload = function() {
-            updateLeaderboard();
-        };
     </script>
 
 </body>
