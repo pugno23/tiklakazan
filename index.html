@@ -61,6 +61,30 @@
             font-size: 1.1rem;
             margin-top: 10px;
         }
+
+        /* Sıralama Tablosu */
+        h2 {
+            margin-top: 40px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 80%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -70,9 +94,17 @@
     <button onclick="login()">Giriş Yap</button>
     <div id="errorMessage" class="error"></div>
 
+    <h2>En Yüksek 5 Kullanıcı</h2>
+    <table border="1" id="leaderboard">
+        <tr>
+            <th>Kullanıcı</th>
+            <th>Tıklama Sayısı</th>
+        </tr>
+    </table>
+
     <script>
-        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
-        const registeredUsers = [];
+        // Kullanıcı adı veritabanı ve tıklama sayıları
+        let users = JSON.parse(localStorage.getItem('users')) || {};
 
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
@@ -84,21 +116,45 @@
                 return;
             }
 
-            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
-            if (registeredUsers.includes(username)) {
+            // Eğer kullanıcı adı daha önce kaydedilmişse uyarı ver
+            if (users[username]) {
                 errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
                 return;
             }
 
-            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
-            registeredUsers.push(username); 
+            // Kullanıcıyı kaydet
+            users[username] = { clicks: 0 };
 
-            // Kullanıcı adını localStorage'a kaydet
+            // Kullanıcı adını ve verilerini localStorage'a kaydet
             localStorage.setItem('username', username);
+            localStorage.setItem('users', JSON.stringify(users));
 
-            // Giriş yaptıktan sonra oyun sayfasına yönlendir
+            // Giriş yaptıktan sonra sıralama tablosunu güncelle
+            updateLeaderboard();
+
+            // Oyun sayfasına yönlendir
             window.location.href = 'game.html';  // Burada game.html, oyun sayfasının ismi olacak
         }
+
+        // Sıralama tablosunu güncelleyen fonksiyon
+        function updateLeaderboard() {
+            let sortedUsers = Object.entries(users)
+                .sort((a, b) => b[1].clicks - a[1].clicks)
+                .slice(0, 5); // İlk 5 kullanıcıyı al
+
+            let table = document.getElementById('leaderboard');
+            table.innerHTML = '<tr><th>Kullanıcı</th><th>Tıklama Sayısı</th></tr>'; // Başlıkları ekle
+
+            sortedUsers.forEach(([username, data]) => {
+                let row = `<tr><td>${username}</td><td>${data.clicks}</td></tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        // Sayfa yüklendiğinde sıralama tablosunu güncelle
+        window.onload = function() {
+            updateLeaderboard();
+        };
     </script>
 
 </body>
