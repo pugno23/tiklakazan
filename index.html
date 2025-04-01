@@ -133,12 +133,12 @@
                     }).then(() => {
                         // Yönlendirme işlemi
                         localStorage.setItem('username', username); // Kullanıcı adını localStorage'a kaydet
-                        window.location.href = 'game.html?username=' + username; // Oyun sayfasına yönlendir
+                        window.location.href = 'https://tiklakazanbypugno.com/game.html?username=' + username; // Oyun sayfasına yönlendir
                     });
                 } else {
                     // Kullanıcı zaten varsa, direkt yönlendir
                     localStorage.setItem('username', username); // Kullanıcı adını localStorage'a kaydet
-                    window.location.href = 'game.html?username=' + username; // Oyun sayfasına yönlendir
+                    window.location.href = 'https://tiklakazanbypugno.com/game.html?username=' + username; // Oyun sayfasına yönlendir
                 }
             }).catch(error => {
                 console.error(error);
