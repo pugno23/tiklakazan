@@ -5,130 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi - Giriş</title>
 
-    <!-- Google AdSense Doğrulama Kodu -->
-    <meta name="google-site-verification" content="DOĞRULAMA_KODUNUZ">
+    <script type="module">
+        // Firebase SDK importları
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    <!-- Google AdSense Script -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214678385916003"
-     crossorigin="anonymous"></script>
+        // Firebase yapılandırma
+        const firebaseConfig = {
+            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
+            authDomain: "tiklakazan-5f61a.firebaseapp.com",
+            projectId: "tiklakazan-5f61a",
+            storageBucket: "tiklakazan-5f61a.firebasestorage.app",
+            messagingSenderId: "867213315462",
+            appId: "1:867213315462:web:287c994f0feaa3658a3007",
+            measurementId: "G-19F7L7X2HH"
+        };
 
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #e6f7ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Kullanıcı adı alımı
+        let username = prompt("Lütfen kullanıcı adınızı girin:"); // Kullanıcıdan isim alıyoruz.
+
+        // Kullanıcı verisi Firestore'dan alınır
+        async function getUserData() {
+            if (username) {
+                const userRef = doc(db, "users", username);
+                const docSnap = await getDoc(userRef);
+
+                if (docSnap.exists()) {
+                    // Kullanıcı zaten var, verileri alabiliriz.
+                    console.log("Kullanıcı verisi bulundu.");
+                } else {
+                    // Kullanıcı verisi bulunmazsa yeni bir kullanıcı kaydet
+                    console.log("Kullanıcı verisi bulunamadı, yeni kullanıcı oluşturulacak.");
+                    await setDoc(doc(db, "users", username), {
+                        clickCount: 0, // Başlangıçtaki clickCount
+                        totalEarnings: 0 // Başlangıçtaki kazanç
+                    });
+                }
+
+                // Firebase'e kullanıcı adı ve bilgilerini kaydetmek tamamlandığında yönlendirme işlemi
+                window.location.href = 'game.html'; // Oyun sayfasına yönlendirme
+            }
         }
 
-        h1 {
-            font-size: 3rem;
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-
-        #usernameInput {
-            padding: 10px;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            width: 250px;
-            border-radius: 5px;
-            border: 2px solid #ccc;
-        }
-
-        button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            margin: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .error {
-            color: red;
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-    </style>
+        // Sayfa yüklendiğinde kullanıcı verisini al ve yönlendirme yap
+        window.onload = function() {
+            getUserData();
+        };
+    </script>
 </head>
 <body>
+    <h1>Tıkla Kazan Sistemi - Giriş</h1>
+    <p>Uygulamayı kullanabilmek için lütfen kullanıcı adınızı girin.</p>
 
-    <h1>Tıkla Kazan Sistemi</h1>
-    <input type="text" id="usernameInput" placeholder="Kullanıcı Adınızı Girin" />
-    <button onclick="login()">Giriş Yap</button>
-    <div id="errorMessage" class="error"></div>
-
-    <!-- Firebase SDK -->
-    <script type="module">
-      // Firebase SDK'dan gerekli fonksiyonları import et
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-      import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-      
-      // Firebase Konfigürasyonu
-      const firebaseConfig = {
-        apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
-        authDomain: "tiklakazan-5f61a.firebaseapp.com",
-        projectId: "tiklakazan-5f61a",
-        storageBucket: "tiklakazan-5f61a.firebasestorage.app",
-        messagingSenderId: "867213315462",
-        appId: "1:867213315462:web:287c994f0feaa3658a3007",
-        measurementId: "G-19F7L7X2HH"
-      };
-
-      // Firebase'i başlat
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-
-      // Kullanıcı Girişi Yapma Fonksiyonu
-      async function login() {
-          const username = document.getElementById('usernameInput').value.trim();
-          const errorMessage = document.getElementById('errorMessage');
-
-          // Eğer kullanıcı adı boşsa hata mesajı ver
-          if (username === '') {
-              errorMessage.innerText = 'Lütfen geçerli bir kullanıcı adı girin!';
-              return;
-          }
-
-          // Kullanıcı adının veritabanında olup olmadığını kontrol et
-          const usersRef = collection(db, "users");
-          const q = query(usersRef, where("username", "==", username));
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-              // Kullanıcı adı bulunduysa, giriş başarılıdır, oyun sayfasına yönlendir
-              window.location.href = 'https://tiklakazanbypugno.com/game.html'; 
-          } else {
-              // Kullanıcı adı yoksa, yeni bir kullanıcı oluştur
-              try {
-                  await addDoc(usersRef, {
-                      username: username,
-                      createdAt: new Date(),
-                      clicks: 0, // Başlangıç tıklama sayısı
-                      earnings: 0 // Başlangıç kazanç miktarı
-                  });
-
-                  // Yeni kullanıcı başarıyla oluşturuldu, oyun sayfasına yönlendir
-                  window.location.href = 'https://tiklakazanbypugno.com/game.html'; 
-              } catch (e) {
-                  console.error("Hata oluştu: ", e);
-                  errorMessage.innerText = 'Bir hata oluştu, lütfen tekrar deneyin.';
-              }
-          }
-      }
-    </script>
-
+    <p id="loadingMessage">Yükleniyor...</p> <!-- Yükleniyor mesajı gösterilecektir -->
 </body>
 </html>
