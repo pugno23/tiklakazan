@@ -8,7 +8,7 @@
     <script type="module">
         // Firebase SDK importları
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         // Firebase yapılandırma
         const firebaseConfig = {
@@ -26,8 +26,15 @@
         const db = getFirestore(app);
 
         let clickCount = 0;
-        let username = prompt("Lütfen kullanıcı adınızı girin:"); // Kullanıcıdan isim alıyoruz.
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
+
+        // Kullanıcı adı giriş sayfasından alınır
+        let username = localStorage.getItem('username'); // LocalStorage'dan kullanıcı adını alıyoruz
+
+        if (!username) {
+            // Eğer kullanıcı adı alınmamışsa, giriş sayfasına yönlendir
+            window.location.href = 'index.html';
+        }
 
         // Kullanıcı verisi Firestore'dan alınır
         async function getUserData() {
@@ -43,7 +50,6 @@
                     console.log("Kullanıcı verisi bulunamadı, yeni kullanıcı oluşturulacak.");
                     await setDoc(doc(db, "users", username), {
                         clickCount: clickCount,
-                        totalEarnings: 0 // Kazanç da eklenebilir
                     });
                     document.getElementById('clickCount').innerText = clickCount; // Başlangıçta 0 göster
                 }
@@ -54,9 +60,8 @@
         async function updateUserData() {
             if (username) {
                 const userRef = doc(db, "users", username);
-                await updateDoc(userRef, {
+                await setDoc(userRef, {
                     clickCount: clickCount,
-                    totalEarnings: Math.floor(clickCount / 1000) // 1000 tıklama için 1 Euro kazanç ekleniyor
                 });
             }
         }
@@ -69,7 +74,6 @@
             // Firebase'e kaydet
             updateUserData();
 
-            // Eğer clickCount 50'nin katlarıysa, reklam izleme butonunu göster
             if (clickCount % 50 === 0) {
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
                 document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster
@@ -102,112 +106,6 @@
             getUserData();
         };
     </script>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f4f9;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            margin: 0;
-            color: #333;
-        }
-
-        /* Arka Plan Coin Animasyonu */
-        .coin {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background-image: url('https://img.icons8.com/ios/50/ffd700/coin.png');
-            background-size: cover;
-            animation: fall 5s infinite;
-        }
-
-        @keyframes fall {
-            0% { top: -60px; left: 10%; }
-            50% { top: 80vh; left: 50%; }
-            100% { top: 100vh; left: 90%; }
-        }
-
-        /* Butonlar */
-        button {
-            padding: 15px 30px;
-            font-size: 1.5rem;
-            margin: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 80%; /* Buttons take 80% of the width */
-            max-width: 400px; /* Limit button width */
-        }
-
-        #mainButton { 
-            background-color: #4CAF50; 
-            color: white; 
-        }
-        #adButton { 
-            background-color: #f0ad4e; 
-            color: white; 
-            display: none; 
-        }
-
-        #mainButton:hover, #adButton:hover {
-            background-color: #45a049;
-        }
-
-        /* Ödeme Modalı */
-        #paymentModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .paymentContent {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .paymentContent input {
-            padding: 10px;
-            margin: 10px;
-            width: 100%;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .paymentContent button {
-            background-color: #4CAF50;
-            color: white;
-            width: 100%;
-            padding: 12px;
-            font-size: 1.2rem;
-            border-radius: 5px;
-        }
-
-        /* Native Banner için CSS - Sol alt köşe */
-        .native-banner {
-            position: fixed;
-            left: 10px;
-            bottom: 10px;
-            z-index: 1000;
-        }
-    </style>
-
-    <script type='text/javascript' src='//anvilgruelmarrying.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'></script>
 </head>
 <body>
 
@@ -230,13 +128,12 @@
         </div>
     </div>
 
-    <!-- Native Banner Script ve Konumu - Sol Alt -->
+    <!-- Native Banner için CSS - Sol alt köşe -->
     <div class="native-banner">
         <script async="async" data-cfasync="false" src="//anvilgruelmarrying.com/5056f918874a797012b4975ad8811610/invoke.js"></script>
         <div id="container-5056f918874a797012b4975ad8811610"></div>
     </div>
 
-    <!-- Sosyal Bar Kodunu Buraya Ekledik -->
     <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
 
 </body>
