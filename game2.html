@@ -69,6 +69,13 @@
         let targetInterval;
         let targets = [];
 
+        // Kullanıcı adını localStorage'dan al
+        const username = localStorage.getItem('username');
+        if (!username) {
+            alert("Kullanıcı adı bulunamadı, lütfen giriş yapın.");
+            window.location.href = 'index.html';  // Eğer kullanıcı adı yoksa, giriş sayfasına yönlendir
+        }
+
         // Oyunu başlat
         function startGame() {
             if (gameStarted) return; // Eğer oyun zaten başladıysa tekrar başlatmasın
@@ -161,12 +168,15 @@
         function endGame() {
             clearInterval(targetInterval); // Hedefleri durdur
             alert(`Oyun Bitti! Kazandığınız Puan: ${score}`);
+
+            // Puanı localStorage'a kaydet
+            localStorage.setItem('lastScore', score);
+
             gameStarted = false; // Oyunu bitir
         }
 
         // Hedeflerin hareketini sürekli güncelle
         setInterval(moveTargets, 20);
-
     </script>
 
 </body>
