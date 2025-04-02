@@ -55,12 +55,22 @@
             margin-top: 10px;
         }
 
-        /* Yeni Eklenen Not Yazısı */
         p {
             font-size: 1.1rem;
             color: #555;
             margin-top: 20px;
             text-align: center;
+        }
+
+        /* Oyun Seçim Butonları */
+        .game-buttons {
+            display: none; /* Başlangıçta gizli */
+            text-align: center;
+        }
+
+        .game-buttons button {
+            background-color: #4CAF50;
+            color: white;
         }
     </style>
 </head>
@@ -68,10 +78,15 @@
 
     <h1>Tıkla Kazan Sistemi</h1>
     <input type="text" id="usernameInput" placeholder="Kullanıcı Adınızı Girin" />
-    <button onclick="login()">Giriş Yap</button>
+    
+    <div class="game-buttons">
+        <h2>Oynamak İstediğiniz Oyunu Seçin</h2>
+        <button id="clickGameBtn">Tıkla Kazan</button>
+        <button id="shootingGameBtn">Hedef Vurma</button>
+    </div>
+
     <div id="errorMessage" class="error"></div>
 
-    <!-- Yeni Not Mesajı -->
     <p>
         Sevgili kullanıcılar, ilerlemenizin kaldığı yerden devam etmesini istiyorsanız mevcut kullanıcı adınız ile giriş yapın. 
         Aksi takdirde ilerleyişiniz sıfırlanacaktır. 😊
@@ -81,7 +96,8 @@
         // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
         const registeredUsers = [];
 
-        function login() {
+        // Kullanıcı adı ve oyun seçim
+        function handleUserInput() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
 
@@ -103,9 +119,21 @@
             // Kullanıcı adını localStorage'a kaydet
             localStorage.setItem('username', username);
 
-            // Giriş yaptıktan sonra oyun sayfasına yönlendir
-            window.location.href = 'game.html';  // Burada game.html, oyun sayfasının ismi olacak
+            // Oyun butonlarını göster
+            document.querySelector('.game-buttons').style.display = 'block';
         }
+
+        // Oyun seçimi yapılınca yönlendirme yap
+        document.getElementById('clickGameBtn').onclick = function() {
+            window.location.href = 'game.html'; // Tıkla Kazan oyunu
+        };
+
+        document.getElementById('shootingGameBtn').onclick = function() {
+            window.location.href = 'game2.html'; // Hedef Vurma oyunu
+        };
+
+        // Kullanıcı adı girişi ile oyunu başlat
+        document.getElementById('usernameInput').addEventListener('input', handleUserInput);
     </script>
 
 </body>
