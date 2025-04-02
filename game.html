@@ -5,16 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi</title>
 
+    <script src="https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js"></script>
+
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBV5XYoidy49DKmVbx269Ri-039eCyxjYk",
+            authDomain: "tiklakazan-5f61a.firebaseapp.com",
+            projectId: "tiklakazan-5f61a",
+            storageBucket: "tiklakazan-5f61a.appspot.com",
+            messagingSenderId: "867213315462",
+            appId: "1:867213315462:web:287c994f0feaa3658a3007",
+            measurementId: "G-19F7L7X2HH"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        window.onload = function() {
+            // Anonim giriş yapılmış mı kontrol et
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                // Kullanıcı anonim giriş yapmamışsa, giriş sayfasına yönlendir
+                window.location.href = 'index.html';
+            }
+        };
+
         let clickCount = 0;
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
-
-        // Kullanıcının ismini localStorage'dan al
-        const username = localStorage.getItem('username');
-        if (!username) {
-            // Eğer kullanıcı adı yoksa, giriş sayfasına yönlendir
-            window.location.href = 'index.html';
-        }
 
         function handleClick() {
             clickCount++;
@@ -154,7 +174,6 @@
 <body>
 
     <h1>Tıkla Kazan Sistemi</h1>
-    <h2>Merhaba, <span id="usernameDisplay"></span></h2> <!-- Kullanıcı adını burada göstereceğiz -->
     <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
     <h3>10.000 kere tıkla 10 Euro kazan</h3>
     <h3>Toplam Kazanç: <span id="totalEarnings">0 Euro</span></h3>
@@ -181,11 +200,6 @@
 
     <!-- Sosyal Bar Kodunu Buraya Ekledik -->
     <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
-
-    <script>
-        // Kullanıcı adı display kısmını güncelle
-        document.getElementById('usernameDisplay').innerText = username;
-    </script>
 
 </body>
 </html>
