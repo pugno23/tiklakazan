@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tıkla Kazan Sistemi - Giriş</title>
 
-    <!-- Google AdSense Doğrulama Kodu -->
-    <meta name="google-site-verification" content="DOĞRULAMA_KODUNUZ">
-
-    <!-- Google AdSense Script -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1214678385916003"
-     crossorigin="anonymous"></script>
-
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -71,9 +64,6 @@
     <div id="errorMessage" class="error"></div>
 
     <script>
-        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
-        const registeredUsers = [];
-
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
@@ -84,16 +74,7 @@
                 return;
             }
 
-            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
-            if (registeredUsers.includes(username)) {
-                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
-                return;
-            }
-
-            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
-            registeredUsers.push(username); 
-
-            // Kullanıcı adını localStorage'a kaydet
+            // Kullanıcı adı localStorage'a kaydediliyor
             localStorage.setItem('username', username);
 
             // Giriş yaptıktan sonra oyun sayfasına yönlendir
