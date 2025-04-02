@@ -6,12 +6,28 @@
     <title>Tıkla Kazan Sistemi</title>
 
     <script>
-        let clickCount = 0;
+        let clickCount = parseInt(localStorage.getItem('clickCount')) || 0; // localStorage'dan tıklama sayısı alınır.
         const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
+
+        // Sayfa yüklendiğinde kullanıcı adı ve tıklama sayısını ekranda göster
+        window.onload = function() {
+            const username = localStorage.getItem('username'); // localStorage'dan kullanıcı adı alınır
+            if (!username) {
+                window.location.href = 'index.html'; // Eğer kullanıcı adı yoksa giriş sayfasına yönlendir
+            } else {
+                document.getElementById('username').innerText = `${username} - Hoşgeldiniz`;
+            }
+
+            // Tıklama sayısını ekrana yazdır
+            document.getElementById('clickCount').innerText = clickCount;
+        };
 
         function handleClick() {
             clickCount++;
             document.getElementById('clickCount').innerText = clickCount;
+
+            // Tıklama sayısını localStorage'a kaydet
+            localStorage.setItem('clickCount', clickCount);
 
             if (clickCount % 50 === 0) {
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
@@ -140,13 +156,20 @@
             bottom: 10px;
             z-index: 1000;
         }
+
+        /* Kullanıcı adı metni */
+        .username {
+            font-size: 1.2rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
     </style>
 
-    <script type='text/javascript' src='//anvilgruelmarrying.com/00/41/5b/00415b86bd5b3f8f7e814e5466672c54.js'></script>
 </head>
 <body>
 
     <h1>Tıkla Kazan Sistemi</h1>
+    <div id="username" class="username"></div> <!-- Kullanıcı adı buraya eklenecek -->
     <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
     <h3>10.000 kere tıkla 10 Euro kazan</h3>
     <h3>Toplam Kazanç: <span id="totalEarnings">0 Euro</span></h3>
