@@ -54,6 +54,14 @@
             font-size: 1.1rem;
             margin-top: 10px;
         }
+
+        /* Yeni Eklenen Not Yazısı */
+        p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -63,7 +71,16 @@
     <button onclick="login()">Giriş Yap</button>
     <div id="errorMessage" class="error"></div>
 
+    <!-- Yeni Not Mesajı -->
+    <p>
+        Sevgili kullanıcılar, ilerlemenizin kaldığı yerden devam etmesini istiyorsanız mevcut kullanıcı adınız ile giriş yapın. 
+        Aksi takdirde ilerleyişiniz sıfırlanacaktır. 😊
+    </p>
+
     <script>
+        // Kullanıcı adı veritabanı (gerçek uygulamada backend kullanmalısınız)
+        const registeredUsers = [];
+
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const errorMessage = document.getElementById('errorMessage');
@@ -74,7 +91,16 @@
                 return;
             }
 
-            // Kullanıcı adı localStorage'a kaydediliyor
+            // Aynı kullanıcı adı zaten alınmış mı diye kontrol et
+            if (registeredUsers.includes(username)) {
+                errorMessage.innerText = 'Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.';
+                return;
+            }
+
+            // Eğer geçerli bir kullanıcı adı ise, listeye ekle
+            registeredUsers.push(username); 
+
+            // Kullanıcı adını localStorage'a kaydet
             localStorage.setItem('username', username);
 
             // Giriş yaptıktan sonra oyun sayfasına yönlendir
