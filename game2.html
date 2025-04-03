@@ -18,6 +18,14 @@
             flex-direction: column;
         }
 
+        #gameMessage {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
         h1 {
             color: #4CAF50;
             font-size: 2rem;
@@ -25,7 +33,7 @@
 
         #score {
             font-size: 1.5rem;
-            margin: 20px;
+            margin: 10px;
         }
 
         .target {
@@ -35,12 +43,13 @@
             background-color: #f44336;
             border-radius: 50%;
             cursor: pointer;
+            transition: transform 0.1s ease;
         }
 
         button {
             padding: 15px 30px;
             font-size: 1.2rem;
-            margin-top: 30px;
+            margin: 10px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -48,103 +57,95 @@
             color: white;
         }
 
-        button:hover {
-            transform: scale(1.1);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
 
+        #messageBox {
+            position: absolute;
+            top: 60%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
+    <div id="gameMessage">Hedefi Vur! €5'i Tamamla ve Ödülü Al!</div>
     <h1>Hedef Vurma Oyunu</h1>
-    <div id="score">Puan: 0</div>
+    <div id="score">Toplam Kazanç: €0</div>
     <div id="gameArea" style="width: 80%; height: 70%; position: relative; background-color: #fff; border: 2px solid #ccc;"></div>
     <button onclick="startGame()">Oyunu Başlat</button>
-    <button id="requestMoneyBtn" disabled onclick="requestMoney()">Para Talep Et</button>
+    <button id="withdrawButton" disabled onclick="requestPayment()">Para Talep Et</button>
+
+    <div id="messageBox"></div>
 
     <script>
-        let score = 0;
+        let totalMoney = 0;
         let gameStarted = false;
-        let gameInterval;
         let targetInterval;
         let targets = [];
-        let rewardAmount = 0;
 
-        // Kullanıcı adını localStorage'dan al
-        const username = localStorage.getItem('username');
-        if (!username) {
-            alert("Kullanıcı adı bulunamadı, lütfen giriş yapın.");
-            window.location.href = 'index.html';  // Eğer kullanıcı adı yoksa, giriş sayfasına yönlendir
-        }
-
-        // Oyunu başlat
         function startGame() {
-            if (gameStarted) return; // Eğer oyun zaten başladıysa tekrar başlatmasın
+            if (gameStarted) return;
 
-            score = 0; // Puanı sıfırla
-            document.getElementById('score').innerText = `Puan: ${score}`;
+            totalMoney = 0;
+            document.getElementById('score').innerText = `Toplam Kazanç: €${totalMoney.toFixed(2)}`;
             gameStarted = true;
 
-            // Hedefleri rastgele yerleştiren interval başlat
-            targetInterval = setInterval(createTarget, 1000);
+            targetInterval = setInterval(createTarget, 940); // %2 daha yavaşlatıldı (920ms → 940ms)
 
-            // 30 saniye sonra oyunu bitir
-            gameInterval = setTimeout(endGame, 30000); // 30 saniye
+            setTimeout(endGame, 30000);
         }
 
-        // Hedef oluştur
         function createTarget() {
             const target = document.createElement('div');
             target.classList.add('target');
             const gameArea = document.getElementById('gameArea');
-            
-            // Hedef rastgele bir yer seçiyor
+
             const x = Math.random() * (gameArea.offsetWidth - 50);
             const y = Math.random() * (gameArea.offsetHeight - 50);
-            
+
             target.style.left = `${x}px`;
             target.style.top = `${y}px`;
             gameArea.appendChild(target);
 
-            // Hedefin hareket yönünü rastgele seçiyoruz
             const randomDirection = getRandomDirection();
-            targets.push({target, direction: randomDirection});
+            targets.push({ target, direction: randomDirection });
 
             target.addEventListener('click', () => {
-                rewardAmount += 0.20; // Hedefe tıklayınca 0.20 £ ekle
-                score += 10; // Puanı artır
-                document.getElementById('score').innerText = `Puan: ${score}`;
-                target.remove(); // Hedefi sil
+                totalMoney += 0.20;
+                document.getElementById('score').innerText = `Toplam Kazanç: €${totalMoney.toFixed(2)}`;
+                target.remove();
 
-                // 5 Euro tamamlandığında para talep et butonunu aktif et
-                if (rewardAmount >= 5) {
-                    document.getElementById("requestMoneyBtn").disabled = false;
+                // €5 tamamlandıysa butonu aktif et
+                if (totalMoney >= 5) {
+                    document.getElementById("withdrawButton").disabled = false;
                 }
             });
 
-            // Hedef belli bir süre sonra kaybolur
-            setTimeout(() => target.remove(), 1500);
+            setTimeout(() => target.remove(), 1200);
         }
 
-        // Hedefin rastgele hareket yönünü seçme fonksiyonu
         function getRandomDirection() {
             const directions = ['up', 'down', 'left', 'right'];
             return directions[Math.floor(Math.random() * directions.length)];
         }
 
-        // Hedeflerin hareketini sağla
         function moveTargets() {
             targets.forEach(item => {
                 const target = item.target;
                 const direction = item.direction;
-                const speed = 5; // Hedeflerin hızını %10 azalttık
+                const speed = 15; // %2 daha yavaşlatıldı (15ms)
 
-                // Hedefin mevcut pozisyonunu alalım
                 let top = parseInt(target.style.top);
                 let left = parseInt(target.style.left);
 
-                // Yönlere göre hareket etmesini sağla
                 if (direction === 'up') {
                     top -= speed;
                 } else if (direction === 'down') {
@@ -155,44 +156,58 @@
                     left += speed;
                 }
 
-                // Hedefin ekran dışına çıkmaması için sınır kontrolleri
                 if (top < 0) top = 0;
                 if (top > window.innerHeight - 50) top = window.innerHeight - 50;
                 if (left < 0) left = 0;
                 if (left > window.innerWidth - 50) left = window.innerWidth - 50;
 
-                // Yeni pozisyonu uygulayalım
                 target.style.top = `${top}px`;
                 target.style.left = `${left}px`;
 
-                // Yönü tekrar değiştir (rastgele yön değişimi)
-                if (Math.random() < 0.01) {
-                    item.direction = getRandomDirection(); // Yönü rastgele değiştir
+                if (Math.random() < 0.02) {
+                    item.direction = getRandomDirection();
                 }
             });
         }
 
-        // Oyun bittiğinde
         function endGame() {
-            clearInterval(targetInterval); // Hedefleri durdur
-            alert(`Oyun Bitti! Kazandığınız Puan: ${score}`);
-
-            // Puanı localStorage'a kaydet
-            localStorage.setItem('lastScore', score);
-
-            gameStarted = false; // Oyunu bitir
+            clearInterval(targetInterval);
+            alert(`Oyun Bitti! Toplam Kazancın: €${totalMoney.toFixed(2)}`);
+            gameStarted = false;
         }
 
-        // Para talep et
-        function requestMoney() {
-            if (rewardAmount >= 5) {
-                alert("Ödemeniz işleme alındı. PayPal, Papara veya IBAN seçenekleri ile ödeme yapılabilir.");
-                // Burada ödeme seçeneklerini ekleyebilirsiniz
+        setInterval(moveTargets, 20);
+
+        function requestPayment() {
+            if (totalMoney < 5) {
+                showMessage("Önce Görevleri Tamamla!");
+                return;
+            }
+
+            let paymentMethod = prompt("Ödeme yöntemi seçin: Papara / PayPal / IBAN").toLowerCase();
+
+            if (["papara", "paypal", "iban"].includes(paymentMethod)) {
+                let accountInfo = prompt(`Lütfen ${paymentMethod} bilgilerinizi girin:`);
+                if (accountInfo) {
+                    alert(`Talebiniz alındı! €${totalMoney.toFixed(2)} ödeme yapılacaktır.`);
+                    totalMoney = 0;
+                    document.getElementById("score").innerText = `Toplam Kazanç: €${totalMoney.toFixed(2)}`;
+                    document.getElementById("withdrawButton").disabled = true;
+                }
+            } else {
+                alert("Geçersiz ödeme yöntemi!");
             }
         }
 
-        // Hedeflerin hareketini sürekli güncelle
-        setInterval(moveTargets, 30); // Hedeflerin hareket hızını değiştirdik
+        function showMessage(text) {
+            const messageBox = document.getElementById("messageBox");
+            messageBox.innerText = text;
+            messageBox.style.display = "block";
+
+            setTimeout(() => {
+                messageBox.style.display = "none";
+            }, 2000);
+        }
     </script>
 
 </body>
