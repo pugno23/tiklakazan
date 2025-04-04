@@ -75,6 +75,7 @@
             <p>Toplam Kazanç: <span id="earnings">0</span> ₺</p>
         </div>
         <button class="btn" id="watchButton">Videoyu İzle ve Kazan</button>
+        <button class="btn" id="goToVideoButton">Videoya Git</button> <!-- Yeni Buton Eklendi -->
         <p id="message"></p>
     </div>
 
@@ -119,6 +120,12 @@
         watchButton.addEventListener("click", function () {
             video.play();
             message.textContent = "";
+        });
+
+        // Yeni buton ile yönlendirme ekleniyor
+        document.getElementById("goToVideoButton").addEventListener("click", function () {
+            // Yönlendirme yapılacak URL'yi belirtiyoruz
+            window.location.href = "https://groleegni.net/401/9172740"; // Buraya video linki veya yönlendirme yapılacak sayfanın URL'si
         });
     </script>
 
