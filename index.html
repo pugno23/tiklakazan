@@ -15,6 +15,7 @@
             height: 100vh;
             margin: 0;
             flex-direction: column;
+            text-align: center;
         }
 
         h1 {
@@ -59,7 +60,6 @@
             font-size: 1.1rem;
             color: #555;
             margin-top: 20px;
-            text-align: center;
         }
 
         /* Oyun Seçim Butonları */
@@ -68,9 +68,21 @@
             text-align: center;
         }
 
-        .game-buttons button {
-            background-color: #4CAF50;
-            color: white;
+        /* Mobil uyumlu düzenlemeler */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            #usernameInput {
+                width: 80%;
+            }
+
+            button {
+                width: 80%;
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -83,6 +95,8 @@
         <h2>Oynamak İstediğiniz Oyunu Seçin</h2>
         <button id="clickGameBtn">Tıkla Kazan</button>
         <button id="shootingGameBtn">Hedef Vurma</button>
+        <!-- Yeni Video İzle Butonu Eklendi -->
+        <button id="watchVideoBtn">Video İzle, Para Kazan</button>
     </div>
 
     <div id="errorMessage" class="error"></div>
@@ -130,6 +144,11 @@
 
         document.getElementById('shootingGameBtn').onclick = function() {
             window.location.href = 'game2.html'; // Hedef Vurma oyunu
+        };
+
+        // Video izleme butonu ile yönlendirme
+        document.getElementById('watchVideoBtn').onclick = function() {
+            window.location.href = 'izlekazan.html'; // Video İzle, Para Kazan sayfası
         };
 
         // Kullanıcı adı girişi ile oyunu başlat
