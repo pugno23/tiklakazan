@@ -1,217 +1,427 @@
 <!DOCTYPE html>
+
 <html lang="tr">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Hedef Vurma Oyunu</title>
 
+
+
     <style>
+
         body {
+
             font-family: Arial, sans-serif;
+
             background-color: #f0f4f9;
+
             display: flex;
+
             justify-content: center;
+
             align-items: center;
+
             height: 100vh;
+
             margin: 0;
+
             position: relative;
+
             flex-direction: column;
+
         }
+
+
 
         #gameMessage {
+
             font-size: 1.8rem;
+
             font-weight: bold;
+
             color: #d32f2f;
+
             margin-bottom: 15px;
+
             text-align: center;
+
         }
+
+
 
         h1 {
+
             color: #4CAF50;
+
             font-size: 2rem;
+
         }
+
+
 
         #score {
+
             font-size: 1.5rem;
+
             margin: 10px;
+
         }
+
+
 
         .target {
+
             position: absolute;
+
             width: 50px;
+
             height: 50px;
+
             background-color: #f44336;
+
             border-radius: 50%;
+
             cursor: pointer;
+
             transition: transform 0.1s ease;
+
         }
+
+
 
         button {
+
             padding: 15px 30px;
+
             font-size: 1.2rem;
+
             margin: 10px;
+
             border: none;
+
             border-radius: 10px;
+
             cursor: pointer;
+
             background-color: #4CAF50;
+
             color: white;
+
         }
+
+
 
         button:disabled {
+
             background-color: #ccc;
+
             cursor: not-allowed;
+
         }
+
+
 
         #messageBox {
+
             position: absolute;
+
             top: 60%;
+
             background: rgba(0, 0, 0, 0.8);
+
             color: white;
+
             padding: 10px 15px;
+
             border-radius: 8px;
+
             font-size: 1.2rem;
+
             display: none;
+
         }
+
     </style>
+
 </head>
+
 <body>
 
+
+
     <div id="gameMessage">Hedefi Vur! €5'i Tamamla ve Ödülü Al!</div>
+
     <h1>Hedef Vurma Oyunu</h1>
+
     <div id="score">Toplam Kazanç: €0</div>
+
     <div id="gameArea" style="width: 80%; height: 70%; position: relative; background-color: #fff; border: 2px solid #ccc;"></div>
+
     <button onclick="startGame()">Oyunu Başlat</button>
+
     <button id="withdrawButton" disabled onclick="requestPayment()">Para Talep Et</button>
+
+
 
     <div id="messageBox"></div>
 
+
+
     <script>
+
         let totalMoney = 0;
+
         let gameStarted = false;
+
         let targetInterval;
+
         let targets = [];
 
+
+
         function startGame() {
+
             if (gameStarted) return;
 
+
+
             totalMoney = 0;
+
             document.getElementById('score').innerText = `Toplam Kazanç: €${totalMoney.toFixed(2)}`;
+
             gameStarted = true;
 
-            // Yeni reklam yönlendirmesi
-            window.location.href = "https://kulroakonsu.net/88/tag.min.js?data-zone=140625"; // Reklam linkine yönlendiriyor
+
 
             targetInterval = setInterval(createTarget, 940); // %2 daha yavaşlatıldı (920ms → 940ms)
 
+
+
             setTimeout(endGame, 30000);
+
         }
+
+
 
         function createTarget() {
+
             const target = document.createElement('div');
+
             target.classList.add('target');
+
             const gameArea = document.getElementById('gameArea');
 
+
+
             const x = Math.random() * (gameArea.offsetWidth - 50);
+
             const y = Math.random() * (gameArea.offsetHeight - 50);
 
+
+
             target.style.left = `${x}px`;
+
             target.style.top = `${y}px`;
+
             gameArea.appendChild(target);
 
+
+
             const randomDirection = getRandomDirection();
+
             targets.push({ target, direction: randomDirection });
 
+
+
             target.addEventListener('click', () => {
+
                 totalMoney += 0.20;
+
                 document.getElementById('score').innerText = `Toplam Kazanç: €${totalMoney.toFixed(2)}`;
+
                 target.remove();
 
+
+
                 // €5 tamamlandıysa butonu aktif et
+
                 if (totalMoney >= 5) {
+
                     document.getElementById("withdrawButton").disabled = false;
+
                 }
+
             });
+
+
 
             setTimeout(() => target.remove(), 1200);
+
         }
+
+
 
         function getRandomDirection() {
+
             const directions = ['up', 'down', 'left', 'right'];
+
             return directions[Math.floor(Math.random() * directions.length)];
+
         }
+
+
 
         function moveTargets() {
+
             targets.forEach(item => {
+
                 const target = item.target;
+
                 const direction = item.direction;
+
                 const speed = 15; // %2 daha yavaşlatıldı (15ms)
 
+
+
                 let top = parseInt(target.style.top);
+
                 let left = parseInt(target.style.left);
 
+
+
                 if (direction === 'up') {
+
                     top -= speed;
+
                 } else if (direction === 'down') {
+
                     top += speed;
+
                 } else if (direction === 'left') {
+
                     left -= speed;
+
                 } else if (direction === 'right') {
+
                     left += speed;
+
                 }
+
+
 
                 if (top < 0) top = 0;
+
                 if (top > window.innerHeight - 50) top = window.innerHeight - 50;
+
                 if (left < 0) left = 0;
+
                 if (left > window.innerWidth - 50) left = window.innerWidth - 50;
 
+
+
                 target.style.top = `${top}px`;
+
                 target.style.left = `${left}px`;
 
+
+
                 if (Math.random() < 0.02) {
+
                     item.direction = getRandomDirection();
+
                 }
+
             });
+
         }
 
+
+
         function endGame() {
+
             clearInterval(targetInterval);
+
             alert(`Oyun Bitti! Toplam Kazancın: €${totalMoney.toFixed(2)}`);
+
             gameStarted = false;
+
         }
+
+
 
         setInterval(moveTargets, 20);
 
+
+
         function requestPayment() {
+
             if (totalMoney < 5) {
+
                 showMessage("Önce Görevleri Tamamla!");
+
                 return;
+
             }
+
+
 
             let paymentMethod = prompt("Ödeme yöntemi seçin: Papara / PayPal / IBAN").toLowerCase();
 
+
+
             if (["papara", "paypal", "iban"].includes(paymentMethod)) {
+
                 let accountInfo = prompt(`Lütfen ${paymentMethod} bilgilerinizi girin:`);
+
                 if (accountInfo) {
+
                     alert(`Talebiniz alındı! €${totalMoney.toFixed(2)} ödeme yapılacaktır.`);
+
                     totalMoney = 0;
+
                     document.getElementById("score").innerText = `Toplam Kazanç: €${totalMoney.toFixed(2)}`;
+
                     document.getElementById("withdrawButton").disabled = true;
+
                 }
+
             } else {
+
                 alert("Geçersiz ödeme yöntemi!");
+
             }
+
         }
+
+
 
         function showMessage(text) {
+
             const messageBox = document.getElementById("messageBox");
+
             messageBox.innerText = text;
+
             messageBox.style.display = "block";
 
+
+
             setTimeout(() => {
+
                 messageBox.style.display = "none";
+
             }, 2000);
+
         }
+
     </script>
 
+
+
 </body>
+
 </html>
