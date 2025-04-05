@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap</title>
+    <title>Login</title>
     <script type="module">
-        // Firebase SDK Bağlantıları
+        // Firebase SDK'lerini içeri al
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-        // Firebase Konfigürasyonu
+        // Firebase yapılandırma ayarları
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -20,35 +20,45 @@
             measurementId: "G-YZ6MYCPK8G"
         };
 
+        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Kullanıcı Girişini Yap
-        function loginUser() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        window.onload = function () {
+            const loginButton = document.getElementById("login-button");
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+            // Kullanıcı girişi işlemi
+            loginButton.addEventListener('click', async () => {
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                    alert("Giriş başarılı!");
-                    window.location.href = "dashboard.html"; // Giriş başarılıysa dashboard sayfasına yönlendir
-                })
-                .catch((error) => {
+                    console.log("Giriş başarılı:", user);
+
+                    // Giriş başarılı olursa, dashboard sayfasına yönlendir
+                    window.location.href = "dashboard.html";  // Yönlendirme yapılacak sayfa
+                } catch (error) {
                     const errorCode = error.code;
                     const errorMessage = error.message;
-                    alert(`Hata: ${errorMessage}`);
-                });
-        }
+                    console.log("Hata:", errorCode, errorMessage);
+                    alert("Giriş sırasında bir hata oluştu: " + errorMessage);
+                }
+            });
+        };
     </script>
 </head>
 <body>
     <h2>Giriş Yap</h2>
-    <form onsubmit="event.preventDefault(); loginUser();">
-        <input type="email" id="email" placeholder="E-posta" required><br>
-        <input type="password" id="password" placeholder="Şifre" required><br>
-        <button type="submit">Giriş Yap</button>
+    <form id="login-form">
+        <label for="email">E-posta:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="password">Şifre:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="button" id="login-button">Giriş Yap</button>
     </form>
-    <p>Hesabınız yok mu? <a href="signup.html">Kayıt Ol</a></p>
 </body>
 </html>
