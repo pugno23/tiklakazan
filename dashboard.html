@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script type="module">
-        // Firebase SDK'lerini içeri al
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        // Firebase yapılandırma ayarları
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -21,72 +18,29 @@
             measurementId: "G-YZ6MYCPK8G"
         };
 
-        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Kullanıcı oturumunu kontrol et
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    // Kullanıcı giriş yapmışsa, bilgilerle dashboard sayfasını doldur
-                    const userId = user.uid;
-                    const userRef = doc(db, "users", userId);
-                    const docSnap = await getDoc(userRef);
+        window.onload = async function () {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
 
-                    // Eğer kullanıcı verisi mevcutsa, dashboard'u güncelle
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        document.getElementById("welcome-message").innerText = `Hoş Geldiniz, ${userData.username || user.displayName}!`;
-                        document.getElementById("user-email").innerText = `E-posta: ${user.email}`;
-                        document.getElementById("user-username").innerText = `Kullanıcı Adı: ${userData.username || 'Bilinmiyor'}`;
-                    }
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById("welcome-message").innerText = `Hoşgeldin, ${userData.username} (${userData.email})`;
                 } else {
-                    // Eğer kullanıcı giriş yapmamışsa, login sayfasına yönlendir
-                    window.location.href = "login.html";
+                    console.log("Kullanıcı verisi bulunamadı.");
                 }
-            });
-
-            // Çıkış yap butonunu ekleyelim
-            document.getElementById("logout-button").addEventListener('click', async () => {
-                await signOut(auth);
-                window.location.href = "login.html"; // Çıkış yapıldığında login sayfasına yönlendir
-            });
-
-            // Kullanıcı adını güncellemek için formu ekleyelim
-            document.getElementById("update-username-button").addEventListener('click', async () => {
-                const newUsername = document.getElementById("new-username").value;
-                if (newUsername) {
-                    const user = auth.currentUser;
-                    if (user) {
-                        const userRef = doc(db, "users", user.uid);
-                        await setDoc(userRef, { username: newUsername }, { merge: true }); // Kullanıcı adını Firestore'da güncelle
-                        alert("Kullanıcı adı başarıyla güncellendi!");
-                        document.getElementById("user-username").innerText = `Kullanıcı Adı: ${newUsername}`;
-                    }
-                }
-            });
+            } else {
+                window.location.href = "login.html"; // Eğer giriş yapılmamışsa login sayfasına yönlendir
+            }
         };
     </script>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p id="welcome-message">Yükleniyor...</p>
-
-    <div>
-        <p id="user-email"></p>
-        <p id="user-username"></p>
-
-        <hr>
-
-        <h3>Kullanıcı Adını Güncelle</h3>
-        <input type="text" id="new-username" placeholder="Yeni kullanıcı adı" required>
-        <button type="button" id="update-username-button">Kullanıcı Adını Güncelle</button>
-    </div>
-
-    <hr>
-
-    <button id="logout-button">Çıkış Yap</button>
+    <h2 id="welcome-message">Hoşgeldin, kullanıcı!</h2>
 </body>
 </html>
