@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script type="module">
+        // Firebase SDK Bağlantıları
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+        // Firebase Konfigürasyonu
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+            authDomain: "cekilisveritabani.firebaseapp.com",
+            projectId: "cekilisveritabani",
+            storageBucket: "cekilisveritabani.firebasestorage.app",
+            messagingSenderId: "246236686196",
+            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+            measurementId: "G-YZ6MYCPK8G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Kullanıcı Giriş Durumunu Kontrol Et
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('user-info').innerHTML = `Hoşgeldiniz, ${user.email}`;
+            } else {
+                window.location.href = "login.html"; // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
+            }
+        });
+
+        // Çıkış Yapma
+        function logoutUser() {
+            auth.signOut().then(() => {
+                alert("Çıkış yapıldı.");
+                window.location.href = "login.html"; // Çıkış yapıldığında login sayfasına yönlendir
+            }).catch((error) => {
+                console.error("Çıkış hatası:", error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Dashboard</h2>
+    <div id="user-info"></div>
+    <button onclick="logoutUser()">Çıkış Yap</button>
+</body>
+</html>
