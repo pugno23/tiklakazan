@@ -8,6 +8,7 @@
         // Firebase SDK'lerini içeri al
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         // Firebase yapılandırma ayarları
         const firebaseConfig = {
@@ -23,6 +24,7 @@
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         window.onload = function () {
             const signupButton = document.getElementById("signup-button");
@@ -33,9 +35,19 @@
                 const password = document.getElementById("password").value;
 
                 try {
+                    // Kullanıcıyı Firebase Authentication ile kaydet
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
                     console.log("Kullanıcı başarıyla kaydedildi:", user);
+
+                    // Kullanıcıyı Firestore'a kaydet
+                    await setDoc(doc(db, "users", user.uid), {
+                        email: user.email,
+                        displayName: user.displayName || "Yeni Kullanıcı",
+                        createdAt: new Date()
+                    });
+
+                    console.log("Kullanıcı Firestore'a başarıyla kaydedildi!");
 
                     // Kayıt başarılı olursa, login sayfasına yönlendir
                     window.location.href = "login.html";  // Yönlendirme yapılacak sayfa
