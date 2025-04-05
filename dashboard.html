@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -23,19 +25,25 @@
         const db = getFirestore(app);
 
         window.onload = async function () {
+            // Giriş yapmış kullanıcıyı al
             const user = auth.currentUser;
+
             if (user) {
+                // Firestore'dan kullanıcının bilgilerini al
                 const userRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userRef);
 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    document.getElementById("welcome-message").innerText = `Hoşgeldin, ${userData.username} (${userData.email})`;
+                    // Kullanıcı adını (username) dinamik olarak ekle
+                    document.getElementById("welcome-message").innerText = `Hoşgeldin, ${userData.username}!`;
                 } else {
                     console.log("Kullanıcı verisi bulunamadı.");
+                    document.getElementById("welcome-message").innerText = "Kullanıcı bilgileri bulunamadı.";
                 }
             } else {
-                window.location.href = "login.html"; // Eğer giriş yapılmamışsa login sayfasına yönlendir
+                // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
+                window.location.href = "login.html";
             }
         };
     </script>
