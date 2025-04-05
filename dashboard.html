@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script type="module">
-        // Firebase SDK Bağlantıları
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-        // Firebase Konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -23,29 +21,34 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Kullanıcı Giriş Durumunu Kontrol Et
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('user-info').innerHTML = `Hoşgeldiniz, ${user.email}`;
-            } else {
-                window.location.href = "login.html"; // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
-            }
-        });
-
-        // Çıkış Yapma
-        function logoutUser() {
-            auth.signOut().then(() => {
-                alert("Çıkış yapıldı.");
-                window.location.href = "login.html"; // Çıkış yapıldığında login sayfasına yönlendir
-            }).catch((error) => {
-                console.error("Çıkış hatası:", error);
+        window.onload = function () {
+            // Kullanıcı oturum durumu kontrolü
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log("Oturum açmış kullanıcı:", user);
+                    document.getElementById("user-info").textContent = `Hoşgeldiniz, ${user.email}`;
+                } else {
+                    console.log("Kullanıcı giriş yapmamış.");
+                    window.location.href = "login.html";  // Eğer giriş yapılmamışsa login sayfasına yönlendir
+                }
             });
-        }
+
+            // Çıkış yapma işlemi
+            document.getElementById("logout-button").addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    console.log("Çıkış yapıldı");
+                    window.location.href = "login.html";  // Çıkış yaptıktan sonra login sayfasına yönlendir
+                } catch (error) {
+                    console.log("Çıkış yaparken hata oluştu:", error);
+                }
+            });
+        };
     </script>
 </head>
 <body>
     <h2>Dashboard</h2>
-    <div id="user-info"></div>
-    <button onclick="logoutUser()">Çıkış Yap</button>
+    <p id="user-info">Yükleniyor...</p>
+    <button id="logout-button">Çıkış Yap</button>
 </body>
 </html>
