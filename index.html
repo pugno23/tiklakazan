@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1894.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="tr"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Netlify Identity Widget Örneği&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.netlify-identity-widget {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f4f4f4;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 300px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 50px auto;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #4CAF50;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>button:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #45a049;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.output {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #ddd;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="open-login"&gt;Giriş Yap&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="open-signup"&gt;Kayıt Ol&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="logout" style="display:none;"&gt;Çıkış Yap&lt;/button&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="output" id="user-info" style="display:none;"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://identity.netlify.com/v1/netlify-identity-widget.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (window.netlifyIdentity) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.on('init', (user) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!user) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>console.log("Kullanıcı giriş yapmamış.");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>console.log("Giriş yapan kullanıcı:", user);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('user-info').style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('user-info').innerHTML = `Hoşgeldiniz, ${user.user_metadata.full_name || user.email}`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('logout').style.display = 'inline-block';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('open-login').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('open-signup').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.on('login', (user) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>console.log("Giriş başarılı:", user);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('user-info').style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('user-info').innerHTML = `Hoşgeldiniz, ${user.user_metadata.full_name || user.email}`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('logout').style.display = 'inline-block';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-login').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-signup').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.on('logout', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>console.log("Çıkış yapıldı.");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('user-info').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('logout').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-login').style.display = 'inline-block';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-signup').style.display = 'inline-block';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('open-login').addEventListener('click', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.open('login');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('open-signup').addEventListener('click', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.open('signup');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('logout').addEventListener('click', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.logout();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
