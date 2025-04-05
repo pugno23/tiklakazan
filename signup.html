@@ -6,9 +6,9 @@
     <title>Sign Up</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -21,7 +21,6 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
         window.onload = function () {
             const signupButton = document.getElementById("signup-button");
@@ -29,34 +28,22 @@
             signupButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
-                const username = document.getElementById("username").value;  // Kullanıcı adı alınıyor
+                const username = document.getElementById("username").value;
 
                 try {
                     // Kullanıcıyı Firebase Authentication'a kaydet
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-
-                    // Kullanıcıyı Firebase Authentication'da güncelle (Kullanıcı adı ekle)
-                    await updateProfile(user, {
-                        displayName: username
-                    });
-
-                    // Kullanıcı bilgilerini Firestore'a kaydet (email ve displayName)
-                    await setDoc(doc(db, "users", user.uid), {
-                        username: username,
-                        email: email,
-                        createdAt: new Date()
-                    });
-
-                    console.log("Kullanıcı başarıyla kaydedildi:", user);
-
-                    // Kayıt başarılı olursa login sayfasına yönlendir
+                    
+                    // E-posta doğrulama gönder
+                    await sendEmailVerification(user);
+                    alert("Kayıt başarılı! E-posta adresinizi doğrulamak için mail gönderildi.");
+                    
+                    // Kayıt işlemi sonrası login sayfasına yönlendir
                     window.location.href = "login.html";
                 } catch (error) {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.log("Hata:", errorCode, errorMessage);
-                    alert("Kayıt sırasında bir hata oluştu: " + errorMessage);
+                    console.log("Hata:", error.code, error.message);
+                    alert("Kayıt sırasında bir hata oluştu: " + error.message);
                 }
             });
         };
@@ -65,14 +52,14 @@
 <body>
     <h2>Kayıt Ol</h2>
     <form id="signup-form">
+        <label for="username">Kullanıcı Adı:</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+
         <label for="email">E-posta:</label><br>
         <input type="email" id="email" name="email" required><br><br>
 
         <label for="password">Şifre:</label><br>
         <input type="password" id="password" name="password" required><br><br>
-
-        <label for="username">Kullanıcı Adı:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
 
         <button type="button" id="signup-button">Kaydol</button>
     </form>
