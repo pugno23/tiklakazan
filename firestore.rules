@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Kullanıcıların yalnızca kendi görevlerine erişmesini sağlar
+    match /tasks/{taskId} {
+      // Görev verisi eklerken, kimlik doğrulama gereklidir
+      allow create: if request.auth != null;
+      
+      // Görev verilerini okuyabilmek için kullanıcı kimliği doğrulandı mı kontrol edilir
+      allow read: if request.auth != null;
+
+      // Görev verisini sadece kullanıcı kendisi güncelleyebilir
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // Görev verisini silemez
+      allow delete: if false;
+    }
+
+    // Diğer koleksiyonlar için varsayılan olarak erişimi engelle
+    match /{document=**} {
+      allow read, write: if false;  // Varsayılan olarak erişim engellenir
+    }
+  }
+}
