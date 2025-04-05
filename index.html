@@ -1,105 +1,150 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1894.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Authentication Örneği</title>
+    <style>
+        .auth-widget {
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            padding: 20px;
+            width: 300px;
+            margin: 50px auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ddd;
+        }
+        #user-info {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="tr"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Netlify Identity Widget Örneği&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.netlify-identity-widget {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f4f4f4;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 300px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 50px auto;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #4CAF50;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #45a049;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.output {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #ddd;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="open-login"&gt;Giriş Yap&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="open-signup"&gt;Kayıt Ol&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="logout" style="display:none;"&gt;Çıkış Yap&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="output" id="user-info" style="display:none;"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://identity.netlify.com/v1/netlify-identity-widget.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (window.netlifyIdentity) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.on('init', (user) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!user) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>console.log("Kullanıcı giriş yapmamış.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>console.log("Giriş yapan kullanıcı:", user);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('user-info').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('user-info').innerHTML = `Hoşgeldiniz, ${user.user_metadata.full_name || user.email}`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('logout').style.display = 'inline-block';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('open-login').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('open-signup').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.on('login', (user) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.log("Giriş başarılı:", user);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('user-info').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('user-info').innerHTML = `Hoşgeldiniz, ${user.user_metadata.full_name || user.email}`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('logout').style.display = 'inline-block';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-login').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-signup').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.on('logout', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.log("Çıkış yapıldı.");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('user-info').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('logout').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-login').style.display = 'inline-block';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('open-signup').style.display = 'inline-block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('open-login').addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.open('login');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('open-signup').addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.open('signup');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('logout').addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.netlifyIdentity.logout();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <div class="auth-widget">
+        <button id="open-login">Giriş Yap</button>
+        <button id="open-signup">Kayıt Ol</button>
+        <button id="logout" style="display:none;">Çıkış Yap</button>
+ 
+        <div class="output" id="user-info" style="display:none;">
+            <h3>Kullanıcı Bilgileri:</h3>
+            <p id="user-name">Ad: Bilgi yükleniyor...</p>
+            <p id="user-email">E-posta: Bilgi yükleniyor...</p>
+        </div>
+    </div>
+ 
+    <!-- Firebase SDK Bağlantıları -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+ 
+    <script>
+        // Firebase Web App Konfigürasyonu
+        const firebaseConfig = {
+          apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+          authDomain: "cekilisveritabani.firebaseapp.com",
+          projectId: "cekilisveritabani",
+          storageBucket: "cekilisveritabani.firebasestorage.app",
+          messagingSenderId: "246236686196",
+          appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+          measurementId: "G-YZ6MYCPK8G"
+        };
+ 
+        // Firebase'i başlat
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+ 
+        // Kullanıcıyı doğrulama ve yönetme işlemleri
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("Giriş yapan kullanıcı:", user);
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('user-info').innerHTML = `
+                    <h3>Kullanıcı Bilgileri:</h3>
+                    <p id="user-name">Ad: ${user.displayName || 'Bilgi bulunamadı'}</p>
+                    <p id="user-email">E-posta: ${user.email || 'Bilgi bulunamadı'}</p>
+                `;
+                document.getElementById('logout').style.display = 'inline-block';
+                document.getElementById('open-login').style.display = 'none';
+                document.getElementById('open-signup').style.display = 'none';
+ 
+                // Kullanıcı bilgilerini Firestore'dan alıp gösterme
+                db.collection("users").doc(user.uid).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            document.getElementById('user-name').textContent = `Ad: ${userData.full_name || 'Bilgi bulunamadı'}`;
+                            document.getElementById('user-email').textContent = `E-posta: ${userData.email || 'Bilgi bulunamadı'}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Veri çekme hatası:", error);
+                    });
+            } else {
+                console.log("Kullanıcı giriş yapmamış.");
+                document.getElementById('user-info').style.display = 'none';
+                document.getElementById('logout').style.display = 'none';
+                document.getElementById('open-login').style.display = 'inline-block';
+                document.getElementById('open-signup').style.display = 'inline-block';
+            }
+        });
+ 
+        // Kullanıcı kaydı
+        document.getElementById('open-signup').addEventListener('click', () => {
+            const email = prompt("Email adresinizi girin:");
+            const password = prompt("Şifrenizi girin:");
+ 
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    console.log("Kayıt başarılı:", userCredential.user);
+                    // Kullanıcı kaydını Firestore'a kaydedebiliriz
+                    db.collection("users").doc(userCredential.user.uid).set({
+                        email: email,
+                        full_name: prompt("Adınızı girin:")
+                    });
+                })
+                .catch((error) => {
+                    console.error("Kayıt hatası:", error.message);
+                });
+        });
+ 
+        // Kullanıcı girişi
+        document.getElementById('open-login').addEventListener('click', () => {
+            const email = prompt("Email adresinizi girin:");
+            const password = prompt("Şifrenizi girin:");
+ 
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    console.log("Giriş başarılı:", userCredential.user);
+                })
+                .catch((error) => {
+                    console.error("Giriş hatası:", error.message);
+                });
+        });
+ 
+        // Çıkış yapma
+        document.getElementById('logout').addEventListener('click', () => {
+            auth.signOut().then(() => {
+                console.log("Çıkış yapıldı.");
+            }).catch((error) => {
+                console.error("Çıkış hatası:", error.message);
+            });
+        });
+    </script>
 </body>
 </html>
