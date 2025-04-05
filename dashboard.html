@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script type="module">
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        // Firebase SDK'lerini içeri al
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
+        // Firebase yapılandırma ayarları
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -18,29 +20,19 @@
             measurementId: "G-YZ6MYCPK8G"
         };
 
+        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
         window.onload = function () {
-            // Kullanıcı oturum durumu kontrolü
+            // Kullanıcı giriş yapmış mı kontrol et
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    console.log("Oturum açmış kullanıcı:", user);
-                    document.getElementById("user-info").textContent = `Hoşgeldiniz, ${user.email}`;
+                    console.log("Kullanıcı giriş yaptı:", user);
+                    document.getElementById("user-info").innerHTML = `Hoşgeldiniz, ${user.email}`;
                 } else {
-                    console.log("Kullanıcı giriş yapmamış.");
-                    window.location.href = "login.html";  // Eğer giriş yapılmamışsa login sayfasına yönlendir
-                }
-            });
-
-            // Çıkış yapma işlemi
-            document.getElementById("logout-button").addEventListener('click', async () => {
-                try {
-                    await signOut(auth);
-                    console.log("Çıkış yapıldı");
-                    window.location.href = "login.html";  // Çıkış yaptıktan sonra login sayfasına yönlendir
-                } catch (error) {
-                    console.log("Çıkış yaparken hata oluştu:", error);
+                    console.log("Kullanıcı giriş yapmadı.");
+                    window.location.href = "login.html"; // Eğer giriş yapılmamışsa login sayfasına yönlendir
                 }
             });
         };
@@ -48,7 +40,6 @@
 </head>
 <body>
     <h2>Dashboard</h2>
-    <p id="user-info">Yükleniyor...</p>
-    <button id="logout-button">Çıkış Yap</button>
+    <p id="user-info"></p>
 </body>
 </html>
