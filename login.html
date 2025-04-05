@@ -7,7 +7,7 @@
     <script type="module">
         // Firebase SDK'lerini içeri al
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js"; // Google Auth SDK'sı
 
         // Firebase yapılandırma ayarları
         const firebaseConfig = {
@@ -26,25 +26,42 @@
 
         window.onload = function () {
             const loginButton = document.getElementById("login-button");
+            const googleSignInButton = document.getElementById("google-signin-button"); // Google giriş butonu
 
-            // Kullanıcı girişi işlemi
+            // E-posta ve şifre ile giriş
             loginButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
 
                 try {
-                    // Kullanıcıyı Firebase Authentication ile giriş yap
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                    console.log("Başarıyla giriş yapıldı:", user);
-
-                    // Giriş başarılı olduğunda dashboard sayfasına yönlendir
+                    console.log("Kullanıcı başarıyla giriş yaptı:", user);
+                    // Giriş başarılı olursa, dashboard sayfasına yönlendir
                     window.location.href = "dashboard.html";  // Yönlendirme yapılacak sayfa
                 } catch (error) {
                     const errorCode = error.code;
                     const errorMessage = error.message;
                     console.log("Hata:", errorCode, errorMessage);
                     alert("Giriş sırasında bir hata oluştu: " + errorMessage);
+                }
+            });
+
+            // Google ile giriş işlemi
+            googleSignInButton.addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    const user = result.user;
+                    console.log("Google ile giriş yapıldı:", user);
+                    // Google ile giriş yaptıktan sonra dashboard sayfasına yönlendir
+                    window.location.href = "dashboard.html";
+                } catch (error) {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log("Google ile giriş hata:", errorCode, errorMessage);
+                    alert("Google ile giriş sırasında bir hata oluştu: " + errorMessage);
                 }
             });
         };
@@ -61,5 +78,8 @@
 
         <button type="button" id="login-button">Giriş Yap</button>
     </form>
+
+    <h3>Veya Google ile Giriş Yapın:</h3>
+    <button type="button" id="google-signin-button">Google ile Giriş Yap</button>
 </body>
 </html>
