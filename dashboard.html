@@ -7,7 +7,8 @@
     <script type="module">
         // Firebase SDK'lerini içeri al
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"; // Firestore SDK'sı
 
         // Firebase yapılandırma ayarları
         const firebaseConfig = {
@@ -23,23 +24,32 @@
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        window.onload = function () {
-            // Kullanıcı giriş yapmış mı kontrol et
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    console.log("Kullanıcı giriş yaptı:", user);
-                    document.getElementById("user-info").innerHTML = `Hoşgeldiniz, ${user.email}`;
+        window.onload = async function () {
+            const user = auth.currentUser; // Giriş yapmış kullanıcıyı al
+            if (user) {
+                // Kullanıcının Firestore verilerini al
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    const username = userData.username; // Kullanıcı adı
+
+                    // Hoş geldin mesajını kullanıcı adıyla göster
+                    const greetingElement = document.getElementById("greeting");
+                    greetingElement.textContent = `Hoş geldin, ${username}!`;
                 } else {
-                    console.log("Kullanıcı giriş yapmadı.");
-                    window.location.href = "login.html"; // Eğer giriş yapılmamışsa login sayfasına yönlendir
+                    console.log("Kullanıcı verisi bulunamadı!");
                 }
-            });
+            } else {
+                console.log("Kullanıcı giriş yapmamış.");
+            }
         };
     </script>
 </head>
 <body>
-    <h2>Dashboard</h2>
-    <p id="user-info"></p>
+    <h2 id="greeting">Hoş geldin!</h2>
 </body>
 </html>
