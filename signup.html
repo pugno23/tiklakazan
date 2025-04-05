@@ -7,8 +7,7 @@
     <script type="module">
         // Firebase SDK'lerini içeri al
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"; // Firestore SDK'sı
+        import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js"; // Google Auth SDK'sı
 
         // Firebase yapılandırma ayarları
         const firebaseConfig = {
@@ -24,29 +23,21 @@
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
         window.onload = function () {
             const signupButton = document.getElementById("signup-button");
+            const googleSignInButton = document.getElementById("google-signin-button"); // Google giriş butonu
 
             // Kullanıcı kaydını işle
             signupButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
-                const username = document.getElementById("username").value; // Kullanıcı adı
 
                 try {
-                    // Kullanıcıyı Firebase Authentication ile kaydet
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-
-                    // Firestore'a kullanıcı adı ve diğer bilgileri ekle
-                    await setDoc(doc(db, "users", user.uid), {
-                        username: username,  // Kullanıcı adı
-                        email: email
-                    });
-
                     console.log("Kullanıcı başarıyla kaydedildi:", user);
+
                     // Kayıt başarılı olursa login sayfasına yönlendir
                     window.location.href = "login.html";  // Yönlendirme yapılacak sayfa
                 } catch (error) {
@@ -56,15 +47,30 @@
                     alert("Kayıt sırasında bir hata oluştu: " + errorMessage);
                 }
             });
+
+            // Google ile giriş işlemi
+            googleSignInButton.addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    const user = result.user;
+                    console.log("Google ile giriş yapıldı:", user);
+                    // Google ile giriş yaptıktan sonra dashboard sayfasına yönlendir
+                    window.location.href = "dashboard.html";
+                } catch (error) {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log("Google ile giriş hata:", errorCode, errorMessage);
+                    alert("Google ile giriş sırasında bir hata oluştu: " + errorMessage);
+                }
+            });
         };
     </script>
 </head>
 <body>
     <h2>Kayıt Ol</h2>
     <form id="signup-form">
-        <label for="username">Kullanıcı Adı:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
-
         <label for="email">E-posta:</label><br>
         <input type="email" id="email" name="email" required><br><br>
 
@@ -73,5 +79,8 @@
 
         <button type="button" id="signup-button">Kaydol</button>
     </form>
+
+    <h3>Veya Google ile Giriş Yapın:</h3>
+    <button type="button" id="google-signin-button">Google ile Giriş Yap</button>
 </body>
 </html>
