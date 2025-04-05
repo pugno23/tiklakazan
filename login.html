@@ -33,11 +33,12 @@
                 const password = document.getElementById("password").value;
 
                 try {
+                    // Kullanıcıyı Firebase Authentication ile giriş yap
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                    console.log("Giriş başarılı:", user);
+                    console.log("Başarıyla giriş yapıldı:", user);
 
-                    // Giriş başarılı olursa, dashboard sayfasına yönlendir
+                    // Giriş başarılı olduğunda dashboard sayfasına yönlendir
                     window.location.href = "dashboard.html";  // Yönlendirme yapılacak sayfa
                 } catch (error) {
                     const errorCode = error.code;
