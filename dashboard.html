@@ -7,6 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
@@ -20,17 +21,31 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const firestore = getFirestore(app);
 
-        window.onload = function () {
+        window.onload = async function () {
             const user = auth.currentUser; // Kullanıcı oturum kontrolü
 
-            // Eğer kullanıcı oturumu yoksa, login sayfasına yönlendirmeyelim, sadece hoşgeldiniz mesajı gösterelim
-            if (user) {
-                // Kullanıcı giriş yapmışsa, dashboard sayfasında karşılama mesajı
-                document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${user.email}!`;
+            if (!user) {
+                // Eğer kullanıcı oturum açmamışsa login sayfasına yönlendir
+                window.location.href = "login.html"; // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
             } else {
-                // Eğer kullanıcı oturum açmamışsa, giriş yapmak için bir mesaj göster
-                document.getElementById("welcome-message").innerText = `Lütfen giriş yapın!`;
+                // Kullanıcı giriş yapmışsa, Firestore'dan kullanıcı bilgilerini al
+                try {
+                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const username = userDoc.data().username;
+                        // Kullanıcıyı karşıla
+                        document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
+                    } else {
+                        // Kullanıcı bilgileri yoksa login sayfasına yönlendir
+                        alert("Kullanıcı bilgileri bulunamadı.");
+                        window.location.href = "login.html";
+                    }
+                } catch (error) {
+                    alert("Veritabanı hatası: " + error.message);
+                    window.location.href = "login.html";
+                }
             }
         };
     </script>
@@ -38,5 +53,6 @@
 <body>
     <h2 id="welcome-message">Hoşgeldiniz!</h2>
     <p>Burada kullanıcıya özel içerikler olacak.</p>
+    <button onclick="window.location.href='login.html'">Çıkış Yap</button> <!-- Kullanıcı çıkış yapabilir -->
 </body>
 </html>
