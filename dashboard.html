@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -23,30 +23,26 @@
         const auth = getAuth(app);
         const firestore = getFirestore(app);
 
-        window.onload = async function() {
+        window.onload = async function () {
             const user = auth.currentUser;
 
             if (user) {
-                // Kullanıcı giriş yapmışsa
                 const userDoc = await getDoc(doc(firestore, "users", user.uid));
                 if (userDoc.exists()) {
                     const username = userDoc.data().username;
-                    // Kullanıcıyı hoşgeldiniz mesajı ile karşıla
-                    document.getElementById("welcome-message").innerHTML = `Hoşgeldiniz, ${username}!`;
+                    document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
                 } else {
                     alert("Kullanıcı bilgileri bulunamadı.");
-                    window.location.href = "login.html"; // Kullanıcıyı login sayfasına yönlendir
+                    window.location.href = "login.html"; // login sayfasına yönlendir
                 }
             } else {
-                alert("Giriş yapmadınız. Lütfen giriş yapınız.");
-                window.location.href = "login.html"; // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
+                alert("Lütfen giriş yapın.");
+                window.location.href = "login.html"; // login sayfasına yönlendir
             }
         };
     </script>
 </head>
 <body>
-    <h2 id="welcome-message">Hoşgeldiniz!</h2>
-    <p>Burada dashboard bilgileri olacak...</p>
-    <button onclick="window.location.href='login.html'">Çıkış Yap</button>
+    <h2 id="welcome-message"></h2>
 </body>
 </html>
