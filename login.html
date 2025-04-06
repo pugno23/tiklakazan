@@ -7,8 +7,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -21,6 +21,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const firestore = getFirestore(app);
 
         window.onload = function () {
             const loginButton = document.getElementById("login-button");
@@ -30,18 +31,22 @@
                 const password = document.getElementById("password").value;
 
                 try {
-                    // Email ve password ile giriş
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                    
-                    // Eğer giriş başarılıysa dashboard'a yönlendir
-                    window.location.href = "dashboard.html";
+
+                    // Firestore'dan kullanıcı bilgilerini al
+                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const username = userDoc.data().username;
+                        // Başarıyla giriş yaptıktan sonra Dashboard'a yönlendir
+                        alert("Hoşgeldiniz, " + username + "!");
+                        window.location.href = "dashboard.html";
+                    } else {
+                        alert("Kullanıcı bulunamadı. Lütfen kayıt olunuz.");
+                        window.location.href = "signup.html";
+                    }
                 } catch (error) {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.log("Hata:", errorCode, errorMessage);
-                    alert("Kayıtlı olmayan bir kullanıcı girdiniz. Lütfen kaydolun.");
-                    window.location.href = "signup.html";  // Kayıt sayfasına yönlendir
+                    alert("Giriş sırasında bir hata oluştu: " + error.message);
                 }
             });
         };
@@ -51,12 +56,13 @@
     <h2>Giriş Yap</h2>
     <form id="login-form">
         <label for="email">E-posta:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+        <input type="email" id="email" required><br><br>
 
         <label for="password">Şifre:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+        <input type="password" id="password" required><br><br>
 
         <button type="button" id="login-button">Giriş Yap</button>
     </form>
+    <p>Henüz üye değil misiniz? <a href="signup.html">Kayıt Ol</a></p>
 </body>
 </html>
