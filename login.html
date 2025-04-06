@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
@@ -29,22 +29,21 @@
             loginButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
-                const username = document.getElementById("username").value;
 
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // Kullanıcı adı ve email doğrulaması
-                    const userQuery = query(collection(firestore, "users"), where("username", "==", username), where("email", "==", email));
-                    const userSnapshot = await getDocs(userQuery);
-                    
-                    if (!userSnapshot.empty) {
-                        // Kullanıcı bulunduysa giriş başarılı
+                    // Kullanıcı verilerini Firestore'dan kontrol et
+                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const username = userDoc.data().username;
+                        // Başarıyla giriş yaptıktan sonra Dashboard'a yönlendir
                         alert("Hoşgeldiniz, " + username + "!");
                         window.location.href = "dashboard.html"; // yönlendirme
                     } else {
-                        alert("Kullanıcı adı veya e-posta hatalı. Lütfen tekrar deneyin.");
+                        alert("Kullanıcı bulunamadı. Lütfen kayıt olunuz.");
+                        window.location.href = "signup.html"; // yönlendirme
                     }
                 } catch (error) {
                     alert("Giriş sırasında bir hata oluştu: " + error.message);
@@ -58,9 +57,6 @@
     <form id="login-form">
         <label for="email">E-posta:</label><br>
         <input type="email" id="email" required><br><br>
-
-        <label for="username">Kullanıcı Adı:</label><br>
-        <input type="text" id="username" required><br><br>
 
         <label for="password">Şifre:</label><br>
         <input type="password" id="password" required><br><br>
