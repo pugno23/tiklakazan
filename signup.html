@@ -1,71 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kayıt Ol</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import {
+      getFirestore,
+      setDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-            authDomain: "cekilisveritabani.firebaseapp.com",
-            projectId: "cekilisveritabani",
-            storageBucket: "cekilisveritabani.firebasestorage.app",
-            messagingSenderId: "246236686196",
-            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-            measurementId: "G-YZ6MYCPK8G"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+      measurementId: "G-YZ6MYCPK8G"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const firestore = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const firestore = getFirestore(app);
 
-        window.onload = function () {
-            const signupButton = document.getElementById("signup-button");
+    window.onload = function () {
+      const signupButton = document.getElementById("signup-button");
 
-            signupButton.addEventListener('click', async () => {
-                const email = document.getElementById("email").value;
-                const password = document.getElementById("password").value;
-                const username = document.getElementById("username").value;
+      signupButton.addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const username = document.getElementById("username").value;
 
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
 
-                    // Firestore'a kullanıcı bilgilerini ekle
-                    await setDoc(doc(firestore, "users", user.uid), {
-                        email: email,
-                        username: username
-                    });
+          await setDoc(doc(firestore, "users", user.uid), {
+            email: email,
+            username: username
+          });
 
-                    // Kullanıcıya doğrulama maili gönder
-                    await sendEmailVerification(user);
+          await sendEmailVerification(user);
 
-                    alert("Kayıt başarılı! Lütfen e-posta doğrulamanızı yapın.");
-                    window.location.href = "login.html"; // login sayfasına yönlendir
-                } catch (error) {
-                    alert("Kayıt sırasında bir hata oluştu: " + error.message);
-                }
-            });
-        };
-    </script>
+          alert("Kayıt başarılı! Lütfen e-posta doğrulamanızı yapın.");
+          window.location.href = "verify.html"; // GÜNCELLENDİ
+        } catch (error) {
+          alert("Kayıt sırasında bir hata oluştu: " + error.message);
+        }
+      });
+    };
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .signup-container {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 500;
+      color: #34495e;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    @media (max-width: 600px) {
+      .signup-container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="signup-container">
     <h2>Kayıt Ol</h2>
     <form id="signup-form">
-        <label for="email">E-posta:</label><br>
-        <input type="email" id="email" required><br><br>
+      <label for="email">E-posta:</label><br />
+      <input type="email" id="email" required /><br />
 
-        <label for="username">Kullanıcı Adı:</label><br>
-        <input type="text" id="username" required><br><br>
+      <label for="username">Kullanıcı Adı:</label><br />
+      <input type="text" id="username" required /><br />
 
-        <label for="password">Şifre:</label><br>
-        <input type="password" id="password" required><br><br>
+      <label for="password">Şifre:</label><br />
+      <input type="password" id="password" required /><br />
 
-        <button type="button" id="signup-button">Kayıt Ol</button>
+      <button type="button" id="signup-button">Kayıt Ol</button>
     </form>
+  </div>
 </body>
 </html>
