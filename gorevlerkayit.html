@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Görev Sistemi</title>
+</head>
+<body>
+  <h2>Görev Durumu Kaydet</h2>
+  <input type="text" id="userIdInput" placeholder="Kullanıcı ID">
+  <input type="text" id="taskIdInput" placeholder="Görev Adı (örneğin task1)">
+  <select id="statusSelect">
+    <option value="true">Tamamlandı</option>
+    <option value="false">Tamamlanmadı</option>
+  </select>
+  <button onclick="updateTask()">Görev Güncelle</button>
+
+  <hr>
+
+  <h2>🎁 Çekilişe Katıl</h2>
+  <button onclick="joinDraw()">Çekilişe Katıl</button>
+
+  <hr>
+
+  <h2>📋 Kullanıcının Görev Listesi</h2>
+  <div id="taskListContainer"></div>
+  <button onclick="loadTasksList()">Görevleri Listele</button>
+
+  <hr>
+
+  <h2>📋 Kullanıcının Tüm Görevlerini Göster</h2>
+  <button onclick="showUserTasks()">Görevleri Göster</button>
+  <pre id="userTasksOutput"></pre>
+
+  <hr>
+
+  <h2>👥 Tüm Kullanıcıları Göster</h2>
+  <button onclick="getAllUsersTaskStatus()">Tüm Kullanıcılar</button>
+  <pre id="output"></pre>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+      measurementId: "G-YZ6MYCPK8G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function updateTask() {
+      const userId = document.getElementById("userIdInput").value;
+      const taskId = document.getElementById("taskIdInput").value;
+      const isCompleted = document.getElementById("statusSelect").value === "true";
+
+      const userTaskRef = doc(db, "tasks", `task_${userId}`);
+      const userDoc = await getDoc(userTaskRef);
+
+      if (userDoc.exists()) {
+        const currentTasks = userDoc.data().tasksCompleted || {};
+        currentTasks[taskId] = isCompleted;
+
+        await updateDoc(userTaskRef, {
+          tasksCompleted: currentTasks,
+          completedTasksCount: Object.values(currentTasks).filter(task => task === true).length
+        });
+
+        alert("Görev güncellendi!");
+      } else {
+        await setDoc(userTaskRef, {
+          userId: userId,
+          tasksCompleted: {
+            [taskId]: isCompleted
+          },
+          isInDraw: false,
+          completedTasksCount: isCompleted ? 1 : 0
+        });
+
+        alert("Yeni kullanıcı ve görev oluşturuldu!");
+      }
+    }
+
+    async function joinDraw() {
+      const userId = document.getElementById("userIdInput").value;
+      const userTaskRef = doc(db, "tasks", `task_${userId}`);
+      const userDoc = await getDoc(userTaskRef);
+
+      if (userDoc.exists()) {
+        const completedCount = userDoc.data().completedTasksCount || 0;
+
+        if (completedCount >= 3) {
+          await updateDoc(userTaskRef, {
+            isInDraw: true
+          });
+          alert("🎉 Çekilişe başarıyla katıldınız!");
+        } else {
+          alert("En az 3 görevi tamamlamanız gerekiyor.");
+        }
+      } else {
+        alert("Kullanıcı bulunamadı.");
+      }
+    }
+
+    async function loadTasksList() {
+      const userId = document.getElementById("userIdInput").value;
+      const userTaskRef = doc(db, "tasks", `task_${userId}`);
+      const userDoc = await getDoc(userTaskRef);
+      const container = document.getElementById("taskListContainer");
+
+      if (!userDoc.exists()) {
+        container.innerHTML = "<p>📛 Kullanıcı bulunamadı.</p>";
+        return;
+      }
+
+      const data = userDoc.data();
+      const tasks = data.tasksCompleted || {};
+
+      let html = "<ul style='list-style-type: none; padding-left: 0;'>";
+
+      for (let task in tasks) {
+        const status = tasks[task] ? "✅ Tamamlandı" : "❌ Tamamlanmadı";
+        html += `<li style="margin-bottom: 5px;">📝 <strong>${task}</strong>: ${status}</li>`;
+      }
+
+      html += "</ul>";
+      container.innerHTML = html;
+    }
+
+    async function showUserTasks() {
+      const userId = document.getElementById("userIdInput").value;
+      const userTaskRef = doc(db, "tasks", `task_${userId}`);
+      const userDoc = await getDoc(userTaskRef);
+
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        const tasks = data.tasksCompleted || {};
+        let output = `👤 Kullanıcı: ${data.userId}\n🎁 Çekilişe Katıldı mı: ${data.isInDraw}\n\n📋 Görevler:\n`;
+
+        for (let task in tasks) {
+          output += `- ${task}: ${tasks[task] ? "✅ Tamamlandı" : "❌ Tamamlanmadı"}\n`;
+        }
+
+        document.getElementById("userTasksOutput").textContent = output;
+      } else {
+        document.getElementById("userTasksOutput").textContent = "Kullanıcı bulunamadı.";
+      }
+    }
+
+    async function getAllUsersTaskStatus() {
+      const tasksRef = collection(db, "tasks");
+      const querySnapshot = await getDocs(tasksRef);
+      let output = "";
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        output += `👤 Kullanıcı: ${data.userId}\n✅ Tamamlanan: ${data.completedTasksCount}\n🎁 Çekilişe Katıldı mı: ${data.isInDraw}\n\n`;
+      });
+
+      document.getElementById("output").textContent = output;
+    }
+  </script>
+</body>
+</html>
