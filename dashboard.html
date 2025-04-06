@@ -44,40 +44,53 @@
             }
         });
 
-        // Pazar günü saat 23:35'e kadar olan geri sayım
-        function countdownToSunday() {
+        // Geri Sayım - Her Cuma 20:00'a döngüsel şekilde ayarlı
+        function countdownToNextFriday() {
             const now = new Date();
-            let nextSunday = new Date();
+            const target = new Date(now);
+            const daysUntilFriday = (5 - now.getDay() + 7) % 7; // 5: Cuma
 
-            // Haftanın Pazar gününe ulaşana kadar tarihe ekle
-            nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
-            nextSunday.setHours(23, 35, 0, 0); // Pazar günü saat 23:35
-
-            const timeLeft = nextSunday - now;
-
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-            // Kalan süreyi sayfada göster
-            document.getElementById("active-draw-timer").innerText = `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
-
-            // Eğer geri sayım bitmişse, bir mesaj göster
-            if (timeLeft < 0) {
-                document.getElementById("active-draw-timer").innerText = "Çekiliş tamamlandı!";
+            if (daysUntilFriday === 0 && (now.getHours() > 20 || (now.getHours() === 20 && now.getMinutes() >= 0))) {
+                target.setDate(now.getDate() + 7);
             } else {
-                setTimeout(countdownToSunday, 1000); // Her saniye geri sayımı güncelle
+                target.setDate(now.getDate() + daysUntilFriday);
             }
+
+            target.setHours(20, 0, 0, 0); // Her Cuma 20:00
+
+            function updateCountdown() {
+                const now = new Date();
+                const timeLeft = target - now;
+
+                if (timeLeft <= 0) {
+                    target.setDate(target.getDate() + 7);
+                    document.getElementById("active-draw-timer").classList.add("flash");
+                    setTimeout(() => document.getElementById("active-draw-timer").classList.remove("flash"), 2000);
+                    updateCountdown();
+                    return;
+                }
+
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById("active-draw-timer").innerText =
+                    `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
+
+                setTimeout(updateCountdown, 1000);
+            }
+
+            updateCountdown();
         }
 
         // Sayfa yüklendiğinde geri sayımı başlat
         window.onload = function() {
-            countdownToSunday();
+            countdownToNextFriday();
         };
     </script>
     <style>
-        /* Stil kısmını burada düzenliyorum */
+        /* Genel Stil */
         * {
             box-sizing: border-box;
         }
@@ -88,9 +101,9 @@
             background: #f0f4f8;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             text-align: center;
             padding: 20px;
         }
@@ -99,9 +112,11 @@
             background: white;
             border-radius: 16px;
             padding: 30px 20px;
-            max-width: 500px;
+            max-width: 100%;
             width: 100%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            box-sizing: border-box;
         }
 
         h2 {
@@ -131,6 +146,60 @@
             background-color: #2980b9;
         }
 
+        /* Animasyon Efekti */
+        .flash {
+            animation: flash 1s linear infinite;
+        }
+
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Menu Butonu ve Üst Menü */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .menu {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background-color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            border-radius: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #3498db;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .menu a:hover {
+            color: #2980b9;
+        }
+
+        /* Göster/Gizle Menü */
+        .menu.show {
+            display: flex;
+        }
+
+        /* Mobil Tasarım */
         @media (max-width: 600px) {
             h2 {
                 font-size: 20px;
@@ -139,41 +208,54 @@
             p {
                 font-size: 15px;
             }
+
+            .container {
+                padding: 20px;
+            }
+
+            .button {
+                width: 100%;
+                padding: 12px 0;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Hoşgeldiniz Mesajı Sayfanın En Üstünde -->
+    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+
     <div class="container">
         <!-- Ana Sayfa Başlık ve Mesaj -->
-        <h2 id="welcome-message">Hoşgeldiniz!</h2>
-
-        <!-- Her hafta bir çekiliş mesajı -->
-        <p>Her hafta bir çekiliş. <br> Son katılım tarihi her Cuma 20:00'a kadar. <br> Görevleri tamamla çekilişe katıl. <br> Bu hafta şans seninle olabilir!</p>
+        <h2>Bu Hafta Şans Seninle Olabilir!</h2>
+        <p>Her hafta bir çekiliş.</p>
+        <p>Son katılım tarihi her Cuma 20:00'a kadar.</p>
+        <p>Görevleri tamamla çekilişe katıl.</p>
+        <p>Bu hafta şans seninle olabilir!</p>
         
-        <!-- Çekilişe Katıl butonu -->
-        <button class="button">Çekilişe Katıl</button>
-
         <!-- Aktif Çekiliş -->
         <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
         <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
-
-        <!-- Menü Butonu -->
-        <div>
-            <button class="button" id="menu-button">Menü</button>
-        </div>
-
-        <!-- Kullanıcı Bilgileri -->
-        <p id="message">Yükleniyor...</p>
-
-        <!-- Profil, Görevler, Ayarlar gibi menü bağlantıları -->
-        <div>
-            <a href="#">Profilim</a> |
-            <a href="#">Görevlerim</a> |
-            <a href="#">Ayarlar</a> |
-            <a href="#">Destek ve Yardım</a> |
-            <a href="#">Sık Sorulan Sorular</a> |
-            <a href="#">Canlı Destek</a>
-        </div>
+        <button class="button">Çekilişe Katıl</button>
     </div>
+
+    <!-- Menu Butonu -->
+    <div class="menu-button" onclick="toggleMenu()">☰</div>
+
+    <!-- Menü -->
+    <div class="menu" id="menu">
+        <a href="#">Profilim</a>
+        <a href="#">Görevlerim</a>
+        <a href="#">Ayarlar</a>
+        <a href="#">Destek ve Yardım</a>
+        <a href="#">Sık Sorulan Sorular</a>
+        <a href="#">Canlı Destek</a>
+        <a href="#">Çekilişe Katılanlar</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("menu").classList.toggle("show");
+        }
+    </script>
 </body>
 </html>
