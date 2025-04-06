@@ -23,25 +23,30 @@
         const auth = getAuth(app);
         const firestore = getFirestore(app);
 
-        window.onload = function () {
-            const loginButton = document.getElementById("login-button");
+        window.onload = function() {
+            // Kullanıcı giriş yaptıysa, doğrudan dashboard sayfasına yönlendir
+            const user = auth.currentUser;
+            if (user) {
+                window.location.href = "dashboard.html"; // Giriş yaptıysa dashboard sayfasına yönlendir
+            }
 
+            const loginButton = document.getElementById("login-button");
+            
             loginButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
 
                 try {
-                    // Giriş işlemi asenkron olarak gerçekleşiyor
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // Kullanıcı bilgilerini Firestore'dan al
+                    // Firestore'dan kullanıcı bilgilerini al
                     const userDoc = await getDoc(doc(firestore, "users", user.uid));
                     if (userDoc.exists()) {
                         const username = userDoc.data().username;
                         // Başarıyla giriş yaptıktan sonra Dashboard'a yönlendir
                         alert("Hoşgeldiniz, " + username + "!");
-                        window.location.href = "https://tiklakazanbypugno.com/dashboard.html"; // Dashboard sayfasına yönlendir
+                        window.location.href = "dashboard.html";
                     } else {
                         alert("Kullanıcı bulunamadı. Lütfen kayıt olunuz.");
                         window.location.href = "signup.html";
