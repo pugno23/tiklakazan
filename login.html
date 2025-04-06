@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, query, where, collection } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
@@ -23,42 +23,29 @@
         const auth = getAuth(app);
         const firestore = getFirestore(app);
 
-        window.onload = function() {
-            // Kullanıcı giriş yaptıysa, doğrudan dashboard sayfasına yönlendir
-            const user = auth.currentUser;
-            if (user) {
-                window.location.href = "dashboard.html"; // Giriş yaptıysa dashboard sayfasına yönlendir
-            }
-
+        window.onload = function () {
             const loginButton = document.getElementById("login-button");
 
             loginButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
-                const username = document.getElementById("username").value; // Kullanıcı adı girişini al
                 const password = document.getElementById("password").value;
+                const username = document.getElementById("username").value; // Kullanıcı adı girişi ekleniyor
 
                 try {
-                    // Kullanıcı adı ile e-posta sorgusu
-                    const usersRef = collection(firestore, "users");
-                    const q = query(usersRef, where("username", "==", username));
-                    const querySnapshot = await getDocs(q);
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
 
-                    if (!querySnapshot.empty) {
-                        // Eğer kullanıcı adı varsa, e-posta adresini al
-                        const userDoc = querySnapshot.docs[0]; 
-                        const userEmail = userDoc.data().email; // Firestore'dan alınan e-posta
-
-                        // E-posta ve şifre ile giriş yap
-                        const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
-                        const user = userCredential.user;
-
-                        // Başarıyla giriş yaptıktan sonra Dashboard'a yönlendir
+                    // Kullanıcı adını ve maili kontrol et
+                    const userQuery = query(collection(firestore, "users"), where("username", "==", username), where("email", "==", email));
+                    const userSnapshot = await getDocs(userQuery);
+                    
+                    if (!userSnapshot.empty) {
+                        // Kullanıcı bulunduysa giriş başarılı
                         alert("Hoşgeldiniz, " + username + "!");
-                        window.location.href = "dashboard.html"; // Dashboard'a yönlendir
+                        window.location.href = "dashboard.html";
                     } else {
-                        alert("Kullanıcı adı bulunamadı. Lütfen kontrol edin.");
+                        alert("Kullanıcı adı veya e-posta hatalı. Lütfen tekrar deneyin.");
                     }
-
                 } catch (error) {
                     alert("Giriş sırasında bir hata oluştu: " + error.message);
                 }
