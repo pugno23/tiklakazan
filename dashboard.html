@@ -90,7 +90,7 @@
         };
     </script>
     <style>
-        /* Stil kısmını burada düzenliyorum */
+        /* Genel Stil */
         * {
             box-sizing: border-box;
         }
@@ -103,7 +103,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             text-align: center;
             padding: 20px;
         }
@@ -112,9 +112,11 @@
             background: white;
             border-radius: 16px;
             padding: 30px 20px;
-            max-width: 500px;
+            max-width: 100%;
             width: 100%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            box-sizing: border-box;
         }
 
         h2 {
@@ -197,6 +199,7 @@
             display: flex;
         }
 
+        /* Mobil Tasarım */
         @media (max-width: 600px) {
             h2 {
                 font-size: 20px;
@@ -204,6 +207,15 @@
 
             p {
                 font-size: 15px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .button {
+                width: 100%;
+                padding: 12px 0;
             }
         }
     </style>
@@ -221,7 +233,6 @@
 
         <!-- Kullanıcı Bilgileri -->
         <h2 id="welcome-message">Hoşgeldiniz!</h2>
-        <p id="message">Yükleniyor...</p>
     </div>
 
     <!-- Menu Butonu -->
