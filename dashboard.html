@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,23 +39,24 @@
                     window.location.href = "login.html";
                 }
             } else {
+                // Giriş yapılmamışsa login sayfasına yönlendir
                 window.location.href = "login.html";
             }
         });
 
-        // Geri Sayım - Her Pazar 23:28'e döngüsel şekilde ayarlı
+        // Geri Sayım - Her Pazar 23:35'e döngüsel şekilde ayarlı
         function countdownToNextSunday() {
             const now = new Date();
             const target = new Date(now);
             const daysUntilSunday = (7 - now.getDay()) % 7;
 
-            if (daysUntilSunday === 0 && (now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() >= 28))) {
+            if (daysUntilSunday === 0 && (now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() >= 35))) {
                 target.setDate(now.getDate() + 7);
             } else {
                 target.setDate(now.getDate() + daysUntilSunday);
             }
 
-            target.setHours(23, 28, 0, 0); // Her Pazar 23:28
+            target.setHours(23, 35, 0, 0); // Her Pazar 23:35
 
             function updateCountdown() {
                 const now = new Date();
@@ -83,12 +84,13 @@
             updateCountdown();
         }
 
-        window.onload = function () {
+        // Sayfa yüklendiğinde geri sayımı başlat
+        window.onload = function() {
             countdownToNextSunday();
         };
     </script>
-
     <style>
+        /* Stil kısmını burada düzenliyorum */
         * {
             box-sizing: border-box;
         }
@@ -101,7 +103,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             text-align: center;
             padding: 20px;
         }
@@ -142,23 +144,15 @@
             background-color: #2980b9;
         }
 
+        /* Animasyon Efekti */
         .flash {
-            animation: flash 1s ease-in-out 3;
+            animation: flash 1s linear infinite;
         }
 
         @keyframes flash {
-            0%, 100% { color: #2c3e50; }
-            50% { color: red; }
-        }
-
-        a {
-            color: #3498db;
-            text-decoration: none;
-            margin: 0 5px;
-        }
-
-        a:hover {
-            text-decoration: underline;
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         @media (max-width: 600px) {
@@ -174,24 +168,27 @@
 </head>
 <body>
     <div class="container">
+        <!-- Ana Sayfa Başlık ve Mesaj -->
         <h2>Bu Hafta Şans Seninle Olabilir!</h2>
-        <p>Her hafta bir çekiliş. Son katılım tarihi her Pazar 23:28'e kadar. Bu hafta şans seninle olabilir!</p>
+        <p>Her hafta bir çekiliş. Son katılım tarihi her Pazar 23:35'a kadar. Bu hafta şans seninle olabilir!</p>
         
+        <!-- Aktif Çekiliş -->
         <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
         <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
         <button class="button">Çekilişe Katıl</button>
 
+        <!-- Kullanıcı Bilgileri -->
         <h2 id="welcome-message">Hoşgeldiniz!</h2>
         <p id="message">Yükleniyor...</p>
 
-        <div style="margin-top: 20px;">
+        <!-- Profil, Görevler, Ayarlar gibi menü bağlantıları -->
+        <div>
             <a href="#">Profilim</a> |
             <a href="#">Görevlerim</a> |
             <a href="#">Ayarlar</a> |
             <a href="#">Destek ve Yardım</a> |
             <a href="#">Sık Sorulan Sorular</a> |
-            <a href="#">Canlı Destek</a> |
-            <a href="#">Çekilişe Katılanlar</a>
+            <a href="#">Canlı Destek</a>
         </div>
     </div>
 </body>
