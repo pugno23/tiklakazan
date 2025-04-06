@@ -1,171 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard & Ana Sayfa</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard & Ana Sayfa</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-            authDomain: "cekilisveritabani.firebaseapp.com",
-            projectId: "cekilisveritabani",
-            storageBucket: "cekilisveritabani.firebasestorage.app",
-            messagingSenderId: "246236686196",
-            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-            measurementId: "G-YZ6MYCPK8G"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+      measurementId: "G-YZ6MYCPK8G"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const firestore = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const firestore = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
-                    if (userDoc.exists()) {
-                        const username = userDoc.data().username;
-                        document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
-                    } else {
-                        alert("Kullanıcı veritabanında bulunamadı.");
-                        window.location.href = "signup.html";
-                    }
-                } catch (err) {
-                    alert("Bir hata oluştu: " + err.message);
-                    window.location.href = "login.html";
-                }
-            } else {
-                // Giriş yapılmamışsa login sayfasına yönlendir
-                window.location.href = "login.html";
-            }
-        });
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(firestore, "users", user.uid));
+          if (userDoc.exists()) {
+            const username = userDoc.data().username;
+            document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
+          } else {
+            alert("Kullanıcı veritabanında bulunamadı.");
+            window.location.href = "signup.html";
+          }
+        } catch (err) {
+          alert("Bir hata oluştu: " + err.message);
+          window.location.href = "login.html";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
 
-        // Pazar günü saat 22:40'a kadar olan geri sayım
-        function countdownToSunday() {
-            const now = new Date();
-            let nextSunday = new Date();
+    // DÖNGÜSEL GERİ SAYIM - Her hafta Pazar 23:15
+    function countdownToNextSunday() {
+      const now = new Date();
+      const target = new Date(now);
 
-            // Haftanın Pazar gününe ulaşana kadar tarihe ekle
-            nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
-            nextSunday.setHours(22, 40, 0, 0); // Pazar günü saat 22:40
+      const daysUntilSunday = (7 - now.getDay()) % 7;
 
-            const timeLeft = nextSunday - now;
+      if (daysUntilSunday === 0 && (now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() >= 15))) {
+        target.setDate(now.getDate() + 7);
+      } else {
+        target.setDate(now.getDate() + daysUntilSunday);
+      }
 
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+      target.setHours(23, 15, 0, 0);
 
-            // Kalan süreyi sayfada göster
-            document.getElementById("active-draw-timer").innerText = `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
+      function updateCountdown() {
+        const now = new Date();
+        const timeLeft = target - now;
 
-            // Eğer geri sayım bitmişse, bir mesaj göster
-            if (timeLeft < 0) {
-                document.getElementById("active-draw-timer").innerText = "Çekiliş tamamlandı!";
-            } else {
-                setTimeout(countdownToSunday, 1000); // Her saniye geri sayımı güncelle
-            }
+        if (timeLeft <= 0) {
+          target.setDate(target.getDate() + 7);
+          updateCountdown();
+          return;
         }
 
-        // Sayfa yüklendiğinde geri sayımı başlat
-        window.onload = function() {
-            countdownToSunday();
-        };
-    </script>
-    <style>
-        /* Stil kısmını burada düzenliyorum */
-        * {
-            box-sizing: border-box;
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        const countdownEl = document.getElementById("active-draw-timer");
+        if (countdownEl) {
+          countdownEl.innerText = `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
         }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
+        setTimeout(updateCountdown, 1000);
+      }
 
-        .container {
-            background: white;
-            border-radius: 16px;
-            padding: 30px 20px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
+      updateCountdown();
+    }
 
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+    window.onload = function () {
+      countdownToNextSunday();
+    };
+  </script>
 
-        p {
-            font-size: 16px;
-            color: #34495e;
-            line-height: 1.6;
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .button {
-            padding: 12px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
 
-        .button:hover {
-            background-color: #2980b9;
-        }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 30px 20px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
 
-        @media (max-width: 600px) {
-            h2 {
-                font-size: 20px;
-            }
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
 
-            p {
-                font-size: 15px;
-            }
-        }
-    </style>
+    p {
+      font-size: 16px;
+      color: #34495e;
+      line-height: 1.6;
+    }
+
+    .button {
+      padding: 12px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .button:hover {
+      background-color: #2980b9;
+    }
+
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
+
+    .menu {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #3498db;
+      margin: 0 6px;
+    }
+
+    .menu a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- Ana Sayfa Başlık ve Mesaj -->
-        <h2>Bu Hafta Şans Seninle Olabilir!</h2>
-        <p>Her hafta bir çekiliş. Son katılım tarihi her Pazar 22:40'a kadar. Bu hafta şans seninle olabilir!</p>
-        
-        <!-- Aktif Çekiliş -->
-        <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
-        <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
-        <button class="button">Çekilişe Katıl</button>
+  <div class="container">
+    <h2>Bu Hafta Şans Seninle Olabilir!</h2>
+    <p>Her hafta bir çekiliş. Son katılım tarihi her Pazar 23:15'e kadar. Bu hafta şans seninle olabilir!</p>
 
-        <!-- Kullanıcı Bilgileri -->
-        <h2 id="welcome-message">Hoşgeldiniz!</h2>
-        <p id="message">Yükleniyor...</p>
+    <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
+    <p id="active-draw-timer">Kalan Süre: Yükleniyor...</p>
+    <button class="button">Çekilişe Katıl</button>
 
-        <!-- Profil, Görevler, Ayarlar gibi menü bağlantıları -->
-        <div>
-            <a href="#">Profilim</a> |
-            <a href="#">Görevlerim</a> |
-            <a href="#">Ayarlar</a> |
-            <a href="#">Destek ve Yardım</a> |
-            <a href="#">Sık Sorulan Sorular</a> |
-            <a href="#">Canlı Destek</a>
-        </div>
+    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+    <p id="message">Yükleniyor...</p>
+
+    <div class="menu">
+      <a href="#">Profilim</a> |
+      <a href="#">Görevlerim</a> |
+      <a href="#">Ayarlar</a> |
+      <a href="#">Destek ve Yardım</a> |
+      <a href="#">Sık Sorulan Sorular</a> |
+      <a href="#">Canlı Destek</a>
     </div>
+  </div>
 </body>
 </html>
