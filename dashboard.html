@@ -6,7 +6,7 @@
     <title>Dashboard</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -23,36 +23,29 @@
         const auth = getAuth(app);
         const firestore = getFirestore(app);
 
-        window.onload = async function () {
-            const user = auth.currentUser; // Kullanıcı oturum kontrolü
-
-            if (!user) {
-                // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
-                window.location.href = "login.html"; // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
-            } else {
-                // Kullanıcı giriş yapmışsa, Firestore'dan kullanıcı bilgilerini al
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
                 try {
                     const userDoc = await getDoc(doc(firestore, "users", user.uid));
                     if (userDoc.exists()) {
                         const username = userDoc.data().username;
-                        // Kullanıcıyı karşıla
                         document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
                     } else {
-                        // Kullanıcı bilgileri yoksa login sayfasına yönlendir
-                        alert("Kullanıcı bilgileri bulunamadı.");
-                        window.location.href = "login.html";
+                        alert("Kullanıcı veritabanında bulunamadı.");
+                        window.location.href = "signup.html";
                     }
-                } catch (error) {
-                    alert("Veritabanı hatası: " + error.message);
+                } catch (err) {
+                    alert("Bir hata oluştu: " + err.message);
                     window.location.href = "login.html";
                 }
+            } else {
+                // Giriş yapılmamışsa login sayfasına yönlendir
+                window.location.href = "login.html";
             }
-        };
+        });
     </script>
 </head>
 <body>
     <h2 id="welcome-message">Hoşgeldiniz!</h2>
-    <p>Burada kullanıcıya özel içerikler olacak.</p>
-    <button onclick="window.location.href='login.html'">Çıkış Yap</button> <!-- Kullanıcı çıkış yapabilir -->
 </body>
 </html>
