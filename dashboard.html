@@ -26,6 +26,7 @@
         window.onload = async function () {
             const user = auth.currentUser;
 
+            // Oturum açmış kullanıcıyı kontrol et
             if (user) {
                 const userDoc = await getDoc(doc(firestore, "users", user.uid));
                 if (userDoc.exists()) {
@@ -33,11 +34,11 @@
                     document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
                 } else {
                     alert("Kullanıcı bilgileri bulunamadı.");
-                    window.location.href = "login.html"; // login sayfasına yönlendir
+                    window.location.href = "login.html"; // Kullanıcı bilgileri yoksa login sayfasına yönlendir
                 }
             } else {
                 alert("Lütfen giriş yapın.");
-                window.location.href = "login.html"; // login sayfasına yönlendir
+                window.location.href = "login.html"; // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
             }
         };
     </script>
