@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
@@ -29,20 +29,20 @@
             loginButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
-                const username = document.getElementById("username").value; // Kullanıcı adı girişi ekleniyor
+                const username = document.getElementById("username").value;
 
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // Kullanıcı adını ve maili kontrol et
+                    // Kullanıcı adı ve email doğrulaması
                     const userQuery = query(collection(firestore, "users"), where("username", "==", username), where("email", "==", email));
                     const userSnapshot = await getDocs(userQuery);
                     
                     if (!userSnapshot.empty) {
                         // Kullanıcı bulunduysa giriş başarılı
                         alert("Hoşgeldiniz, " + username + "!");
-                        window.location.href = "dashboard.html";
+                        window.location.href = "dashboard.html"; // yönlendirme
                     } else {
                         alert("Kullanıcı adı veya e-posta hatalı. Lütfen tekrar deneyin.");
                     }
