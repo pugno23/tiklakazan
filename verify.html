@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoşgeldiniz</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+            authDomain: "cekilisveritabani.firebaseapp.com",
+            projectId: "cekilisveritabani",
+            storageBucket: "cekilisveritabani.firebasestorage.app",
+            messagingSenderId: "246236686196",
+            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+            measurementId: "G-YZ6MYCPK8G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(firestore, "users", user.uid));
+                if (userDoc.exists()) {
+                    const username = userDoc.data().username;
+                    document.getElementById("welcome").innerText = `Hoşgeldiniz, ${username}!`;
+                } else {
+                    document.getElementById("welcome").innerText = "Hoşgeldiniz!";
+                }
+
+                document.getElementById("message").innerText =
+                    "Lütfen e-posta adresinizi doğrulayarak hesabınızı aktif hale getirin. E-posta kutunuza gönderilen doğrulama bağlantısını kontrol edin.";
+            } else {
+                document.getElementById("welcome").innerText = "Hoşgeldiniz!";
+                document.getElementById("message").innerText = "Lütfen önce giriş yapın.";
+            }
+        });
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="welcome">Hoşgeldiniz!</h2>
+        <p id="message">Yükleniyor...</p>
+    </div>
+</body>
+</html>
