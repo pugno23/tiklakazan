@@ -155,6 +155,48 @@
             100% { opacity: 1; }
         }
 
+        /* Menu Butonu ve Üst Menü */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .menu {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background-color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            border-radius: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #3498db;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .menu a:hover {
+            color: #2980b9;
+        }
+
+        /* Göster/Gizle Menü */
+        .menu.show {
+            display: flex;
+        }
+
         @media (max-width: 600px) {
             h2 {
                 font-size: 20px;
@@ -180,16 +222,36 @@
         <!-- Kullanıcı Bilgileri -->
         <h2 id="welcome-message">Hoşgeldiniz!</h2>
         <p id="message">Yükleniyor...</p>
-
-        <!-- Profil, Görevler, Ayarlar gibi menü bağlantıları -->
-        <div>
-            <a href="#">Profilim</a> |
-            <a href="#">Görevlerim</a> |
-            <a href="#">Ayarlar</a> |
-            <a href="#">Destek ve Yardım</a> |
-            <a href="#">Sık Sorulan Sorular</a> |
-            <a href="#">Canlı Destek</a>
-        </div>
     </div>
+
+    <!-- Menu Butonu -->
+    <div class="menu-button" onclick="toggleMenu()">☰</div>
+
+    <!-- Menü -->
+    <div class="menu" id="menu">
+        <a href="#">Profilim</a>
+        <a href="#">Görevlerim</a>
+        <a href="#">Ayarlar</a>
+        <a href="#">Destek ve Yardım</a>
+        <a href="#">Sık Sorulan Sorular</a>
+        <a href="#">Canlı Destek</a>
+        <a href="#">Çekilişe Katılanlar</a>
+    </div>
+
+    <!-- Profil, Görevler, Ayarlar gibi menü bağlantıları -->
+    <div>
+        <a href="#">Profilim</a> |
+        <a href="#">Görevlerim</a> |
+        <a href="#">Ayarlar</a> |
+        <a href="#">Destek ve Yardım</a> |
+        <a href="#">Sık Sorulan Sorular</a> |
+        <a href="#">Canlı Destek</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("menu").classList.toggle("show");
+        }
+    </script>
 </body>
 </html>
