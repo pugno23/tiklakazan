@@ -27,7 +27,7 @@
             const user = auth.currentUser; // Kullanıcı oturum kontrolü
 
             if (!user) {
-                // Eğer kullanıcı oturum açmamışsa login sayfasına yönlendir
+                // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
                 window.location.href = "login.html"; // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
             } else {
                 // Kullanıcı giriş yapmışsa, Firestore'dan kullanıcı bilgilerini al
