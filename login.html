@@ -31,16 +31,17 @@
                 const password = document.getElementById("password").value;
 
                 try {
+                    // Giriş işlemi asenkron olarak gerçekleşiyor
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // Firestore'dan kullanıcı bilgilerini al
+                    // Kullanıcı bilgilerini Firestore'dan al
                     const userDoc = await getDoc(doc(firestore, "users", user.uid));
                     if (userDoc.exists()) {
                         const username = userDoc.data().username;
                         // Başarıyla giriş yaptıktan sonra Dashboard'a yönlendir
                         alert("Hoşgeldiniz, " + username + "!");
-                        window.location.href = "https://tiklakazanbypugno.com/dashboard.html"; // dashboard sayfasına yönlendir
+                        window.location.href = "https://tiklakazanbypugno.com/dashboard.html"; // Dashboard sayfasına yönlendir
                     } else {
                         alert("Kullanıcı bulunamadı. Lütfen kayıt olunuz.");
                         window.location.href = "signup.html";
