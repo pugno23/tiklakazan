@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Dashboard</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
@@ -22,37 +22,20 @@
         const auth = getAuth(app);
 
         window.onload = function () {
-            const loginButton = document.getElementById("login-button");
+            const user = auth.currentUser;  // Kullanıcı durumu kontrolü
 
-            loginButton.addEventListener('click', async () => {
-                const email = document.getElementById("email").value;
-                const password = document.getElementById("password").value;
-
-                try {
-                    // Giriş işlemi yapılıyor
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-
-                    // Eğer giriş başarılıysa, dashboard sayfasına yönlendir
-                    window.location.href = "dashboard.html";
-                } catch (error) {
-                    alert("Giriş sırasında bir hata oluştu: " + error.message);
-                }
-            });
+            if (!user) {
+                // Eğer kullanıcı giriş yapmamışsa, login sayfasına yönlendir
+                window.location.href = "login.html";
+            } else {
+                // Kullanıcı giriş yapmışsa, dashboard sayfasında karşılanır
+                document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${user.email}!`;
+            }
         };
     </script>
 </head>
 <body>
-    <h2>Giriş Yap</h2>
-    <form id="login-form">
-        <label for="email">E-posta:</label><br>
-        <input type="email" id="email" required><br><br>
-
-        <label for="password">Şifre:</label><br>
-        <input type="password" id="password" required><br><br>
-
-        <button type="button" id="login-button">Giriş Yap</button>
-    </form>
-    <p>Henüz üye değil misiniz? <a href="signup.html">Kayıt Ol</a></p>
+    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+    <p>Burada kullanıcıya özel içerikler olacak.</p>
 </body>
 </html>
