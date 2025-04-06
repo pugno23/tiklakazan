@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard & Ana Sayfa</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -44,8 +44,96 @@
             }
         });
     </script>
+    <style>
+        /* Stil kısmını burada düzenliyorum */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+    <div class="container">
+        <!-- Ana Sayfa Başlık ve Mesaj -->
+        <h2>Bu Hafta Şans Seninle Olabilir!</h2>
+        <p>Her hafta bir çekiliş. Son katılım tarihi her Cuma 20:00'a kadar. Bu hafta şans seninle olabilir!</p>
+        
+        <!-- Aktif Çekiliş -->
+        <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
+        <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
+        <button class="button">Çekilişe Katıl</button>
+
+        <!-- Kullanıcı Bilgileri -->
+        <h2 id="welcome-message">Hoşgeldiniz!</h2>
+        <p id="message">Yükleniyor...</p>
+
+        <!-- Profil, Görevler, Ayarlar gibi menü bağlantıları -->
+        <div>
+            <a href="#">Profilim</a> |
+            <a href="#">Görevlerim</a> |
+            <a href="#">Ayarlar</a> |
+            <a href="#">Destek ve Yardım</a> |
+            <a href="#">Sık Sorulan Sorular</a> |
+            <a href="#">Canlı Destek</a>
+        </div>
+    </div>
 </body>
 </html>
