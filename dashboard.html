@@ -22,14 +22,15 @@
         const auth = getAuth(app);
 
         window.onload = function () {
-            const user = auth.currentUser; // Kullanıcı oturumu kontrolü
+            const user = auth.currentUser; // Kullanıcı oturum kontrolü
 
-            if (!user) {
-                // Kullanıcı giriş yapmamışsa, login sayfasına yönlendir
-                window.location.href = "login.html";
-            } else {
-                // Kullanıcı giriş yapmışsa, dashboard sayfasında karşılama
+            // Eğer kullanıcı oturumu yoksa, login sayfasına yönlendirmeyelim, sadece hoşgeldiniz mesajı gösterelim
+            if (user) {
+                // Kullanıcı giriş yapmışsa, dashboard sayfasında karşılama mesajı
                 document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${user.email}!`;
+            } else {
+                // Eğer kullanıcı oturum açmamışsa, giriş yapmak için bir mesaj göster
+                document.getElementById("welcome-message").innerText = `Lütfen giriş yapın!`;
             }
         };
     </script>
