@@ -23,26 +23,30 @@
         const auth = getAuth(app);
         const firestore = getFirestore(app);
 
-        window.onload = async function () {
+        window.onload = async function() {
             const user = auth.currentUser;
 
-            if (!user) {
-                // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
-                window.location.href = "login.html";
-                return;
-            }
-
-            const userDoc = await getDoc(doc(firestore, "users", user.uid));
-            if (userDoc.exists()) {
-                const username = userDoc.data().username;
-                document.getElementById("greeting").innerText = "Hoşgeldin, " + username + "!";
+            if (user) {
+                // Kullanıcı giriş yapmışsa
+                const userDoc = await getDoc(doc(firestore, "users", user.uid));
+                if (userDoc.exists()) {
+                    const username = userDoc.data().username;
+                    // Kullanıcıyı hoşgeldiniz mesajı ile karşıla
+                    document.getElementById("welcome-message").innerHTML = `Hoşgeldiniz, ${username}!`;
+                } else {
+                    alert("Kullanıcı bilgileri bulunamadı.");
+                    window.location.href = "login.html"; // Kullanıcıyı login sayfasına yönlendir
+                }
+            } else {
+                alert("Giriş yapmadınız. Lütfen giriş yapınız.");
+                window.location.href = "login.html"; // Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
             }
         };
     </script>
 </head>
 <body>
-    <h2 id="greeting">Hoşgeldiniz!</h2>
-    <p>Dashboard içeriği buraya gelecek...</p>
+    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+    <p>Burada dashboard bilgileri olacak...</p>
     <button onclick="window.location.href='login.html'">Çıkış Yap</button>
 </body>
 </html>
