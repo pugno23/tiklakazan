@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, query, where, collection } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
@@ -31,26 +31,34 @@
             }
 
             const loginButton = document.getElementById("login-button");
-            
+
             loginButton.addEventListener('click', async () => {
                 const email = document.getElementById("email").value;
+                const username = document.getElementById("username").value; // Kullanıcı adı girişini al
                 const password = document.getElementById("password").value;
 
                 try {
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
+                    // Kullanıcı adı ile e-posta sorgusu
+                    const usersRef = collection(firestore, "users");
+                    const q = query(usersRef, where("username", "==", username));
+                    const querySnapshot = await getDocs(q);
 
-                    // Firestore'dan kullanıcı bilgilerini al
-                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
-                    if (userDoc.exists()) {
-                        const username = userDoc.data().username;
+                    if (!querySnapshot.empty) {
+                        // Eğer kullanıcı adı varsa, e-posta adresini al
+                        const userDoc = querySnapshot.docs[0]; 
+                        const userEmail = userDoc.data().email; // Firestore'dan alınan e-posta
+
+                        // E-posta ve şifre ile giriş yap
+                        const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
+                        const user = userCredential.user;
+
                         // Başarıyla giriş yaptıktan sonra Dashboard'a yönlendir
                         alert("Hoşgeldiniz, " + username + "!");
-                        window.location.href = "dashboard.html";
+                        window.location.href = "dashboard.html"; // Dashboard'a yönlendir
                     } else {
-                        alert("Kullanıcı bulunamadı. Lütfen kayıt olunuz.");
-                        window.location.href = "signup.html";
+                        alert("Kullanıcı adı bulunamadı. Lütfen kontrol edin.");
                     }
+
                 } catch (error) {
                     alert("Giriş sırasında bir hata oluştu: " + error.message);
                 }
@@ -63,6 +71,9 @@
     <form id="login-form">
         <label for="email">E-posta:</label><br>
         <input type="email" id="email" required><br><br>
+
+        <label for="username">Kullanıcı Adı:</label><br>
+        <input type="text" id="username" required><br><br>
 
         <label for="password">Şifre:</label><br>
         <input type="password" id="password" required><br><br>
