@@ -43,6 +43,38 @@
                 window.location.href = "login.html";
             }
         });
+
+        // Pazar günü saat 22:40'a kadar olan geri sayım
+        function countdownToSunday() {
+            const now = new Date();
+            let nextSunday = new Date();
+
+            // Haftanın Pazar gününe ulaşana kadar tarihe ekle
+            nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+            nextSunday.setHours(22, 40, 0, 0); // Pazar günü saat 22:40
+
+            const timeLeft = nextSunday - now;
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            // Kalan süreyi sayfada göster
+            document.getElementById("active-draw-timer").innerText = `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
+
+            // Eğer geri sayım bitmişse, bir mesaj göster
+            if (timeLeft < 0) {
+                document.getElementById("active-draw-timer").innerText = "Çekiliş tamamlandı!";
+            } else {
+                setTimeout(countdownToSunday, 1000); // Her saniye geri sayımı güncelle
+            }
+        }
+
+        // Sayfa yüklendiğinde geri sayımı başlat
+        window.onload = function() {
+            countdownToSunday();
+        };
     </script>
     <style>
         /* Stil kısmını burada düzenliyorum */
@@ -114,7 +146,7 @@
     <div class="container">
         <!-- Ana Sayfa Başlık ve Mesaj -->
         <h2>Bu Hafta Şans Seninle Olabilir!</h2>
-        <p>Her hafta bir çekiliş. Son katılım tarihi her Cuma 20:00'a kadar. Bu hafta şans seninle olabilir!</p>
+        <p>Her hafta bir çekiliş. Son katılım tarihi her Pazar 22:40'a kadar. Bu hafta şans seninle olabilir!</p>
         
         <!-- Aktif Çekiliş -->
         <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
