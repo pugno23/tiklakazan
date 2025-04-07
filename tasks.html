@@ -1,205 +1,159 @@
+<!-- tasks.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Görevler</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+  <meta charset="UTF-8">
+  <title>Görevler</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    let currentUser = null;
+
+    // Kullanıcıyı takip et
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+      } else {
+        alert("Lütfen giriş yapın.");
+      }
+    });
+
+    // Firestore'a kullanıcıyı kaydet
+    async function addUserToFirestore(username) {
+      try {
+        const userRef = doc(db, "participants", username);  // tekrar katılmasını engellemek için username ID
+        await setDoc(userRef, {
+          username: username,
+          timestamp: serverTimestamp()
+        });
+        console.log("Katılım kaydedildi:", username);
+      } catch (err) {
+        console.error("Kayıt hatası:", err);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      let task1 = 0, task2 = 0, task3 = 0;
+      let completedTasks = 0;
+
+      const btn1 = document.getElementById("task1");
+      const btn2 = document.getElementById("task2");
+      const btn3 = document.getElementById("task3");
+      const progress = document.getElementById("progress");
+      const drawBtn = document.getElementById("drawButton");
+
+      function updateProgress() {
+        const percent = (completedTasks / 3) * 100;
+        progress.style.width = percent + "%";
+        if (completedTasks === 3) drawBtn.style.display = "block";
+      }
+
+      btn1.addEventListener("click", () => {
+        if (++task1 <= 5) btn1.textContent = `Tıkla (${task1}/5)`;
+        if (task1 === 5) {
+          btn1.disabled = true;
+          completedTasks++;
+          updateProgress();
+        }
+      });
+
+      btn2.addEventListener("click", () => {
+        if (++task2 <= 3) btn2.textContent = `Tıkla (${task2}/3)`;
+        if (task2 === 3) {
+          btn2.disabled = true;
+          completedTasks++;
+          updateProgress();
+        }
+      });
+
+      btn3.addEventListener("click", () => {
+        if (++task3 <= 4) btn3.textContent = `Tıkla (${task3}/4)`;
+        if (task3 === 4) {
+          btn3.disabled = true;
+          completedTasks++;
+          updateProgress();
+        }
+      });
+
+      drawBtn.addEventListener("click", async () => {
+        if (!currentUser) {
+          alert("Lütfen giriş yapın.");
+          return;
         }
 
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        const username = currentUser.displayName || currentUser.email || currentUser.uid;
+        await addUserToFirestore(username);
+        window.location.href = "cekiliseKatilanlar.html";
+      });
+    });
+  </script>
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        .progress-container {
-            margin: 20px 0;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background-color: #ddd;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress {
-            height: 100%;
-            width: 0%;
-            background-color: #4CAF50;
-            transition: width 0.3s;
-        }
-
-        .task {
-            margin: 20px 0;
-        }
-
-        .task button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-        }
-
-        .task button:disabled {
-            background-color: #95a5a6;
-        }
-
-        #drawButton {
-            display: none;
-            margin-top: 30px;
-            background-color: #e67e22;
-        }
-    </style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .progress-bar {
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: #4CAF50;
+    }
+    .task button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+    .task button:disabled {
+      background: #aaa;
+    }
+    #drawButton {
+      display: none;
+      margin-top: 20px;
+      background: #e67e22;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Görevleri Tamamla</h2>
-
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress" id="progress"></div>
-            </div>
-        </div>
-
-        <div class="task">
-            <p>1. Görev: Butona 5 kere tıkla</p>
-            <button id="task1">Tıkla (0/5)</button>
-        </div>
-
-        <div class="task">
-            <p>2. Görev: Butona 3 kere tıkla</p>
-            <button id="task2">Tıkla (0/3)</button>
-        </div>
-
-        <div class="task">
-            <p>3. Görev: Butona 4 kere tıkla</p>
-            <button id="task3">Tıkla (0/4)</button>
-        </div>
-
-        <button id="drawButton" onclick="window.location.href='cekilisekatilanlar.html'">Çekilişe Katıl</button>
-    </div>
-
-    <!-- Firebase SDK Bağlantısı -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-        // Firebase Konfigürasyonu
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-            authDomain: "cekilisveritabani.firebaseapp.com",
-            projectId: "cekilisveritabani",
-            storageBucket: "cekilisveritabani.firebasestorage.app",
-            messagingSenderId: "246236686196",
-            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-            measurementId: "G-YZ6MYCPK8G"
-        };
-
-        // Firebase'i başlat
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Katılım kaydını Firestore'a ekleyen fonksiyon
-        async function addUserToFirestore(username) {
-            try {
-                // Firestore'a katılım kaydını ekleme
-                const userRef = doc(db, "participants", username);  // Belge ID'si olarak username kullanılıyor
-                await setDoc(userRef, {
-                    username: username,        // Kullanıcı adı
-                    timestamp: serverTimestamp() // Katılım zamanı
-                });
-                console.log(`${username} çekilişe katıldı!`);
-            } catch (error) {
-                console.error("Veri eklerken hata oluştu: ", error);
-            }
-        }
-
-        let task1Clicks = 0;
-        let task2Clicks = 0;
-        let task3Clicks = 0;
-        let completedTasks = 0;
-
-        const progress = document.getElementById("progress");
-        const task1Btn = document.getElementById("task1");
-        const task2Btn = document.getElementById("task2");
-        const task3Btn = document.getElementById("task3");
-        const drawBtn = document.getElementById("drawButton");
-
-        function updateProgress() {
-            const percentage = (completedTasks / 3) * 100;
-            progress.style.width = percentage + "%";
-
-            if (completedTasks === 3) {
-                drawBtn.style.display = "block";  // Çekilişe katıl butonunu göster
-            }
-        }
-
-        // Görev 1
-        task1Btn.addEventListener("click", () => {
-            if (task1Clicks < 5) {
-                task1Clicks++;
-                task1Btn.textContent = `Tıkla (${task1Clicks}/5)`;
-            }
-            if (task1Clicks === 5) {
-                task1Btn.disabled = true;
-                completedTasks++;
-                updateProgress();
-            }
-        });
-
-        // Görev 2
-        task2Btn.addEventListener("click", () => {
-            if (task2Clicks < 3) {
-                task2Clicks++;
-                task2Btn.textContent = `Tıkla (${task2Clicks}/3)`;
-            }
-            if (task2Clicks === 3) {
-                task2Btn.disabled = true;
-                completedTasks++;
-                updateProgress();
-            }
-        });
-
-        // Görev 3
-        task3Btn.addEventListener("click", () => {
-            if (task3Clicks < 4) {
-                task3Clicks++;
-                task3Btn.textContent = `Tıkla (${task3Clicks}/4)`;
-            }
-            if (task3Clicks === 4) {
-                task3Btn.disabled = true;
-                completedTasks++;
-                updateProgress();
-            }
-        });
-
-        // Çekilişe katıl butonuna tıklama
-        drawBtn.addEventListener("click", () => {
-            const username = "user1_ad";  // Burada örnek olarak 'user1_ad' kullanıyoruz, bunu dinamik yapabilirsiniz.
-            addUserToFirestore(username);  // Firestore'a katılım kaydını ekle
-            window.location.href = 'cekilisekatilanlar.html';  // Çekilişe katılanlar sayfasına yönlendir
-        });
-    </script>
+  <div class="container">
+    <h2>Görevleri Tamamla</h2>
+    <div class="progress-bar"><div class="progress" id="progress"></div></div>
+    <div class="task"><p>1. Görev</p><button id="task1">Tıkla (0/5)</button></div>
+    <div class="task"><p>2. Görev</p><button id="task2">Tıkla (0/3)</button></div>
+    <div class="task"><p>3. Görev</p><button id="task3">Tıkla (0/4)</button></div>
+    <button id="drawButton">Çekilişe Katıl</button>
+  </div>
 </body>
 </html>
