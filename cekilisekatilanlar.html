@@ -1,14 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Çekilişe Katılanlar</title>
-</head>
-<body>
-  <h2>🎁 Çekilişe Katılanlar</h2>
-  <ul id="participantList"></ul>
-  <p id="totalCount"></p>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
@@ -17,31 +12,76 @@
       apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
       authDomain: "cekilisveritabani.firebaseapp.com",
       projectId: "cekilisveritabani",
-      storageBucket: "cekilisveritabani.appspot.com",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
       messagingSenderId: "246236686196",
-      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+      measurementId: "G-YZ6MYCPK8G"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     async function loadParticipants() {
-      const querySnapshot = await getDocs(collection(db, "drawParticipants"));
-      const list = document.getElementById("participantList");
-      let count = 0;
+      const participantsRef = collection(db, "participants");
+      const snapshot = await getDocs(participantsRef);
+      const list = document.getElementById("user-list");
+      const total = document.getElementById("total-count");
 
-      querySnapshot.forEach((doc) => {
+      let count = 0;
+      snapshot.forEach(doc => {
         const data = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `👤 ${data.username}`;
-        list.appendChild(li);
-        count++;
+        if (data.username) {
+          const li = document.createElement("li");
+          li.textContent = data.username;
+          list.appendChild(li);
+          count++;
+        }
       });
 
-      document.getElementById("totalCount").textContent = `Toplam Katılımcı: ${count}`;
+      total.textContent = `Toplam Katılımcı: ${count}`;
     }
 
-    loadParticipants();
+    window.onload = loadParticipants;
   </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    #total-count {
+      font-size: 18px;
+      color: #3498db;
+      margin: 10px 0 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    li {
+      background: white;
+      margin-bottom: 10px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Çekilişe Katılanlar</h1>
+  <div id="total-count">Yükleniyor...</div>
+  <ul id="user-list"></ul>
 </body>
 </html>
