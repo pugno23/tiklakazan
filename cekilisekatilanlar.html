@@ -1,50 +1,47 @@
-<!-- cekiliseKatilanlar.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Çekilişe Katılanlar</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-      authDomain: "cekilisveritabani.firebaseapp.com",
-      projectId: "cekilisveritabani",
-      storageBucket: "cekilisveritabani.firebasestorage.app",
-      messagingSenderId: "246236686196",
-      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function fetchParticipants() {
-      const snapshot = await getDocs(collection(db, "participants"));
-      const list = document.getElementById("userList");
-      list.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const li = document.createElement("li");
-        li.textContent = doc.data().username;
-        list.appendChild(li);
-      });
-    }
-
-    window.addEventListener("DOMContentLoaded", fetchParticipants);
-  </script>
-
-  <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-    .container { background: white; padding: 30px; border-radius: 10px; max-width: 500px; margin: auto; }
-    li { padding: 10px; background: #3498db; color: white; margin: 5px 0; border-radius: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çekilişe Katılanlar</title>
 </head>
 <body>
-  <div class="container">
     <h2>Çekilişe Katılanlar</h2>
-    <ul id="userList"></ul>
-    <a href="index.html">Ana Sayfaya Dön</a>
-  </div>
+    <ul id="participants-list">
+        <!-- Katılımcıların isimleri buraya eklenecek -->
+    </ul>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+            authDomain: "cekilisveritabani.firebaseapp.com",
+            projectId: "cekilisveritabani",
+            storageBucket: "cekilisveritabani.firebasestorage.app",
+            messagingSenderId: "246236686196",
+            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+            measurementId: "G-YZ6MYCPK8G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function getParticipants() {
+            const participantsCol = collection(db, "participants");
+            const participantSnapshot = await getDocs(participantsCol);
+            const participantsList = participantSnapshot.docs.map(doc => doc.data());
+
+            const participantsContainer = document.getElementById("participants-list");
+            participantsList.forEach(participant => {
+                const listItem = document.createElement("li");
+                listItem.textContent = participant.username;
+                participantsContainer.appendChild(listItem);
+            });
+        }
+
+        window.onload = getParticipants;
+    </script>
 </body>
 </html>
