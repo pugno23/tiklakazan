@@ -1,3 +1,4 @@
+<!-- cekiliseKatilanlar.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -11,7 +12,7 @@
       apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
       authDomain: "cekilisveritabani.firebaseapp.com",
       projectId: "cekilisveritabani",
-      storageBucket: "cekilisveritabani.firebasestorage.app",
+      storageBucket: "cekilisveritabani.appspot.com",
       messagingSenderId: "246236686196",
       appId: "1:246236686196:web:d22a9b99140626cc04ae21"
     };
@@ -19,24 +20,65 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function getParticipants() {
-      const participantsCol = collection(db, "participants");
-      const participantSnapshot = await getDocs(participantsCol);
-      const participantsList = participantSnapshot.docs.map(doc => doc.data());
+    window.addEventListener("DOMContentLoaded", async () => {
+      const listElement = document.getElementById("participantList");
+      const countElement = document.getElementById("count");
 
-      const participantsContainer = document.getElementById("participants-list");
-      participantsList.forEach(participant => {
-        const listItem = document.createElement("li");
-        listItem.textContent = participant.username; // Kullanıcı adı görünsün
-        participantsContainer.appendChild(listItem);
+      const querySnapshot = await getDocs(collection(db, "participants"));
+      let count = 0;
+
+      querySnapshot.forEach((doc) => {
+        const username = doc.data().username;
+        const li = document.createElement("li");
+        li.textContent = username;
+        listElement.appendChild(li);
+        count++;
       });
-    }
 
-    window.onload = getParticipants;
+      countElement.textContent = `Toplam Katılımcı: ${count}`;
+    });
   </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #eee;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #count {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h2>Çekilişe Katılanlar</h2>
-  <ul id="participants-list"></ul>
+  <div class="container">
+    <h2>Çekilişe Katılanlar</h2>
+    <ul id="participantList"></ul>
+    <p id="count">Toplam Katılımcı: 0</p>
+  </div>
 </body>
 </html>
