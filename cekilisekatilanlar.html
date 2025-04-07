@@ -28,19 +28,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Katılımcıları alıp, listeye ekleme fonksiyonu
         async function getParticipants() {
-            const participantsCol = collection(db, "participants");
-            const participantSnapshot = await getDocs(participantsCol);
-            const participantsList = participantSnapshot.docs.map(doc => doc.data());
+            try {
+                // Firestore'dan participants koleksiyonuna erişim
+                const participantsCol = collection(db, "participants");
+                const participantSnapshot = await getDocs(participantsCol);
 
-            const participantsContainer = document.getElementById("participants-list");
-            participantsList.forEach(participant => {
-                const listItem = document.createElement("li");
-                listItem.textContent = participant.username;
-                participantsContainer.appendChild(listItem);
-            });
+                // Katılımcıları al ve listeyi oluştur
+                const participantsList = participantSnapshot.docs.map(doc => doc.data());
+                
+                // Katılımcıların listeleneceği alanı seç
+                const participantsContainer = document.getElementById("participants-list");
+                participantsContainer.innerHTML = "";  // Listeyi temizle
+
+                // Katılımcıları listeye ekle
+                participantsList.forEach(participant => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = participant.username;  // Katılımcı adını listeye ekle
+                    participantsContainer.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error("Katılımcılar alınırken hata oluştu:", error);
+            }
         }
 
+        // Sayfa yüklendiğinde katılımcıları al
         window.onload = getParticipants;
     </script>
 </body>
