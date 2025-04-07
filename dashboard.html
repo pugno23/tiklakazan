@@ -39,16 +39,14 @@
                     window.location.href = "login.html";
                 }
             } else {
-                // Giriş yapılmamışsa login sayfasına yönlendir
                 window.location.href = "login.html";
             }
         });
 
-        // Geri Sayım - Her Cuma 20:00'a döngüsel şekilde ayarlı
         function countdownToNextFriday() {
             const now = new Date();
             const target = new Date(now);
-            const daysUntilFriday = (5 - now.getDay() + 7) % 7; // 5: Cuma
+            const daysUntilFriday = (5 - now.getDay() + 7) % 7;
 
             if (daysUntilFriday === 0 && (now.getHours() > 20 || (now.getHours() === 20 && now.getMinutes() >= 0))) {
                 target.setDate(now.getDate() + 7);
@@ -56,7 +54,7 @@
                 target.setDate(now.getDate() + daysUntilFriday);
             }
 
-            target.setHours(20, 0, 0, 0); // Her Cuma 20:00
+            target.setHours(20, 0, 0, 0);
 
             function updateCountdown() {
                 const now = new Date();
@@ -84,13 +82,11 @@
             updateCountdown();
         }
 
-        // Sayfa yüklendiğinde geri sayımı başlat
         window.onload = function() {
             countdownToNextFriday();
         };
     </script>
     <style>
-        /* Genel Stil */
         * {
             box-sizing: border-box;
         }
@@ -146,7 +142,6 @@
             background-color: #2980b9;
         }
 
-        /* Animasyon Efekti */
         .flash {
             animation: flash 1s linear infinite;
         }
@@ -157,7 +152,6 @@
             100% { opacity: 1; }
         }
 
-        /* Menu Butonu ve Üst Menü */
         .menu-button {
             position: fixed;
             top: 20px;
@@ -194,12 +188,10 @@
             color: #2980b9;
         }
 
-        /* Göster/Gizle Menü */
         .menu.show {
             display: flex;
         }
 
-        /* Mobil Tasarım */
         @media (max-width: 600px) {
             h2 {
                 font-size: 20px;
@@ -235,7 +227,7 @@
         <!-- Aktif Çekiliş -->
         <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
         <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
-        <button class="button">Çekilişe Katıl</button>
+        <button class="button" onclick="window.location.href='tasks.html'">Sende Katıl</button>
     </div>
 
     <!-- Menu Butonu -->
