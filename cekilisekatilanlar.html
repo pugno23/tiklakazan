@@ -8,13 +8,14 @@
 <body>
     <h2>Çekilişe Katılanlar</h2>
     <ul id="participants-list">
-        <!-- Katılımcıların e-mailleri buraya eklenecek -->
+        <!-- Katılımcıların isimleri buraya eklenecek -->
     </ul>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+        // Firebase Konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -28,36 +29,25 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Katılımcıları alıp, listeye ekleme fonksiyonu
         async function getParticipants() {
-            try {
-                // Firestore'dan participants koleksiyonuna erişim
-                const participantsCol = collection(db, "participants");
-                const participantSnapshot = await getDocs(participantsCol);
+            // Katılımcıların çekileceği koleksiyon
+            const participantsCol = collection(db, "participants");
+            const participantSnapshot = await getDocs(participantsCol);
+            const participantsList = participantSnapshot.docs.map(doc => doc.data());
 
-                // Katılımcıları al ve listeyi oluştur
-                const participantsList = participantSnapshot.docs.map(doc => doc.data());
+            // Debugging: Konsolda verileri kontrol et
+            console.log(participantsList);
 
-                console.log("Katılımcılar:", participantsList);  // Katılımcıların verisini kontrol et
-
-                // Katılımcıların listeleneceği alanı seç
-                const participantsContainer = document.getElementById("participants-list");
-                participantsContainer.innerHTML = "";  // Listeyi temizle
-
-                // Katılımcıları listeye ekle
-                participantsList.forEach(participant => {
-                    console.log("Katılımcı:", participant.email);  // Katılımcının e-mail adresini kontrol et
-                    const listItem = document.createElement("li");
-                    listItem.textContent = participant.email;  // Katılımcının e-mail adresini listeye ekle
-                    participantsContainer.appendChild(listItem);
-                });
-            } catch (error) {
-                console.error("Katılımcılar alınırken hata oluştu:", error);
-            }
+            // Katılımcıları listele
+            const participantsContainer = document.getElementById("participants-list");
+            participantsList.forEach(participant => {
+                const listItem = document.createElement("li");
+                listItem.textContent = participant.username; // 'username' alanını kullan
+                participantsContainer.appendChild(listItem);
+            });
         }
 
-        // Sayfa yüklendiğinde katılımcıları al
-        window.onload = getParticipants;
+        window.onload = getParticipants;  // Sayfa yüklendiğinde katılımcıları çek
     </script>
 </body>
 </html>
