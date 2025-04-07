@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çekilişe Katıl ve Katılımcıları Gör</title>
-    
+    <title>Çekilişe Katılanlar</title>
     <script type="module">
-        // Firebase SDK'larını içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         // Firebase yapılandırması
         const firebaseConfig = {
@@ -23,41 +19,20 @@
             measurementId: "G-YZ6MYCPK8G"
         };
 
-        // Firebase'i başlat
+        // Firebase başlatma
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const firestore = getFirestore(app);
-        const analytics = getAnalytics(app);
 
-        // Çekilişe katılım ekle
-        async function addParticipant() {
-            const user = auth.currentUser;
-            if (user) {
-                try {
-                    const userDocRef = await addDoc(collection(firestore, "participants"), {
-                        uid: user.uid,
-                        username: user.displayName, // Kullanıcı adını kullanıyoruz
-                        timestamp: new Date()
-                    });
-                    alert("Çekilişe Katıldınız!");
-                } catch (error) {
-                    console.error("Katılım eklenirken hata oluştu: ", error);
-                }
-            } else {
-                alert("Öncelikle giriş yapmanız gerekmektedir.");
-                window.location.href = "login.html";
-            }
-        }
-
-        // Katılımcıları listele
+        // Katılımcıları Yükleme Fonksiyonu
         async function loadParticipants() {
             const participantsList = document.getElementById("participants-list");
+            const q = query(collection(firestore, "participants"));
             try {
-                const querySnapshot = await getDocs(collection(firestore, "participants"));
+                const querySnapshot = await getDocs(q);
                 querySnapshot.forEach((doc) => {
                     const participant = doc.data();
                     const li = document.createElement("li");
-                    li.textContent = participant.username; // Kullanıcı adı
+                    li.textContent = participant.username;
                     participantsList.appendChild(li);
                 });
             } catch (error) {
@@ -65,55 +40,18 @@
             }
         }
 
-        // Kullanıcı durumu kontrolü
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = "login.html";
-            }
-        });
-
-        // Sayfa yüklendiğinde katılımcıları yükle
-        window.onload = loadParticipants;
-    </script>
-
-</head>
-<body>
-    <div>
-        <h2>Bu Hafta Şans Seninle Olabilir!</h2>
-        <p>Her hafta bir çekiliş.</p>
-        <p>Son katılım tarihi her Cuma 20:00'a kadar.</p>
-        <p>Görevleri tamamla, çekilişe katıl.</p>
-
-        <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
-        <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
-
-        <!-- Çekilişe Katıl Butonu -->
-        <button onclick="addParticipant()">Çekilişe Katıl</button>
-
-        <h2>Çekilişe Katılanlar</h2>
-        <ul id="participants-list">
-            <!-- Katılımcılar Burada Listelenecek -->
-        </ul>
-    </div>
-
-    <!-- Menü Butonu -->
-    <div class="menu-button" onclick="toggleMenu()">☰</div>
-
-    <!-- Menü -->
-    <div class="menu" id="menu">
-        <a href="#">Profilim</a>
-        <a href="#">Görevlerim</a>
-        <a href="#">Ayarlar</a>
-        <a href="#">Destek ve Yardım</a>
-        <a href="#">Sık Sorulan Sorular</a>
-        <a href="#">Canlı Destek</a>
-        <a href="#">Çekilişe Katılanlar</a>
-    </div>
-
-    <script>
-        function toggleMenu() {
-            document.getElementById("menu").classList.toggle("show");
+        // Sayfa Yüklendiğinde Katılımcıları Gösterme
+        window.onload = () => {
+            loadParticipants();
         }
     </script>
+</head>
+<body>
+
+    <h2>Çekilişe Katılanlar</h2>
+    <ul id="participants-list">
+        <!-- Katılımcılar Burada Listelenecek -->
+    </ul>
+
 </body>
 </html>
