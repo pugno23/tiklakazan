@@ -1,118 +1,50 @@
+<!-- cekiliseKatilanlar.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çekilişe Katılanlar</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  <meta charset="UTF-8" />
+  <title>Çekilişe Katılanlar</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
+    };
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        .user-list {
-            margin-top: 20px;
-            list-style-type: none;
-            padding: 0;
-        }
+    async function fetchParticipants() {
+      const snapshot = await getDocs(collection(db, "participants"));
+      const list = document.getElementById("userList");
+      list.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const li = document.createElement("li");
+        li.textContent = doc.data().username;
+        list.appendChild(li);
+      });
+    }
 
-        .user-list li {
-            padding: 10px;
-            background-color: #3498db;
-            color: white;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
+    window.addEventListener("DOMContentLoaded", fetchParticipants);
+  </script>
 
-        .user-list li:nth-child(even) {
-            background-color: #2980b9;
-        }
-
-        .back-button {
-            margin-top: 30px;
-            padding: 10px 20px;
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .back-button:hover {
-            background-color: #d35400;
-        }
-    </style>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    .container { background: white; padding: 30px; border-radius: 10px; max-width: 500px; margin: auto; }
+    li { padding: 10px; background: #3498db; color: white; margin: 5px 0; border-radius: 5px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Çekilişe Katılanlar</h2>
-        <ul class="user-list" id="userList">
-            <!-- Katılımcıların listesi burada görünecek -->
-        </ul>
-        <a href="index.html" class="back-button">Ana Sayfaya Dön</a>
-    </div>
-
-    <!-- Firebase SDK Bağlantısı -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-        // Firebase Konfigürasyonu
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-            authDomain: "cekilisveritabani.firebaseapp.com",
-            projectId: "cekilisveritabani",
-            storageBucket: "cekilisveritabani.firebasestorage.app",
-            messagingSenderId: "246236686196",
-            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-            measurementId: "G-YZ6MYCPK8G"
-        };
-
-        // Firebase'i başlat
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Katılımcıları Firestore'dan alıp listelemek için fonksiyon
-        async function fetchParticipants() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "participants"));
-                const userList = document.getElementById("userList");
-                userList.innerHTML = '';  // Listeyi temizle
-
-                // Katılımcıları listele
-                querySnapshot.forEach((doc) => {
-                    const username = doc.data().username;
-                    const listItem = document.createElement("li");
-                    listItem.textContent = username;
-                    userList.appendChild(listItem);
-                });
-            } catch (error) {
-                console.error("Katılımcılar alınırken hata oluştu: ", error);
-            }
-        }
-
-        // Sayfa yüklendiğinde katılımcıları listele
-        fetchParticipants();
-    </script>
+  <div class="container">
+    <h2>Çekilişe Katılanlar</h2>
+    <ul id="userList"></ul>
+    <a href="index.html">Ana Sayfaya Dön</a>
+  </div>
 </body>
 </html>
