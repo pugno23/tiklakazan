@@ -1,14 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Çekilişe Katılanlar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .user-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .user-list li {
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .user-list li:nth-child(even) {
+            background-color: #2980b9;
+        }
+
+        .back-button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Çekilişe Katılanlar</h2>
+        <ul class="user-list" id="userList">
+            <!-- Katılımcıların listesi burada görünecek -->
+        </ul>
+        <a href="index.html" class="back-button">Ana Sayfaya Dön</a>
+    </div>
+
+    <!-- Firebase SDK Bağlantısı -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        // Firebase yapılandırması
+        // Firebase Konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
             authDomain: "cekilisveritabani.firebaseapp.com",
@@ -19,39 +88,31 @@
             measurementId: "G-YZ6MYCPK8G"
         };
 
-        // Firebase başlatma
+        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
-        const firestore = getFirestore(app);
+        const db = getFirestore(app);
 
-        // Katılımcıları Yükleme Fonksiyonu
-        async function loadParticipants() {
-            const participantsList = document.getElementById("participants-list");
-            const q = query(collection(firestore, "participants"));
+        // Katılımcıları Firestore'dan alıp listelemek için fonksiyon
+        async function fetchParticipants() {
             try {
-                const querySnapshot = await getDocs(q);
+                const querySnapshot = await getDocs(collection(db, "participants"));
+                const userList = document.getElementById("userList");
+                userList.innerHTML = '';  // Listeyi temizle
+
+                // Katılımcıları listele
                 querySnapshot.forEach((doc) => {
-                    const participant = doc.data();
-                    const li = document.createElement("li");
-                    li.textContent = participant.username;
-                    participantsList.appendChild(li);
+                    const username = doc.data().username;
+                    const listItem = document.createElement("li");
+                    listItem.textContent = username;
+                    userList.appendChild(listItem);
                 });
             } catch (error) {
                 console.error("Katılımcılar alınırken hata oluştu: ", error);
             }
         }
 
-        // Sayfa Yüklendiğinde Katılımcıları Gösterme
-        window.onload = () => {
-            loadParticipants();
-        }
+        // Sayfa yüklendiğinde katılımcıları listele
+        fetchParticipants();
     </script>
-</head>
-<body>
-
-    <h2>Çekilişe Katılanlar</h2>
-    <ul id="participants-list">
-        <!-- Katılımcılar Burada Listelenecek -->
-    </ul>
-
 </body>
 </html>
