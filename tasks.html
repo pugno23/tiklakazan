@@ -1,102 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Görevler</title>
-  <style>
-    button {
-      padding: 10px;
-      margin: 10px;
-    }
-    .completed {
-      background-color: #c3ffc3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görevler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50;
+            transition: width 0.3s;
+        }
+
+        .task {
+            margin: 20px 0;
+        }
+
+        .task button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+
+        .task button:disabled {
+            background-color: #95a5a6;
+        }
+
+        #drawButton {
+            display: none;
+            margin-top: 30px;
+            background-color: #e67e22;
+        }
+    </style>
 </head>
 <body>
-  <h2>🔥 Görev Tamamlama Adımı: <span id="progress">0 / 3</span></h2>
-  <h3>👤 Kullanıcı Adınız: <input type="text" id="username" placeholder="örnek: kullanici123" /></h3>
+    <div class="container">
+        <h2>Görevleri Tamamla</h2>
 
-  <div>
-    <h4>✅ Görev 1: Bu butona 5 kez tıkla</h4>
-    <button onclick="handleClick(1)">Tıkla (Görev 1)</button>
-    <span id="count1">0 / 5</span>
-  </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
 
-  <div>
-    <h4>✅ Görev 2: Bu butona 3 kez tıkla</h4>
-    <button onclick="handleClick(2)">Tıkla (Görev 2)</button>
-    <span id="count2">0 / 3</span>
-  </div>
+        <div class="task">
+            <p>1. Görev: Butona 5 kere tıkla</p>
+            <button id="task1">Tıkla (0/5)</button>
+        </div>
 
-  <div>
-    <h4>✅ Görev 3: Bu butona 4 kez tıkla</h4>
-    <button onclick="handleClick(3)">Tıkla (Görev 3)</button>
-    <span id="count3">0 / 4</span>
-  </div>
+        <div class="task">
+            <p>2. Görev: Butona 3 kere tıkla</p>
+            <button id="task2">Tıkla (0/3)</button>
+        </div>
 
-  <div style="margin-top: 30px;">
-    <button id="joinButton" onclick="joinDraw()" disabled>🎁 Çekilişe Katıl</button>
-    <p id="statusMessage"></p>
-  </div>
+        <div class="task">
+            <p>3. Görev: Butona 4 kere tıkla</p>
+            <button id="task3">Tıkla (0/4)</button>
+        </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        <button id="drawButton" onclick="window.location.href='cekilise-katilanlar.html'">Çekilişe Katıl</button>
+    </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-      authDomain: "cekilisveritabani.firebaseapp.com",
-      projectId: "cekilisveritabani",
-      storageBucket: "cekilisveritabani.appspot.com",
-      messagingSenderId: "246236686196",
-      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
-    };
+    <script>
+        let task1Clicks = 0;
+        let task2Clicks = 0;
+        let task3Clicks = 0;
+        let completedTasks = 0;
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        const progress = document.getElementById("progress");
+        const task1Btn = document.getElementById("task1");
+        const task2Btn = document.getElementById("task2");
+        const task3Btn = document.getElementById("task3");
+        const drawBtn = document.getElementById("drawButton");
 
-    let clickCounts = { 1: 0, 2: 0, 3: 0 };
-    let goals = { 1: 5, 2: 3, 3: 4 };
-    let completedTasks = 0;
+        function updateProgress() {
+            const percentage = (completedTasks / 3) * 100;
+            progress.style.width = percentage + "%";
 
-    function handleClick(taskNumber) {
-      if (clickCounts[taskNumber] >= goals[taskNumber]) return;
+            if (completedTasks === 3) {
+                drawBtn.style.display = "block";
+            }
+        }
 
-      clickCounts[taskNumber]++;
-      document.getElementById(`count${taskNumber}`).textContent = `${clickCounts[taskNumber]} / ${goals[taskNumber]}`;
+        task1Btn.addEventListener("click", () => {
+            if (task1Clicks < 5) {
+                task1Clicks++;
+                task1Btn.textContent = `Tıkla (${task1Clicks}/5)`;
+            }
+            if (task1Clicks === 5) {
+                task1Btn.disabled = true;
+                completedTasks++;
+                updateProgress();
+            }
+        });
 
-      if (clickCounts[taskNumber] === goals[taskNumber]) {
-        completedTasks++;
-        document.querySelectorAll("button")[taskNumber].classList.add("completed");
-        updateProgress();
-      }
-    }
+        task2Btn.addEventListener("click", () => {
+            if (task2Clicks < 3) {
+                task2Clicks++;
+                task2Btn.textContent = `Tıkla (${task2Clicks}/3)`;
+            }
+            if (task2Clicks === 3) {
+                task2Btn.disabled = true;
+                completedTasks++;
+                updateProgress();
+            }
+        });
 
-    function updateProgress() {
-      document.getElementById("progress").textContent = `${completedTasks} / 3`;
-      if (completedTasks === 3) {
-        document.getElementById("joinButton").disabled = false;
-      }
-    }
-
-    async function joinDraw() {
-      const username = document.getElementById("username").value.trim();
-      if (!username) {
-        alert("Lütfen kullanıcı adınızı girin.");
-        return;
-      }
-
-      const userRef = doc(db, "drawParticipants", username);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) {
-        await setDoc(userRef, { username: username, joinedAt: new Date() });
-        document.getElementById("statusMessage").textContent = "🎉 Çekilişe başarıyla katıldınız!";
-      } else {
-        document.getElementById("statusMessage").textContent = "❗ Zaten çekilişe katıldınız.";
-      }
-    }
-  </script>
+        task3Btn.addEventListener("click", () => {
+            if (task3Clicks < 4) {
+                task3Clicks++;
+                task3Btn.textContent = `Tıkla (${task3Clicks}/4)`;
+            }
+            if (task3Clicks === 4) {
+                task3Btn.disabled = true;
+                completedTasks++;
+                updateProgress();
+            }
+        });
+    </script>
 </body>
 </html>
