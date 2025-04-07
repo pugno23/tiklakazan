@@ -1,87 +1,246 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Çekilişe Katılanlar</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çekilişe Katıl ve Katılımcılar</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-      authDomain: "cekilisveritabani.firebaseapp.com",
-      projectId: "cekilisveritabani",
-      storageBucket: "cekilisveritabani.firebasestorage.app",
-      messagingSenderId: "246236686196",
-      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-      measurementId: "G-YZ6MYCPK8G"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+            authDomain: "cekilisveritabani.firebaseapp.com",
+            projectId: "cekilisveritabani",
+            storageBucket: "cekilisveritabani.firebasestorage.app",
+            messagingSenderId: "246236686196",
+            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+            measurementId: "G-YZ6MYCPK8G"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
 
-    async function loadParticipants() {
-      const participantsRef = collection(db, "participants");
-      const snapshot = await getDocs(participantsRef);
-      const list = document.getElementById("user-list");
-      const total = document.getElementById("total-count");
+        // Kullanıcı giriş kontrolü
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const username = userDoc.data().username;
+                        document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
+                    } else {
+                        alert("Kullanıcı veritabanında bulunamadı.");
+                        window.location.href = "signup.html";
+                    }
+                } catch (err) {
+                    alert("Bir hata oluştu: " + err.message);
+                    window.location.href = "login.html";
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        });
 
-      let count = 0;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (data.username) {
-          const li = document.createElement("li");
-          li.textContent = data.username;
-          list.appendChild(li);
-          count++;
+        // Çekilişe Katılma Fonksiyonu
+        async function addParticipant() {
+            const user = auth.currentUser;
+            if (user) {
+                const participantsRef = collection(firestore, "participants");
+                await setDoc(doc(participantsRef), {
+                    uid: user.uid,
+                    username: user.displayName || user.email,  // Kullanıcı adı veya e-posta
+                    timestamp: Timestamp.now()
+                }).then(() => {
+                    alert("Çekilişe katıldınız!");
+                    fetchParticipants();  // Katılımcıları tekrar çek ve güncelle
+                }).catch((error) => {
+                    console.error("Hata oluştu: ", error);
+                });
+            } else {
+                alert("Lütfen giriş yapın.");
+            }
         }
-      });
 
-      total.textContent = `Toplam Katılımcı: ${count}`;
-    }
+        // Çekilişe Katılanları Listeleme
+        async function fetchParticipants() {
+            const participantsRef = collection(firestore, "participants");
+            const querySnapshot = await getDocs(participantsRef);
+            const participantsList = document.getElementById("participants-list");
+            participantsList.innerHTML = '';  // Listeyi temizle
 
-    window.onload = loadParticipants;
-  </script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
+            querySnapshot.forEach((doc) => {
+                const participant = doc.data();
+                const listItem = document.createElement("li");
+                listItem.textContent = `Kullanıcı Adı: ${participant.username} - Katılma Zamanı: ${participant.timestamp.toDate()}`;
+                participantsList.appendChild(listItem);
+            });
+        }
 
-    h1 {
-      color: #2c3e50;
-    }
+        // Sayfa yüklendiğinde katılımcıları listele
+        window.onload = function() {
+            fetchParticipants();
+        };
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    #total-count {
-      font-size: 18px;
-      color: #3498db;
-      margin: 10px 0 20px;
-    }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
 
-    ul {
-      list-style-type: none;
-      padding: 0;
-      max-width: 400px;
-      margin: 0 auto;
-      text-align: left;
-    }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 20px;
+            max-width: 100%;
+            width: 100%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            box-sizing: border-box;
+        }
 
-    li {
-      background: white;
-      margin-bottom: 10px;
-      padding: 12px 16px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-  </style>
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .menu {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background-color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            border-radius: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #3498db;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .menu a:hover {
+            color: #2980b9;
+        }
+
+        .menu.show {
+            display: flex;
+        }
+
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 15px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .button {
+                width: 100%;
+                padding: 12px 0;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Çekilişe Katılanlar</h1>
-  <div id="total-count">Yükleniyor...</div>
-  <ul id="user-list"></ul>
+    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+
+    <!-- Görevler ve Çekiliş Katılım -->
+    <div class="container">
+        <h2>Bu Hafta Şans Seninle Olabilir!</h2>
+        <p>Her hafta bir çekiliş.</p>
+        <p>Son katılım tarihi her Cuma 20:00'a kadar.</p>
+        <p>Görevleri tamamla çekilişe katıl.</p>
+        <p>Bu hafta şans seninle olabilir!</p>
+        
+        <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
+        <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
+        
+        <!-- Çekilişe Katıl Butonu -->
+        <button class="button" onclick="addParticipant()">Çekilişe Katıl</button>
+
+        <h2>Çekilişe Katılanlar</h2>
+        <ul id="participants-list">
+            <!-- Katılımcılar Burada Listelenecek -->
+        </ul>
+    </div>
+
+    <!-- Menü Butonu -->
+    <div class="menu-button" onclick="toggleMenu()">☰</div>
+
+    <!-- Menü -->
+    <div class="menu" id="menu">
+        <a href="#">Profilim</a>
+        <a href="#">Görevlerim</a>
+        <a href="#">Ayarlar</a>
+        <a href="#">Destek ve Yardım</a>
+        <a href="#">Sık Sorulan Sorular</a>
+        <a href="#">Canlı Destek</a>
+        <a href="#">Çekilişe Katılanlar</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("menu").classList.toggle("show");
+        }
+    </script>
 </body>
 </html>
