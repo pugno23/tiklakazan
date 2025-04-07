@@ -1,4 +1,3 @@
-<!-- tasks.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -66,6 +65,13 @@
       const btn3 = document.getElementById("task3");
       const progress = document.getElementById("progress");
       const drawBtn = document.getElementById("drawButton");
+      const linkContainer = document.getElementById("dynamicLink");
+
+      if (currentUser) {
+        const userId = currentUser.displayName || currentUser.email || currentUser.uid;
+        const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${encodeURIComponent(userId)}`;
+        linkContainer.innerHTML = `<a href="${surveyLink}" target="_blank">Anketi Tamamla</a>`;
+      }
 
       function updateProgress() {
         const percent = (completedTasks / 3) * 100;
@@ -102,7 +108,6 @@
 
       drawBtn.addEventListener("click", async () => {
         if (!currentUser) return alert("Lütfen giriş yapın.");
-
         const username = currentUser.displayName || currentUser.email || currentUser.uid;
         await addUserToFirestore(username);
         window.location.href = "cekiliseKatilanlar.html";
@@ -163,7 +168,7 @@
     <h2>Görevleri Tamamla</h2>
     <div class="progress-bar"><div class="progress" id="progress"></div></div>
     <div class="task">
-      <p>1. Görev: <a href="https://www.theoremreach.com/survey" target="_blank">Anketi Tamamla</a></p>
+      <p>1. Görev: <span id="dynamicLink"></span></p>
       <button id="task1">Görevi Tamamla</button>
     </div>
     <div class="task"><p>2. Görev</p><button id="task2">Tıkla (0/3)</button></div>
