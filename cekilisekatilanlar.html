@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Çekilişe Katılanlar</title>
+</head>
+<body>
+  <h2>🎁 Çekilişe Katılanlar</h2>
+  <ul id="participantList"></ul>
+  <p id="totalCount"></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.appspot.com",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadParticipants() {
+      const querySnapshot = await getDocs(collection(db, "drawParticipants"));
+      const list = document.getElementById("participantList");
+      let count = 0;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `👤 ${data.username}`;
+        list.appendChild(li);
+        count++;
+      });
+
+      document.getElementById("totalCount").textContent = `Toplam Katılımcı: ${count}`;
+    }
+
+    loadParticipants();
+  </script>
+</body>
+</html>
