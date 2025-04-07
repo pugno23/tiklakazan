@@ -69,7 +69,7 @@
 
       if (currentUser) {
         const userId = currentUser.displayName || currentUser.email || currentUser.uid;
-        const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${encodeURIComponent(userId)}`;
+        const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${encodeURIComponent(userId)}&transaction_id=${encodeURIComponent(userId)}`;
         linkContainer.innerHTML = `<a href="${surveyLink}" target="_blank">Anketi Tamamla</a>`;
       }
 
