@@ -1,4 +1,3 @@
-<!-- tasks.html -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -112,7 +111,8 @@
 
         const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${userId}&transaction_id=${transactionId}`;
         
-        window.open(surveyLink, "_blank"); // Yeni sekmede anket açılır
+        // Yeni sekmede anketi açma
+        window.open(surveyLink, "_blank"); 
       });
     });
   </script>
@@ -170,12 +170,26 @@
     <h2>Görevleri Tamamla</h2>
     <div class="progress-bar"><div class="progress" id="progress"></div></div>
     <div class="task">
-      <p>1. Görev: <a href="https://www.theoremreach.com/survey" target="_blank">Anketi Tamamla</a></p>
+      <p>1. Görev: <a href="javascript:void(0);" onclick="startSurvey()">Anketi Tamamla</a></p>
       <button id="task1">Görevi Tamamla</button>
     </div>
     <div class="task"><p>2. Görev</p><button id="task2">Tıkla (0/3)</button></div>
     <div class="task"><p>3. Görev</p><button id="task3">Tıkla (0/4)</button></div>
     <button id="drawButton">Çekilişe Katıl</button>
   </div>
+
+  <script>
+    function startSurvey() {
+      if (!currentUser) return alert("Lütfen giriş yapın.");
+
+      const transactionId = new Date().getTime(); // Benzersiz işlem kimliği
+      const userId = currentUser.uid; // Kullanıcı kimliği
+
+      const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${userId}&transaction_id=${transactionId}`;
+      
+      // Yeni sekmede anketi açma
+      window.open(surveyLink, "_blank");
+    }
+  </script>
 </body>
 </html>
