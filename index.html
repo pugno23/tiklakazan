@@ -2,149 +2,26 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=dashboard.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Authentication Örneği</title>
+    <title>Yönlendiriliyor...</title>
     <style>
-        .auth-widget {
-            background-color: #f4f4f4;
-            border-radius: 8px;
-            padding: 20px;
-            width: 300px;
-            margin: 50px auto;
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            background-color: #f0f0f0;
+            color: #333;
         }
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            cursor: pointer;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .output {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #ddd;
-        }
-        #user-info {
-            display: none;
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="auth-widget">
-        <button id="open-login">Giriş Yap</button>
-        <button id="open-signup">Kayıt Ol</button>
-        <button id="logout" style="display:none;">Çıkış Yap</button>
- 
-        <div class="output" id="user-info" style="display:none;">
-            <h3>Kullanıcı Bilgileri:</h3>
-            <p id="user-name">Ad: Bilgi yükleniyor...</p>
-            <p id="user-email">E-posta: Bilgi yükleniyor...</p>
-        </div>
-    </div>
- 
-    <!-- Firebase SDK Bağlantıları -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
- 
-    <script>
-        // Firebase Web App Konfigürasyonu
-        const firebaseConfig = {
-          apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-          authDomain: "cekilisveritabani.firebaseapp.com",
-          projectId: "cekilisveritabani",
-          storageBucket: "cekilisveritabani.firebasestorage.app",
-          messagingSenderId: "246236686196",
-          appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-          measurementId: "G-YZ6MYCPK8G"
-        };
- 
-        // Firebase'i başlat
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
- 
-        // Kullanıcıyı doğrulama ve yönetme işlemleri
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log("Giriş yapan kullanıcı:", user);
-                document.getElementById('user-info').style.display = 'block';
-                document.getElementById('user-info').innerHTML = `
-                    <h3>Kullanıcı Bilgileri:</h3>
-                    <p id="user-name">Ad: ${user.displayName || 'Bilgi bulunamadı'}</p>
-                    <p id="user-email">E-posta: ${user.email || 'Bilgi bulunamadı'}</p>
-                `;
-                document.getElementById('logout').style.display = 'inline-block';
-                document.getElementById('open-login').style.display = 'none';
-                document.getElementById('open-signup').style.display = 'none';
- 
-                // Kullanıcı bilgilerini Firestore'dan alıp gösterme
-                db.collection("users").doc(user.uid).get()
-                    .then(doc => {
-                        if (doc.exists) {
-                            const userData = doc.data();
-                            document.getElementById('user-name').textContent = `Ad: ${userData.full_name || 'Bilgi bulunamadı'}`;
-                            document.getElementById('user-email').textContent = `E-posta: ${userData.email || 'Bilgi bulunamadı'}`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Veri çekme hatası:", error);
-                    });
-            } else {
-                console.log("Kullanıcı giriş yapmamış.");
-                document.getElementById('user-info').style.display = 'none';
-                document.getElementById('logout').style.display = 'none';
-                document.getElementById('open-login').style.display = 'inline-block';
-                document.getElementById('open-signup').style.display = 'inline-block';
-            }
-        });
- 
-        // Kullanıcı kaydı
-        document.getElementById('open-signup').addEventListener('click', () => {
-            const email = prompt("Email adresinizi girin:");
-            const password = prompt("Şifrenizi girin:");
- 
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    console.log("Kayıt başarılı:", userCredential.user);
-                    // Kullanıcı kaydını Firestore'a kaydedebiliriz
-                    db.collection("users").doc(userCredential.user.uid).set({
-                        email: email,
-                        full_name: prompt("Adınızı girin:")
-                    });
-                })
-                .catch((error) => {
-                    console.error("Kayıt hatası:", error.message);
-                });
-        });
- 
-        // Kullanıcı girişi
-        document.getElementById('open-login').addEventListener('click', () => {
-            const email = prompt("Email adresinizi girin:");
-            const password = prompt("Şifrenizi girin:");
- 
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    console.log("Giriş başarılı:", userCredential.user);
-                })
-                .catch((error) => {
-                    console.error("Giriş hatası:", error.message);
-                });
-        });
- 
-        // Çıkış yapma
-        document.getElementById('logout').addEventListener('click', () => {
-            auth.signOut().then(() => {
-                console.log("Çıkış yapıldı.");
-            }).catch((error) => {
-                console.error("Çıkış hatası:", error.message);
-            });
-        });
-    </script>
+    <h2>Yönlendiriliyorsunuz...</h2>
+    <p>Eğer yönlendirilmezseniz <a href="dashboard.html">buraya tıklayın</a>.</p>
 </body>
 </html>
