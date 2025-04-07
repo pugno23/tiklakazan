@@ -1,53 +1,42 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çekilişe Katılanlar</title>
+  <meta charset="UTF-8">
+  <title>Çekilişe Katılanlar</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function getParticipants() {
+      const participantsCol = collection(db, "participants");
+      const participantSnapshot = await getDocs(participantsCol);
+      const participantsList = participantSnapshot.docs.map(doc => doc.data());
+
+      const participantsContainer = document.getElementById("participants-list");
+      participantsList.forEach(participant => {
+        const listItem = document.createElement("li");
+        listItem.textContent = participant.username; // Kullanıcı adı görünsün
+        participantsContainer.appendChild(listItem);
+      });
+    }
+
+    window.onload = getParticipants;
+  </script>
 </head>
 <body>
-    <h2>Çekilişe Katılanlar</h2>
-    <ul id="participants-list">
-        <!-- Katılımcıların isimleri buraya eklenecek -->
-    </ul>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-        // Firebase Konfigürasyonu
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-            authDomain: "cekilisveritabani.firebaseapp.com",
-            projectId: "cekilisveritabani",
-            storageBucket: "cekilisveritabani.firebasestorage.app",
-            messagingSenderId: "246236686196",
-            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-            measurementId: "G-YZ6MYCPK8G"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        async function getParticipants() {
-            // Katılımcıların çekileceği koleksiyon
-            const participantsCol = collection(db, "participants");
-            const participantSnapshot = await getDocs(participantsCol);
-            const participantsList = participantSnapshot.docs.map(doc => doc.data());
-
-            // Debugging: Konsolda verileri kontrol et
-            console.log(participantsList);
-
-            // Katılımcıları listele
-            const participantsContainer = document.getElementById("participants-list");
-            participantsList.forEach(participant => {
-                const listItem = document.createElement("li");
-                listItem.textContent = participant.username; // 'username' alanını kullan
-                participantsContainer.appendChild(listItem);
-            });
-        }
-
-        window.onload = getParticipants;  // Sayfa yüklendiğinde katılımcıları çek
-    </script>
+  <h2>Çekilişe Katılanlar</h2>
+  <ul id="participants-list"></ul>
 </body>
 </html>
