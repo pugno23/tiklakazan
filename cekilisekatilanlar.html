@@ -5,7 +5,7 @@
   <title>Çekilişe Katılanlar</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplxw",
@@ -19,37 +19,79 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function getParticipants() {
-      const q = query(collection(db, "participants"), orderBy("timestamp", "desc"));
-      const querySnapshot = await getDocs(q);
+    let participants = [];
 
-      const listElement = document.getElementById("participantList");
-      const countElement = document.getElementById("totalCount");
-      let count = 0;
+    async function fetchParticipants() {
+      const querySnapshot = await getDocs(collection(db, "participants"));
+      participants = [];
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const username = data.username;
         const timestamp = data.timestamp?.toDate();
+        const username = data.username;
 
-        if (username && username.trim() !== "") {
-          const li = document.createElement("li");
-
-          // Tarih formatı: GG.AA.YYYY - SS:DD
-          const dateStr = timestamp
-            ? `${timestamp.getDate().toString().padStart(2, '0')}.${(timestamp.getMonth()+1).toString().padStart(2, '0')}.${timestamp.getFullYear()} - ${timestamp.getHours().toString().padStart(2, '0')}:${timestamp.getMinutes().toString().padStart(2, '0')}`
-            : "Tarih yok";
-
-          li.textContent = `${username} (${dateStr})`;
-          listElement.appendChild(li);
-          count++;
+        if (username) {
+          participants.push({
+            username,
+            timestamp,
+          });
         }
       });
 
-      countElement.textContent = count;
+      renderParticipants();
     }
 
-    window.addEventListener("DOMContentLoaded", getParticipants);
+    function formatDate(date) {
+      if (!date) return "Tarih yok";
+      return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()} - ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    function renderParticipants() {
+      const searchValue = document.getElementById("search").value.toLowerCase();
+      const sortValue = document.getElementById("sort").value;
+      const listElement = document.getElementById("participantList");
+      const countElement = document.getElementById("totalCount");
+
+      let filtered = participants.filter(p => p.username.toLowerCase().includes(searchValue));
+
+      // Sıralama
+      filtered.sort((a, b) => {
+        if (sortValue === "newest") return b.timestamp - a.timestamp;
+        if (sortValue === "oldest") return a.timestamp - b.timestamp;
+        if (sortValue === "az") return a.username.localeCompare(b.username);
+        if (sortValue === "za") return b.username.localeCompare(a.username);
+        return 0;
+      });
+
+      listElement.innerHTML = "";
+      filtered.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `${p.username} (${formatDate(p.timestamp)})`;
+        listElement.appendChild(li);
+      });
+
+      countElement.textContent = filtered.length;
+    }
+
+    function downloadCSV() {
+      let csv = "Kullanıcı Adı,Tarih/Saat\n";
+      participants.forEach(p => {
+        csv += `"${p.username}","${formatDate(p.timestamp)}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "cekilise_katilanlar.csv";
+      link.click();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      fetchParticipants();
+      document.getElementById("search").addEventListener("input", renderParticipants);
+      document.getElementById("sort").addEventListener("change", renderParticipants);
+      document.getElementById("downloadCSV").addEventListener("click", downloadCSV);
+    });
   </script>
 
   <style>
@@ -61,7 +103,7 @@
     .container {
       background: white;
       padding: 30px;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -69,6 +111,8 @@
     ul {
       list-style-type: none;
       padding-left: 0;
+      max-height: 300px;
+      overflow-y: auto;
     }
     li {
       padding: 8px;
@@ -77,16 +121,43 @@
     h2 {
       margin-bottom: 10px;
     }
+    .top-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    input, select, button {
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
     .count {
       margin-top: 15px;
       font-weight: bold;
       color: #2c3e50;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Çekilişe Katılanlar</h2>
+    <div class="top-controls">
+      <input type="text" id="search" placeholder="İsim ara...">
+      <select id="sort">
+        <option value="newest">Katılma Tarihi (En Yeni)</option>
+        <option value="oldest">Katılma Tarihi (En Eski)</option>
+        <option value="az">A'dan Z'ye</option>
+        <option value="za">Z'den A'ya</option>
+      </select>
+      <button id="downloadCSV">CSV İndir</button>
+    </div>
     <ul id="participantList"></ul>
     <div class="count">Toplam Katılımcı: <span id="totalCount">0</span></div>
   </div>
