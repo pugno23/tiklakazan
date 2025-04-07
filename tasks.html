@@ -57,19 +57,20 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      let task1 = 0, task2 = 0, task3 = 0;
+      let task1 = 0, task2 = 0, task3 = 0, task4 = 0;
       let completedTasks = 0;
 
       const btn1 = document.getElementById("task1");
       const btn2 = document.getElementById("task2");
       const btn3 = document.getElementById("task3");
+      const btn4 = document.getElementById("task4");  // Yeni buton (Anketi Tamamla)
       const progress = document.getElementById("progress");
       const drawBtn = document.getElementById("drawButton");
 
       function updateProgress() {
-        const percent = (completedTasks / 3) * 100;
+        const percent = (completedTasks / 4) * 100;  // 4 göreve göre güncelleme
         progress.style.width = percent + "%";
-        if (completedTasks === 3) drawBtn.style.display = "block";
+        if (completedTasks === 4) drawBtn.style.display = "block";
       }
 
       btn1.addEventListener("click", () => {
@@ -99,20 +100,17 @@
         }
       });
 
+      // Yeni görev (Anket Tamamla)
+      btn4.addEventListener("click", () => {
+        window.location.href = "https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=" + currentUser.uid + "&transaction_id=" + new Date().getTime(); // Kullanıcıyı ankete yönlendirme
+      });
+
       drawBtn.addEventListener("click", async () => {
         if (!currentUser) return alert("Lütfen giriş yapın.");
 
         const username = currentUser.displayName || currentUser.email || currentUser.uid;
         await addUserToFirestore(username);
-
-        // TheoremReach bağlantısını oluşturma
-        const transactionId = new Date().getTime(); // Benzersiz işlem kimliği
-        const userId = currentUser.uid; // Kullanıcı kimliği
-
-        const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${userId}&transaction_id=${transactionId}`;
-        
-        // Yeni sekmede anketi açma
-        window.open(surveyLink, "_blank"); 
+        window.location.href = "cekiliseKatilanlar.html";
       });
     });
   </script>
@@ -169,27 +167,11 @@
   <div class="container">
     <h2>Görevleri Tamamla</h2>
     <div class="progress-bar"><div class="progress" id="progress"></div></div>
-    <div class="task">
-      <p>1. Görev: <a href="javascript:void(0);" onclick="startSurvey()">Anketi Tamamla</a></p>
-      <button id="task1">Görevi Tamamla</button>
-    </div>
+    <div class="task"><p>1. Görev</p><button id="task1">Tıkla (0/5)</button></div>
     <div class="task"><p>2. Görev</p><button id="task2">Tıkla (0/3)</button></div>
     <div class="task"><p>3. Görev</p><button id="task3">Tıkla (0/4)</button></div>
+    <div class="task"><p>4. Görev: Anketi Tamamla</p><button id="task4">Anketi Tamamla</button></div> <!-- Yeni görev -->
     <button id="drawButton">Çekilişe Katıl</button>
   </div>
-
-  <script>
-    function startSurvey() {
-      if (!currentUser) return alert("Lütfen giriş yapın.");
-
-      const transactionId = new Date().getTime(); // Benzersiz işlem kimliği
-      const userId = currentUser.uid; // Kullanıcı kimliği
-
-      const surveyLink = `https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=${userId}&transaction_id=${transactionId}`;
-      
-      // Yeni sekmede anketi açma
-      window.open(surveyLink, "_blank");
-    }
-  </script>
 </body>
 </html>
