@@ -100,7 +100,41 @@
         <button id="drawButton" onclick="window.location.href='cekilisekatilanlar.html'">Çekilişe Katıl</button>
     </div>
 
-    <script>
+    <!-- Firebase SDK Bağlantısı -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        // Firebase Konfigürasyonu
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+            authDomain: "cekilisveritabani.firebaseapp.com",
+            projectId: "cekilisveritabani",
+            storageBucket: "cekilisveritabani.firebasestorage.app",
+            messagingSenderId: "246236686196",
+            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+            measurementId: "G-YZ6MYCPK8G"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Katılım kaydını Firestore'a ekleyen fonksiyon
+        async function addUserToFirestore(username) {
+            try {
+                // Firestore'a katılım kaydını ekleme
+                const userRef = doc(db, "participants", username);  // Belge ID'si olarak username kullanılıyor
+                await setDoc(userRef, {
+                    username: username,        // Kullanıcı adı
+                    timestamp: serverTimestamp() // Katılım zamanı
+                });
+                console.log(`${username} çekilişe katıldı!`);
+            } catch (error) {
+                console.error("Veri eklerken hata oluştu: ", error);
+            }
+        }
+
         let task1Clicks = 0;
         let task2Clicks = 0;
         let task3Clicks = 0;
@@ -117,10 +151,11 @@
             progress.style.width = percentage + "%";
 
             if (completedTasks === 3) {
-                drawBtn.style.display = "block";
+                drawBtn.style.display = "block";  // Çekilişe katıl butonunu göster
             }
         }
 
+        // Görev 1
         task1Btn.addEventListener("click", () => {
             if (task1Clicks < 5) {
                 task1Clicks++;
@@ -133,6 +168,7 @@
             }
         });
 
+        // Görev 2
         task2Btn.addEventListener("click", () => {
             if (task2Clicks < 3) {
                 task2Clicks++;
@@ -145,6 +181,7 @@
             }
         });
 
+        // Görev 3
         task3Btn.addEventListener("click", () => {
             if (task3Clicks < 4) {
                 task3Clicks++;
@@ -155,6 +192,13 @@
                 completedTasks++;
                 updateProgress();
             }
+        });
+
+        // Çekilişe katıl butonuna tıklama
+        drawBtn.addEventListener("click", () => {
+            const username = "user1_ad";  // Burada örnek olarak 'user1_ad' kullanıyoruz, bunu dinamik yapabilirsiniz.
+            addUserToFirestore(username);  // Firestore'a katılım kaydını ekle
+            window.location.href = 'cekilisekatilanlar.html';  // Çekilişe katılanlar sayfasına yönlendir
         });
     </script>
 </body>
