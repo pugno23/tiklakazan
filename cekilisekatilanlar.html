@@ -37,13 +37,16 @@
 
                 // Katılımcıları al ve listeyi oluştur
                 const participantsList = participantSnapshot.docs.map(doc => doc.data());
-                
+
+                console.log("Katılımcılar:", participantsList);  // Katılımcıların verisini kontrol et
+
                 // Katılımcıların listeleneceği alanı seç
                 const participantsContainer = document.getElementById("participants-list");
                 participantsContainer.innerHTML = "";  // Listeyi temizle
 
                 // Katılımcıları listeye ekle
                 participantsList.forEach(participant => {
+                    console.log("Katılımcı:", participant.email);  // Katılımcının e-mail adresini kontrol et
                     const listItem = document.createElement("li");
                     listItem.textContent = participant.email;  // Katılımcının e-mail adresini listeye ekle
                     participantsContainer.appendChild(listItem);
