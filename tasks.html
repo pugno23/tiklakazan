@@ -37,7 +37,7 @@
     });
 
     async function checkAlreadyParticipated(user) {
-      const username = user.displayName || user.username || user.uid;
+      const username = user.displayName || user.email || user.uid;
       const userRef = doc(db, "participants", username);
       const docSnap = await getDoc(userRef);
 
@@ -149,7 +149,7 @@
       }
 
       drawBtn.addEventListener("click", async () => {
-        const username = currentUser.displayName || currentUser.username || currentUser.uid;
+        const username = currentUser.displayName || currentUser.email || currentUser.uid;
         await setDoc(doc(db, "participants", username), {
           username: username,
           timestamp: serverTimestamp()
