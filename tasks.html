@@ -37,7 +37,7 @@
     });
 
     async function checkAlreadyParticipated(user) {
-      const username = user.displayName; // Sadece kullanıcı adı alınacak
+      const username = user.displayName; // sadece displayName kullanıldı
       const userRef = doc(db, "participants", username);
       const docSnap = await getDoc(userRef);
 
@@ -149,7 +149,7 @@
       }
 
       drawBtn.addEventListener("click", async () => {
-        const username = currentUser.displayName; // Sadece kullanıcı adı alınacak
+        const username = currentUser.displayName; // sadece displayName kullanıldı
         await setDoc(doc(db, "participants", username), {
           username: username,
           timestamp: serverTimestamp()
