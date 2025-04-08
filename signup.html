@@ -47,13 +47,13 @@
           // 'users' koleksiyonuna kullanıcı bilgilerini kaydediyoruz
           await setDoc(doc(firestore, "users", user.uid), {
             email: email,
-            username: username
+            username: username // Burada kullanıcı adı kaydediliyor
           });
 
           // 'participants' koleksiyonuna kullanıcı adı ve timestamp dahil olmak üzere kayıt ediyoruz
           await setDoc(doc(firestore, "participants", user.uid), {
             email: email,
-            username: username,  // Kullanıcı adı
+            username: username,  // Doğru bir şekilde kullanıcı adı ekleniyor
             timestamp: new Date(),  // Katılım zamanı
             tasks: [],  // Başlangıçta boş bir görev listesi
             completedAt: null,  // Başlangıçta tamamlanmış görev yok
