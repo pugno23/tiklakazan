@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Görevler</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -23,10 +25,11 @@
     const auth = getAuth(app);
     let currentUser = null;
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
-        checkAlreadyParticipated(user);
+        await checkTaskStatus();
+        await checkAlreadyParticipated(user);
       } else {
         alert("Lütfen giriş yapın.");
         window.location.href = "login.html";
@@ -39,78 +42,125 @@
       const docSnap = await getDoc(userRef);
 
       if (docSnap.exists()) {
-        document.getElementById("drawButton").disabled = true;
-        document.getElementById("drawButton").innerText = "Zaten Katıldınız!";
+        const drawBtn = document.getElementById("drawButton");
+        drawBtn.disabled = true;
+        drawBtn.innerText = "Zaten Katıldınız!";
       }
     }
 
-    async function addUserToFirestore(username) {
-      try {
-        const userRef = doc(db, "participants", username);
-        await setDoc(userRef, {
+    async function updateTask(uid, taskName) {
+      const userRef = doc(db, "users", uid);
+      await setDoc(userRef, {
+        [taskName]: true,
+        timestamp: serverTimestamp()
+      }, { merge: true });
+    }
+
+    async function checkTaskStatus() {
+      const uid = currentUser.uid;
+      const userRef = doc(db, "users", uid);
+      const docSnap = await getDoc(userRef);
+      let completedTasks = 0;
+
+      const taskStates = {
+        task1: false,
+        task2: false,
+        task3: false,
+        task4: false
+      };
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        for (let task in taskStates) {
+          if (data[task]) {
+            taskStates[task] = true;
+            document.getElementById(task).disabled = true;
+            if (task === "task3") {
+              document.getElementById(task).innerText = "Tamamlandı";
+            }
+            completedTasks++;
+          }
+        }
+      }
+
+      updateProgressBar(completedTasks);
+
+      if (completedTasks === 4) {
+        document.getElementById("drawButton").style.display = "block";
+      }
+
+      setupButtons(taskStates, completedTasks);
+    }
+
+    function updateProgressBar(completed) {
+      const progress = document.getElementById("progress");
+      progress.style.width = (completed / 4) * 100 + "%";
+    }
+
+    function setupButtons(taskStates, completedTasks) {
+      const drawBtn = document.getElementById("drawButton");
+
+      const task1Btn = document.getElementById("task1");
+      if (!taskStates.task1) {
+        task1Btn.addEventListener("click", async () => {
+          window.open("https://gamehag.com/r/6W9MRJCS", "_blank");
+          task1Btn.disabled = true;
+          await updateTask(currentUser.uid, "task1");
+          updateProgressBar(++completedTasks);
+          if (completedTasks === 4) drawBtn.style.display = "block";
+        });
+      }
+
+      const task2Btn = document.getElementById("task2");
+      if (!taskStates.task2) {
+        task2Btn.addEventListener("click", async () => {
+          window.open("https://www.exoclick.com/signup/?login=pugno", "_blank");
+          task2Btn.disabled = true;
+          await updateTask(currentUser.uid, "task2");
+          updateProgressBar(++completedTasks);
+          if (completedTasks === 4) drawBtn.style.display = "block";
+        });
+      }
+
+      const task3Btn = document.getElementById("task3");
+      let task3Count = 0;
+      if (!taskStates.task3) {
+        task3Btn.addEventListener("click", async () => {
+          task3Count++;
+          task3Btn.textContent = `Tıkla (${task3Count}/4)`;
+          if (task3Count >= 4) {
+            task3Btn.disabled = true;
+            task3Btn.textContent = "Tamamlandı";
+            await updateTask(currentUser.uid, "task3");
+            updateProgressBar(++completedTasks);
+            if (completedTasks === 4) drawBtn.style.display = "block";
+          }
+        });
+      }
+
+      const task4Btn = document.getElementById("task4");
+      if (!taskStates.task4) {
+        task4Btn.addEventListener("click", async () => {
+          window.location.href =
+            "https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=" +
+            currentUser.uid + "&transaction_id=" + new Date().getTime();
+          await updateTask(currentUser.uid, "task4");
+        });
+      }
+
+      drawBtn.addEventListener("click", async () => {
+        const username = currentUser.displayName || currentUser.email || currentUser.uid;
+        await setDoc(doc(db, "participants", username), {
           username: username,
           timestamp: serverTimestamp()
         });
-        console.log("Katılım kaydedildi:", username);
-      } catch (err) {
-        console.error("Kayıt hatası:", err);
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      let task1 = 0, task2 = 0, task3 = 0, task4 = 0;
-      let completedTasks = 0;
-
-      const btn1 = document.getElementById("task1");
-      const btn2 = document.getElementById("task2");
-      const btn3 = document.getElementById("task3");
-      const btn4 = document.getElementById("task4");
-      const progress = document.getElementById("progress");
-      const drawBtn = document.getElementById("drawButton");
-
-      function updateProgress() {
-        const percent = (completedTasks / 4) * 100;
-        progress.style.width = percent + "%";
-        if (completedTasks === 4) drawBtn.style.display = "block";
-      }
-
-      btn1.addEventListener("click", () => {
-        window.open("https://gamehag.com/r/6W9MRJCS", "_blank");
-        btn1.disabled = true;
-        completedTasks++;
-        updateProgress();
-      });
-
-      btn2.addEventListener("click", () => {
-        window.open("https://www.exoclick.com/signup/?login=pugno", "_blank");
-        btn2.disabled = true;
-        completedTasks++;
-        updateProgress();
-      });
-
-      btn3.addEventListener("click", () => {
-        if (++task3 <= 4) btn3.textContent = `Tıkla (${task3}/4)`;
-        if (task3 === 4) {
-          btn3.disabled = true;
-          completedTasks++;
-          updateProgress();
-        }
-      });
-
-      btn4.addEventListener("click", () => {
-        window.location.href = "https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=" + currentUser.uid + "&transaction_id=" + new Date().getTime();
-      });
-
-      drawBtn.addEventListener("click", async () => {
-        if (!currentUser) return alert("Lütfen giriş yapın.");
-        const username = currentUser.displayName || currentUser.email || currentUser.uid;
-        await addUserToFirestore(username);
         window.location.href = "cekiliseKatilanlar.html";
       });
-    });
+    }
   </script>
 
   <style>
+    /* Stil kısmı değişmedi */
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -228,15 +278,11 @@
 
     <div class="task">
       <p><strong class="gorev">1. Görev:</strong> <strong>Gamehag’e Katıl ve İlk Görevini Tamamla</strong></p>
-      <p>Gamehag'e katılın ve ilk görevinizi tamamlayarak çekilişe bir adım daha yaklaşın!</p>
-      <p><span class="not">Not:</span> Sitemize katıldığınız mail adresiyle kayıt olmanız önerilir.</p>
       <button id="task1">Gamehag’e Git</button>
     </div>
 
     <div class="task">
       <p><strong class="gorev">2. Görev:</strong> <strong>ExoClick'e Kaydol</strong></p>
-      <p>ExoClick'e katıl, kayıt işlemini tamamla.</p>
-      <p><span class="not">Not:</span> Sitemize katıldığınız mail adresiyle kayıt olmanız önerilir.</p>
       <button id="task2">ExoClick'e Git</button>
     </div>
 
@@ -246,10 +292,8 @@
     </div>
 
     <div class="task">
-      <p><strong class="gorev">4. Görev:</strong> <strong>TheoremReach Kayıt Ol, Anket Tamamla</strong></p>
-      <p>Anket sistemine kayıt olup herhangi bir anketi tamamlayarak görevi tamamlayabilirsin.</p>
-      <p><span class="not">Not:</span> Sitemize katıldığınız mail adresi ile kayıt olmanız önerilir.</p>
-      <button id="task4">TheoremReach Git</button>
+      <p><strong class="gorev">4. Görev:</strong> <strong>Anket Tamamla</strong></p>
+      <button id="task4">Ankete Git</button>
     </div>
 
     <button id="drawButton">Çekilişe Katıl</button>
@@ -257,7 +301,7 @@
 
   <div class="banner">
     <a href="https://www.exoclick.com/signup/?login=pugno">
-      <img src="https://www.exoclick.com/banners/468x60.gif" alt="ExoClick Banner">
+      <img src="https://www.exoclick.com/banners/468x60.gif" alt="ExoClick Banner" />
     </a>
   </div>
 </body>
