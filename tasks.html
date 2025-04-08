@@ -37,7 +37,7 @@
     });
 
     async function checkAlreadyParticipated(user) {
-      const username = user.displayName || user.email || user.uid;
+      const username = user.displayName || user.uid; // E-posta yerine kullanıcı adı veya UID
       const userRef = doc(db, "participants", username);
       const docSnap = await getDoc(userRef);
 
@@ -149,7 +149,7 @@
       }
 
       drawBtn.addEventListener("click", async () => {
-        const username = currentUser.displayName || currentUser.email || currentUser.uid;
+        const username = currentUser.displayName || currentUser.uid; // E-posta yerine kullanıcı adı veya UID
         await setDoc(doc(db, "participants", username), {
           username: username,
           timestamp: serverTimestamp()
@@ -160,7 +160,6 @@
   </script>
 
   <style>
-    /* Stil kısmı değişmedi */
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
