@@ -114,13 +114,15 @@
   </script>
 
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-      min-height: 100vh;
-      padding: 10px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
     }
@@ -132,6 +134,8 @@
       width: 100%;
       border-radius: 15px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      overflow-y: auto;
+      max-height: calc(100vh - 80px); /* Banner için yer bırak */
     }
 
     h2 {
@@ -197,14 +201,18 @@
       font-size: 15px;
     }
 
-    /* Banner stil */
     .banner {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
       text-align: center;
-      margin-top: 20px;
+      padding: 10px 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     }
 
     .banner img {
-      max-width: 100%;
+      max-width: 468px;
       height: auto;
       border-radius: 10px;
     }
