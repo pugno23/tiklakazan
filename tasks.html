@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Görevler</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -114,51 +115,98 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      min-height: 100vh;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .container {
       background: white;
-      padding: 30px;
+      padding: 20px;
       max-width: 500px;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
-    .progress-bar {
-      height: 20px;
-      background: #ddd;
-      border-radius: 10px;
-      overflow: hidden;
+
+    h2 {
+      text-align: center;
+      color: #333;
       margin-bottom: 20px;
     }
+
+    .progress-bar {
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
     .progress {
       height: 100%;
       width: 0%;
-      background: #4CAF50;
+      background: linear-gradient(to right, #4caf50, #81c784);
+      transition: width 0.3s ease;
     }
+
+    .task {
+      margin-bottom: 25px;
+    }
+
+    .task p {
+      margin: 5px 0;
+      color: #444;
+    }
+
     .task button {
-      background: #3498db;
+      background: #007bff;
       color: white;
       border: none;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
       cursor: pointer;
+      width: 100%;
+      transition: background 0.3s ease;
     }
+
+    .task button:hover:not(:disabled) {
+      background: #0056b3;
+    }
+
     .task button:disabled {
       background: #aaa;
+      cursor: not-allowed;
     }
+
     #drawButton {
       display: none;
-      margin-top: 20px;
+      margin-top: 15px;
       background: #e67e22;
       color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    /* Banner stil */
+    .banner {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .banner img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
     }
   </style>
 </head>
@@ -168,33 +216,27 @@
     <div class="progress-bar"><div class="progress" id="progress"></div></div>
 
     <div class="task">
-      <p>1. Görev: Gamehag’e Katıl ve İlk Görevini Tamamla</p>
-      <p style="font-size: 0.9em; color: #666;">
-        Gamehag'e katılın ve ilk görevinizi tamamlayarak çekilişe bir adım daha yaklaşın!
-      </p>
+      <p><strong>1. Görev:</strong> Gamehag’e Katıl ve İlk Görevini Tamamla</p>
+      <p style="font-size: 0.9em; color: #666;">Gamehag'e katılın ve ilk görevinizi tamamlayarak çekilişe bir adım daha yaklaşın!</p>
       <p style="font-size: 0.85em; color: #b00;"><strong>Not:</strong> Sitemize katıldığınız mail adresiyle kayıt olmanız önerilir.</p>
       <button id="task1">Gamehag’e Git</button>
     </div>
 
     <div class="task">
-      <p>2. Görev: Sayfanın Altındaki Reklama Tıkla ve Kayıt Ol</p>
-      <p style="font-size: 0.9em; color: #666;">
-        Sayfanın en altında bulunan ExoClick reklamına tıkla ve açılan sayfada kayıt işlemini tamamla.
-      </p>
+      <p><strong>2. Görev:</strong> Sayfanın Altındaki Reklama Tıkla ve Kayıt Ol</p>
+      <p style="font-size: 0.9em; color: #666;">Sayfanın en altında bulunan ExoClick reklamına tıkla ve açılan sayfada kayıt işlemini tamamla.</p>
       <p style="font-size: 0.85em; color: #b00;"><strong>Not:</strong> Sitemize katıldığınız mail adresiyle kayıt olmanız önerilir.</p>
       <button id="task2">Tıkla (0/3)</button>
     </div>
 
     <div class="task">
-      <p>3. Görev</p>
+      <p><strong>3. Görev:</strong> Butonlara Tıkla</p>
       <button id="task3">Tıkla (0/4)</button>
     </div>
 
     <div class="task">
-      <p>4. Görev: TheoremReach Kayıt Ol, Herhangi Bir Anketi Tamamla</p>
-      <p style="font-size: 0.9em; color: #666;">
-        Anket sistemine kayıt olup herhangi bir anketi tamamlayarak görevi tamamlayabilirsin.
-      </p>
+      <p><strong>4. Görev:</strong> TheoremReach Kayıt Ol, Anket Tamamla</p>
+      <p style="font-size: 0.9em; color: #666;">Anket sistemine kayıt olup herhangi bir anketi tamamlayarak görevi tamamlayabilirsin.</p>
       <p style="font-size: 0.85em; color: #b00;"><strong>Not:</strong> Sitemize katıldığınız mail adresi ile kayıt olmanız önerilir.</p>
       <button id="task4">TheoremReach Git</button>
     </div>
@@ -202,10 +244,9 @@
     <button id="drawButton">Çekilişe Katıl</button>
   </div>
 
-  <!-- ExoClick Banner (Mobil Uyumlu) -->
-  <div style="text-align: center; margin-top: 40px;">
+  <div class="banner">
     <a href="https://www.exoclick.com/signup/?login=pugno">
-      <img src="https://www.exoclick.com/banners/468x60.gif" alt="ExoClick Banner" style="max-width: 100%; height: auto;">
+      <img src="https://www.exoclick.com/banners/468x60.gif" alt="ExoClick Banner">
     </a>
   </div>
 </body>
