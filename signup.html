@@ -52,7 +52,7 @@
           });
 
           // Kullanıcı bilgilerini 'participants' koleksiyonuna kaydediyoruz
-          await addDoc(collection(firestore, "participants"), {
+          await setDoc(doc(firestore, "participants", user.uid), {
             email: email,
             username: username, // Burada kullanıcı adını da ekliyoruz
             timestamp: new Date()
