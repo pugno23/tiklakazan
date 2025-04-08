@@ -63,23 +63,22 @@
       const btn1 = document.getElementById("task1");
       const btn2 = document.getElementById("task2");
       const btn3 = document.getElementById("task3");
-      const btn4 = document.getElementById("task4");  // Yeni buton (Anketi Tamamla)
+      const btn4 = document.getElementById("task4");
       const progress = document.getElementById("progress");
       const drawBtn = document.getElementById("drawButton");
 
       function updateProgress() {
-        const percent = (completedTasks / 4) * 100;  // 4 göreve göre güncelleme
+        const percent = (completedTasks / 4) * 100;
         progress.style.width = percent + "%";
         if (completedTasks === 4) drawBtn.style.display = "block";
       }
 
+      // 1. Görev: Gamehag
       btn1.addEventListener("click", () => {
-        if (++task1 <= 5) btn1.textContent = `Tıkla (${task1}/5)`;
-        if (task1 === 5) {
-          btn1.disabled = true;
-          completedTasks++;
-          updateProgress();
-        }
+        window.open("https://gamehag.com/r/6W9MRJCS", "_blank");
+        btn1.disabled = true;
+        completedTasks++;
+        updateProgress();
       });
 
       btn2.addEventListener("click", () => {
@@ -100,9 +99,8 @@
         }
       });
 
-      // Yeni görev (Anket Tamamla)
       btn4.addEventListener("click", () => {
-        window.location.href = "https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=" + currentUser.uid + "&transaction_id=" + new Date().getTime(); // Kullanıcıyı ankete yönlendirme
+        window.location.href = "https://theoremreach.com/respondent_entry/direct?api_key=eb90b1f37c6b80fde0d3f04a6380&user_id=" + currentUser.uid + "&transaction_id=" + new Date().getTime();
       });
 
       drawBtn.addEventListener("click", async () => {
@@ -148,6 +146,7 @@
       padding: 10px;
       margin-top: 10px;
       border-radius: 5px;
+      cursor: pointer;
     }
     .task button:disabled {
       background: #aaa;
@@ -160,6 +159,7 @@
       border: none;
       padding: 10px;
       border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -167,10 +167,20 @@
   <div class="container">
     <h2>Görevleri Tamamla</h2>
     <div class="progress-bar"><div class="progress" id="progress"></div></div>
-    <div class="task"><p>1. Görev</p><button id="task1">Tıkla (0/5)</button></div>
+
+    <div class="task">
+      <p>1. Görev: Gamehag’e Katıl ve İlk Görevini Tamamla</p>
+      <p style="font-size: 0.9em; color: #666;">
+        Gamehag'e katılın ve ilk görevinizi tamamlayarak çekilişe bir adım daha yaklaşın!
+      </p>
+      <p style="font-size: 0.85em; color: #b00;"><strong>Not:</strong> Sitemize katıldığınız mail adresiyle kayıt olmanız önerilir.</p>
+      <button id="task1">Gamehag’e Git</button>
+    </div>
+
     <div class="task"><p>2. Görev</p><button id="task2">Tıkla (0/3)</button></div>
     <div class="task"><p>3. Görev</p><button id="task3">Tıkla (0/4)</button></div>
-    <div class="task"><p>4. Görev: Anketi Tamamla</p><button id="task4">Anketi Tamamla</button></div> <!-- Yeni görev -->
+    <div class="task"><p>4. Görev: Anketi Tamamla</p><button id="task4">Anketi Tamamla</button></div>
+
     <button id="drawButton">Çekilişe Katıl</button>
   </div>
 </body>
