@@ -14,7 +14,9 @@
     import {
       getFirestore,
       setDoc,
-      doc
+      doc,
+      collection,
+      addDoc
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -43,11 +45,20 @@
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
 
+          // Kullanıcı bilgilerini 'users' koleksiyonuna kaydediyoruz
           await setDoc(doc(firestore, "users", user.uid), {
             email: email,
             username: username
           });
 
+          // Kullanıcı bilgilerini 'participants' koleksiyonuna kaydediyoruz
+          await addDoc(collection(firestore, "participants"), {
+            email: email,
+            username: username, // Burada kullanıcı adını da ekliyoruz
+            timestamp: new Date()
+          });
+
+          // Kullanıcıya doğrulama e-postası gönderiyoruz
           await sendEmailVerification(user);
 
           alert("Kayıt başarılı! Lütfen e-posta doğrulamanızı yapın.");
