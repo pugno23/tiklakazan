@@ -37,7 +37,7 @@
       signupButton.addEventListener("click", async () => {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
-        const username = document.getElementById("username").value;
+        const username = document.getElementById("username").value;  // Kullanıcı adı burada alınıyor
 
         try {
           // Kullanıcıyı Firebase Auth ile kaydediyoruz
@@ -52,8 +52,8 @@
 
           // 'participants' koleksiyonuna kullanıcı adı ve timestamp dahil olmak üzere kayıt ediyoruz
           await setDoc(doc(firestore, "participants", user.uid), {
-            email: email,
-            username: username,  // Doğru bir şekilde kullanıcı adı ekleniyor
+            email: email,        // Burada e-posta kaydediliyor (isteğe bağlı)
+            username: username,  // Burada kullanıcı adı kaydediliyor
             timestamp: new Date(),  // Katılım zamanı
             tasks: [],  // Başlangıçta boş bir görev listesi
             completedAt: null,  // Başlangıçta tamamlanmış görev yok
