@@ -82,12 +82,10 @@
       });
 
       btn2.addEventListener("click", () => {
-        if (++task2 <= 3) btn2.textContent = `Tıkla (${task2}/3)`;
-        if (task2 === 3) {
-          btn2.disabled = true;
-          completedTasks++;
-          updateProgress();
-        }
+        window.open("https://www.exoclick.com/signup/?login=pugno", "_blank");
+        btn2.disabled = true;
+        completedTasks++;
+        updateProgress();
       });
 
       btn3.addEventListener("click", () => {
@@ -236,10 +234,10 @@
     </div>
 
     <div class="task">
-      <p><strong class="gorev">2. Görev:</strong> <strong>Sayfanın Altındaki Reklama Tıkla ve Kayıt Ol</strong></p>
-      <p>Sayfanın en altında bulunan ExoClick reklamına tıkla ve açılan sayfada kayıt işlemini tamamla.</p>
+      <p><strong class="gorev">2. Görev:</strong> <strong>ExoClick'e Kaydol</strong></p>
+      <p>ExoClick'e katıl, kayıt işlemini tamamla.</p>
       <p><span class="not">Not:</span> Sitemize katıldığınız mail adresiyle kayıt olmanız önerilir.</p>
-      <button id="task2">Tıkla (0/3)</button>
+      <button id="task2">ExoClick'e Git</button>
     </div>
 
     <div class="task">
