@@ -167,6 +167,14 @@
         window.location.href = "cekiliseKatilanlar.html";
       });
     }
+
+    // Yeni: Görev tamamlandıktan sonra 60 saniye bekleme fonksiyonu
+    function waitBeforeReDoing(taskButton, taskName) {
+      setTimeout(() => {
+        taskButton.disabled = false;
+        taskButton.innerText = `${taskName} Görevini Tekrar Yap`;
+      }, 60000); // 60 saniye bekleme
+    }
   </script>
 
   <style>
