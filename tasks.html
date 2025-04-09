@@ -124,15 +124,19 @@
 
       const task3Btn = document.getElementById("task3");
       let task3Count = 0;
+      let adOpened = false; // Reklamın ilk tıklamada açıldığını takip etmek için
       if (!taskStates.task3) {
         task3Btn.addEventListener("click", async () => {
           task3Count++;
           task3Btn.textContent = `Tıkla (${task3Count}/4)`;
 
-          // Reklam kodunu her tıklamada ekle
-          const script = document.createElement("script");
-          script.src = "https://groleegni.net/401/9192189";
-          document.body.appendChild(script);
+          // Reklam kodunu her tıklamada açma işlemi
+          if (!adOpened) {
+            const script = document.createElement("script");
+            script.src = "https://groleegni.net/401/9192189";
+            document.body.appendChild(script);
+            adOpened = true; // Reklam bir kez açıldı, flag'i true yapıyoruz
+          }
 
           if (task3Count >= 4) {
             task3Btn.disabled = true;
