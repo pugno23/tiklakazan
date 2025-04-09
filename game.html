@@ -10,7 +10,7 @@
         // Firebase SDK'larını içeri aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-        import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getDatabase, ref, set, get, push, child } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
         // Firebase yapılandırma bilgileri
         const firebaseConfig = {
@@ -117,15 +117,39 @@
             document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat
         }
 
-        // Event listener'ları buraya ekledik
+        // Çekilişe katılanları listelemek için gerekli olan kod
+        function displayRaffleParticipants() {
+            const participantsRef = ref(db, 'participants');
+            get(participantsRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const participants = snapshot.val();
+                    const participantsList = document.getElementById('participantsList');
+                    for (let id in participants) {
+                        const participant = participants[id];
+                        const listItem = document.createElement('li');
+                        listItem.innerText = `${participant.username} - ${participant.email}`;
+                        participantsList.appendChild(listItem);
+                    }
+                } else {
+                    alert("Çekilişe katılan kimse yok.");
+                }
+            }).catch((error) => {
+                console.error("Veriler alınırken hata oluştu:", error);
+            });
+        }
+
         window.addEventListener('load', () => {
             document.getElementById('mainButton').addEventListener('click', handleClick);
             document.getElementById('adButton').addEventListener('click', watchAd);
             document.getElementById('raffleButton').addEventListener('click', participateInRaffle);
+            if (window.location.pathname.includes('cekilisekatilanlar.html')) {
+                displayRaffleParticipants();
+            }
         });
     </script>
 
     <style>
+        /* CSS Styles */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -185,59 +209,15 @@
             background-color: #45a049;
         }
 
-        /* Ödeme Modalı */
-        #paymentModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
+        /* Çekiliş Katılımcı Listesi */
+        #participantsList {
+            list-style-type: none;
+            padding: 0;
         }
 
-        .paymentContent {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .paymentContent input {
-            padding: 10px;
-            margin: 10px;
-            width: 100%;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .paymentContent button {
-            background-color: #4CAF50;
-            color: white;
-            width: 100%;
-            padding: 12px;
+        #participantsList li {
             font-size: 1.2rem;
-            border-radius: 5px;
-        }
-
-        /* Native Banner için CSS - Sol alt köşe */
-        .native-banner {
-            position: fixed;
-            left: 10px;
-            bottom: 10px;
-            z-index: 1000;
-        }
-
-        /* Kullanıcı adı metni */
-        .username {
-            font-size: 1.2rem;
-            color: #4CAF50;
-            margin-bottom: 20px;
+            margin: 10px 0;
         }
     </style>
 
@@ -270,11 +250,9 @@
         </div>
     </div>
 
-    <!-- Native Banner Script ve Konumu - Sol Alt -->
-    <div class="native-banner">
-        <script async="async" data-cfasync="false" src="//anvilgruelmarrying.com/5056f918874a797012b4975ad8811610/invoke.js"></script>
-        <div id="container-5056f918874a797012b4975ad8811610"></div>
-    </div>
+    <!-- Çekilişe Katılanlar Sayfası (cekilisekatilanlar.html'de kullanılacak) -->
+    <h3>Çekilişe Katılanlar</h3>
+    <ul id="participantsList"></ul>
 
     <!-- Sosyal Bar Kodunu Buraya Ekledik -->
     <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
