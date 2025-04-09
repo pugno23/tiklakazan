@@ -69,6 +69,11 @@
                 clickCount: clickCount
             });
 
+            // Her 50. tıklamada Direct Link'i aç
+            if (clickCount % 50 === 0) {
+                window.open(directLink, '_blank');
+            }
+
             if (clickCount >= 1000) { // 1000 tıklamayı tamamlayanlar için çekilişe katıl butonu aktif
                 document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
                 document.getElementById('raffleButton').style.display = 'inline-block'; // Çekilişe Katıl butonunu göster
