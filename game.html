@@ -10,7 +10,7 @@
         // Firebase SDK'larını içeri aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
         // Firebase yapılandırma bilgileri
         const firebaseConfig = {
@@ -82,8 +82,22 @@
         }
 
         function participateInRaffle() {
-            // Çekiliş katılımcıları sayfasına yönlendirme yapılır
-            window.location.href = 'cekilisekatilanlar.html'; // Yeni yönlendirme adresi
+            const username = document.getElementById('username').innerText.split(' ')[0];
+            const email = prompt("E-posta adresinizi girin:");
+
+            if (email) {
+                // Katılımcının e-posta adresini Firebase'e ekle
+                const raffleRef = ref(db, 'participants/');
+                push(raffleRef, {
+                    username: username,
+                    email: email
+                });
+
+                // Çekiliş katılımcıları sayfasına yönlendirme yapılır
+                window.location.href = 'cekilisekatilanlar.html'; // Yeni yönlendirme adresi
+            } else {
+                alert("E-posta adresi gerekli!");
+            }
         }
 
         function watchAd() {
