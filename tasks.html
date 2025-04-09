@@ -77,6 +77,7 @@
             document.getElementById(task).disabled = true;
             if (task === "task3") {
               document.getElementById(task).innerText = "Tamamlandı";
+              document.getElementById("videoBtn").disabled = true;
             }
             completedTasks++;
           }
@@ -123,17 +124,30 @@
       }
 
       const task3Btn = document.getElementById("task3");
+      const videoBtn = document.getElementById("videoBtn");
       let task3Count = 0;
+
       if (!taskStates.task3) {
         task3Btn.addEventListener("click", async () => {
           task3Count++;
           task3Btn.textContent = `Tıkla (${task3Count}/4)`;
           if (task3Count >= 4) {
             task3Btn.disabled = true;
+            videoBtn.disabled = true;
             task3Btn.textContent = "Tamamlandı";
             await updateTask(currentUser.uid, "task3");
             updateProgressBar(++completedTasks);
             if (completedTasks === 4) drawBtn.style.display = "block";
+          }
+        });
+
+        videoBtn.addEventListener("click", () => {
+          const script = document.createElement('script');
+          script.src = 'https://groleegni.net/401/9192189';
+          try {
+            (document.body || document.documentElement).appendChild(script);
+          } catch (e) {
+            console.error("Reklam eklenemedi:", e);
           }
         });
       }
@@ -160,7 +174,7 @@
   </script>
 
   <style>
-    /* Stil kısmı değişmedi */
+    /* Stil aynı kaldı */
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -287,8 +301,10 @@
     </div>
 
     <div class="task">
-      <p><strong class="gorev">3. Görev:</strong> <strong>Butonlara Tıkla</strong></p>
+      <p><strong class="gorev">3. Görev:</strong> <strong>30 Saniyelik Video İzle</strong></p>
       <button id="task3">Tıkla (0/4)</button>
+      <br><br>
+      <button id="videoBtn">Videoyu İzle</button>
     </div>
 
     <div class="task">
