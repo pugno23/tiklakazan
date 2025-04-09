@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Görevler</title>
-
-  <!-- Firebase Scripts and App Setup -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import {
@@ -130,16 +128,6 @@
         task3Btn.addEventListener("click", async () => {
           task3Count++;
           task3Btn.textContent = `Tıkla (${task3Count}/4)`;
-
-          // ✅ Reklam scriptini 3. görevde tetikle
-          const existingScript = document.getElementById("ogjs");
-          if (existingScript) existingScript.remove();
-          const script = document.createElement("script");
-          script.type = "text/javascript";
-          script.id = "ogjs";
-          script.src = "https://appinstallcheck.com/cl/js/lk4v6j";
-          document.body.appendChild(script);
-
           if (task3Count >= 4) {
             task3Btn.disabled = true;
             task3Btn.textContent = "Tamamlandı";
@@ -171,8 +159,8 @@
     }
   </script>
 
-  <!-- Stil -->
   <style>
+    /* Stil kısmı değişmedi */
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -283,7 +271,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <h2>Görevleri Tamamla</h2>
