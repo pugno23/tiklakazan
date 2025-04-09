@@ -46,6 +46,21 @@
       return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()} - ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     }
 
+    function maskEmail(email) {
+      const [localPart, domain] = email.split('@');
+      if (!localPart || !domain) return email;
+
+      if (localPart.length <= 4) {
+        return localPart[0] + '*'.repeat(localPart.length - 2) + localPart.slice(-1) + '@' + domain;
+      }
+
+      const visibleStart = localPart.slice(0, 2);
+      const visibleEnd = localPart.slice(-2);
+      const masked = '*'.repeat(localPart.length - 4);
+
+      return visibleStart + masked + visibleEnd + '@' + domain;
+    }
+
     function renderParticipants() {
       const searchValue = document.getElementById("search").value.toLowerCase();
       const sortValue = document.getElementById("sort").value;
@@ -54,7 +69,6 @@
 
       let filtered = participants.filter(p => p.username.toLowerCase().includes(searchValue));
 
-      // Sıralama
       filtered.sort((a, b) => {
         if (sortValue === "newest") return b.timestamp - a.timestamp;
         if (sortValue === "oldest") return a.timestamp - b.timestamp;
@@ -66,7 +80,7 @@
       listElement.innerHTML = "";
       filtered.forEach(p => {
         const li = document.createElement("li");
-        li.textContent = `${p.username} (${formatDate(p.timestamp)})`;
+        li.textContent = `${maskEmail(p.username)} (${formatDate(p.timestamp)})`;
         listElement.appendChild(li);
       });
 
