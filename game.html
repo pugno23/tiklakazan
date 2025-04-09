@@ -1,217 +1,205 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+
+<html lang="tr">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1894.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tıkla Kazan Sistemi</title>
+
+    <script type="module">
+        // Firebase SDK'larını içeri aktar
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+        // Firebase yapılandırma bilgileri
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+            authDomain: "cekilisveritabani.firebaseapp.com",
+            projectId: "cekilisveritabani",
+            storageBucket: "cekilisveritabani.firebasestorage.app",
+            messagingSenderId: "246236686196",
+            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+            measurementId: "G-YZ6MYCPK8G"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        let clickCount = 0;
+
+        const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink
+
+        // Sayfa yüklendiğinde kullanıcı adı ve tıklama sayısını ekranda göster
+        window.onload = function() {
+            const username = prompt("Lütfen kullanıcı adınızı girin:"); // Firebase üzerinden kullanıcı adı alınıyor
+            if (!username) {
+                window.location.href = 'index.html'; // Eğer kullanıcı adı yoksa giriş sayfasına yönlendir
+            } else {
+                document.getElementById('username').innerText = `${username} - Hoşgeldiniz`;
+                getUserData(username); // Kullanıcı verilerini Firebase'ten al
+            }
+        };
+
+        function getUserData(username) {
+            const userRef = ref(db, 'users/' + username);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    clickCount = snapshot.val().clickCount || 0;
+                    document.getElementById('clickCount').innerText = clickCount;
+                } else {
+                    set(ref(db, 'users/' + username), {
+                        clickCount: 0
+                    });
+                }
+            }).catch((error) => {
+                console.error("Veri alınırken hata oluştu:", error);
+            });
+        }
+
+        function handleClick() {
+            clickCount++;
+            document.getElementById('clickCount').innerText = clickCount;
+
+            // Firebase'e tıklama sayısını kaydet
+            const username = document.getElementById('username').innerText.split(' ')[0];
+            set(ref(db, 'users/' + username), {
+                clickCount: clickCount
+            });
+
+            if (clickCount >= 1000) { // 1000 tıklamayı tamamlayanlar için çekilişe katıl butonu aktif
+                document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle
+                document.getElementById('raffleButton').style.display = 'inline-block'; // Çekilişe Katıl butonunu göster
+                alert('Çekilişe katılmaya hak kazandınız!');
+            }
+        }
+
+        function participateInRaffle() {
+            // Çekiliş katılımcıları sayfasına yönlendirme yapılır
+            window.location.href = 'cekilisekatilanlar.html'; // Yeni yönlendirme adresi
+        }
+
+        function watchAd() {
+            // DirectLink'e git
+            window.open(directLink, '_blank');
+            
+            // Reklam izlendi, Tıkla butonunu tekrar göster
+            document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle
+            document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f4f9;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            color: #333;
+        }
+
+        /* Arka Plan Coin Animasyonu */
+        .coin {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-image: url('https://img.icons8.com/ios/50/ffd700/coin.png');
+            background-size: cover;
+            animation: fall 5s infinite;
+        }
+
+        @keyframes fall {
+            0% { top: -60px; left: 10%; }
+            50% { top: 80vh; left: 50%; }
+            100% { top: 100vh; left: 90%; }
+        }
+
+        /* Butonlar */
+        button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 80%; /* Buttons take 80% of the width */
+            max-width: 400px; /* Limit button width */
+        }
+
+        #mainButton { 
+            background-color: #4CAF50; 
+            color: white; 
+        }
+        #adButton { 
+            background-color: #f0ad4e; 
+            color: white; 
+            display: none; 
+        }
+        #raffleButton { 
+            background-color: #5bc0de;
+            color: white; 
+            display: none; 
+        }
+
+        #mainButton:hover, #adButton:hover, #raffleButton:hover {
+            background-color: #45a049;
+        }
+
+        /* Native Banner için CSS - Sol alt köşe */
+        .native-banner {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+            z-index: 1000;
+        }
+
+        /* Kullanıcı adı metni */
+        .username {
+            font-size: 1.2rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+    </style>
+
 </head>
+
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="tr"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Tıkla Kazan Sistemi&lt;/title&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let clickCount = parseInt(localStorage.getItem('clickCount')) || 0; // localStorage'dan tıklama sayısı alınır.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const directLink = "https://anvilgruelmarrying.com/unmwhq2w?key=0f96067f801cdb37f5f9f388f37f5b7d"; // DirectLink</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Sayfa yüklendiğinde kullanıcı adı ve tıklama sayısını ekranda göster</p>
-<p class="p1"><span class="Apple-converted-space">        </span>window.onload = function() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const username = localStorage.getItem('username'); // localStorage'dan kullanıcı adı alınır</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!username) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>window.location.href = 'index.html'; // Eğer kullanıcı adı yoksa giriş sayfasına yönlendir</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('username').innerText = `${username} - Hoşgeldiniz`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Tıklama sayısını ekrana yazdır</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('clickCount').innerText = clickCount;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function handleClick() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>clickCount++;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('clickCount').innerText = clickCount;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Tıklama sayısını localStorage'a kaydet</p>
-<p class="p1"><span class="Apple-converted-space">            </span>localStorage.setItem('clickCount', clickCount);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (clickCount % 50 === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('mainButton').style.display = 'none'; // Tıkla butonunu gizle</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('adButton').style.display = 'inline-block'; // Reklam İzle butonunu göster</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alert('Reklam izleyerek devam edebilirsiniz!');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function watchAd() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// DirectLink'e git</p>
-<p class="p1"><span class="Apple-converted-space">            </span>window.open(directLink, '_blank');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Reklam izlendi, Tıkla butonunu tekrar göster</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('adButton').style.display = 'none'; // Reklam İzle butonunu gizle</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('mainButton').style.display = 'inline-block'; // Tıkla butonunu tekrar göster</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function requestPayment() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('paymentModal').style.display = 'block'; // Ödeme modalını göster</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function closePaymentModal() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('paymentModal').style.display = 'none'; // Modalı kapat</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: Arial, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f0f4f9;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #333;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Arka Plan Coin Animasyonu */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.coin {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-image: url('https://img.icons8.com/ios/50/ffd700/coin.png');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-size: cover;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: fall 5s infinite;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes fall {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% { top: -60px; left: 10%; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>50% { top: 80vh; left: 50%; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% { top: 100vh; left: 90%; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Butonlar */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: background-color 0.3s;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 80%; /* Buttons take 80% of the width */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 400px; /* Limit button width */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>#mainButton {<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #4CAF50;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#adButton {<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f0ad4e;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: none;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>#mainButton:hover, #adButton:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #45a049;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Ödeme Modalı */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#paymentModal {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: rgba(0, 0, 0, 0.5);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.paymentContent {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 90%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 400px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.paymentContent input {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #ccc;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.paymentContent button {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #4CAF50;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Native Banner için CSS - Sol alt köşe */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.native-banner {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 1000;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Kullanıcı adı metni */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.username {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #4CAF50;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;Tıkla Kazan Sistemi&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="username" class="username"&gt;&lt;/div&gt; &lt;!-- Kullanıcı adı buraya eklenecek --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Tıklama Sayısı: &lt;span id="clickCount"&gt;0&lt;/span&gt;&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h3&gt;10.000 kere tıkla 10 Euro kazan&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h3&gt;Toplam Kazanç: &lt;span id="totalEarnings"&gt;0 Euro&lt;/span&gt;&lt;/h3&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="mainButton" onclick="handleClick()"&gt;Tıkla&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="adButton" onclick="watchAd()"&gt;Reklam İzle&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onclick="requestPayment()"&gt;Para Talep Et&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Ödeme Modalı --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="paymentModal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="paymentContent"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3&gt;Ödeme Talebi&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" placeholder="Papara, IBAN veya PayPal Adresi"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="closePaymentModal()"&gt;Gönder&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Native Banner Script ve Konumu - Sol Alt --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="native-banner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;script async="async" data-cfasync="false" src="//anvilgruelmarrying.com/5056f918874a797012b4975ad8811610/invoke.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="container-5056f918874a797012b4975ad8811610"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Sosyal Bar Kodunu Buraya Ekledik --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'&gt;&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+    <h1>Tıkla Kazan Sistemi</h1>
+
+    <div id="username" class="username"></div> <!-- Kullanıcı adı buraya eklenecek -->
+
+    <h2>Tıklama Sayısı: <span id="clickCount">0</span></h2>
+
+    <h3>1000 kere tıkla çekilişe katıl!</h3>
+
+    <h3>Toplam Kazanç: <span id="totalEarnings">0 Euro</span></h3>
+
+    <button id="mainButton" onclick="handleClick()">Tıkla</button>
+
+    <button id="adButton" onclick="watchAd()">Reklam İzle</button>
+
+    <button id="raffleButton" onclick="participateInRaffle()">Çekilişe Katıl</button>
+
+    <!-- Native Banner Script ve Konumu - Sol Alt -->
+    <div class="native-banner">
+        <script async="async" data-cfasync="false" src="//anvilgruelmarrying.com/5056f918874a797012b4975ad8811610/invoke.js"></script>
+        <div id="container-5056f918874a797012b4975ad8811610"></div>
+    </div>
+
+    <!-- Sosyal Bar Kodunu Buraya Ekledik -->
+    <script type='text/javascript' src='//anvilgruelmarrying.com/6e/98/00/6e9800ba5d741c97c04f37406acf2f50.js'></script>
+
 </body>
+
 </html>
