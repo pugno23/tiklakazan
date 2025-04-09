@@ -47,18 +47,18 @@
     }
 
     function maskEmail(email) {
-      const [localPart, domain] = email.split('@');
-      if (!localPart || !domain) return email;
+      const atIndex = email.indexOf('@');
+      if (atIndex < 2) return email; // Çok kısa mail'lerde maskelenmesin
 
-      if (localPart.length <= 4) {
-        return localPart[0] + '*'.repeat(localPart.length - 2) + localPart.slice(-1) + '@' + domain;
-      }
+      const local = email.substring(0, atIndex);
+      const domain = email.substring(atIndex);
 
-      const visibleStart = localPart.slice(0, 2);
-      const visibleEnd = localPart.slice(-2);
-      const masked = '*'.repeat(localPart.length - 4);
+      const maskedLocal =
+        local.substring(0, 2) +
+        "*".repeat(Math.max(1, local.length - 6)) +
+        local.slice(-2);
 
-      return visibleStart + masked + visibleEnd + '@' + domain;
+      return maskedLocal + domain;
     }
 
     function renderParticipants() {
@@ -69,6 +69,7 @@
 
       let filtered = participants.filter(p => p.username.toLowerCase().includes(searchValue));
 
+      // Sıralama
       filtered.sort((a, b) => {
         if (sortValue === "newest") return b.timestamp - a.timestamp;
         if (sortValue === "oldest") return a.timestamp - b.timestamp;
@@ -80,7 +81,8 @@
       listElement.innerHTML = "";
       filtered.forEach(p => {
         const li = document.createElement("li");
-        li.textContent = `${maskEmail(p.username)} (${formatDate(p.timestamp)})`;
+        const maskedUsername = maskEmail(p.username);
+        li.textContent = `${maskedUsername} (${formatDate(p.timestamp)})`;
         listElement.appendChild(li);
       });
 
@@ -90,7 +92,8 @@
     function downloadCSV() {
       let csv = "Kullanıcı Adı,Tarih/Saat\n";
       participants.forEach(p => {
-        csv += `"${p.username}","${formatDate(p.timestamp)}"\n`;
+        const masked = maskEmail(p.username);
+        csv += `"${masked}","${formatDate(p.timestamp)}"\n`;
       });
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
