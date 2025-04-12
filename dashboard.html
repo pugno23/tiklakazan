@@ -1,253 +1,286 @@
+<!-- En sona eklenmiş hali -->
+<!-- Kodu baştan sona korundu, sadece en alta buton eklendi -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard & Ana Sayfa</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard & Ana Sayfa</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
-            authDomain: "cekilisveritabani.firebaseapp.com",
-            projectId: "cekilisveritabani",
-            storageBucket: "cekilisveritabani.firebasestorage.app",
-            messagingSenderId: "246236686196",
-            appId: "1:246236686196:web:d22a9b99140626cc04ae21",
-            measurementId: "G-YZ6MYCPK8G"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+      measurementId: "G-YZ6MYCPK8G"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const firestore = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const firestore = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const userDoc = await getDoc(doc(firestore, "users", user.uid));
-                    if (userDoc.exists()) {
-                        const username = userDoc.data().username;
-                        document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
-                    } else {
-                        alert("Kullanıcı veritabanında bulunamadı.");
-                        window.location.href = "signup.html";
-                    }
-                } catch (err) {
-                    alert("Bir hata oluştu: " + err.message);
-                    window.location.href = "login.html";
-                }
-            } else {
-                window.location.href = "login.html";
-            }
-        });
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(firestore, "users", user.uid));
+          if (userDoc.exists()) {
+            const username = userDoc.data().username;
+            document.getElementById("welcome-message").innerText = `Hoşgeldiniz, ${username}!`;
+          } else {
+            alert("Kullanıcı veritabanında bulunamadı.");
+            window.location.href = "signup.html";
+          }
+        } catch (err) {
+          alert("Bir hata oluştu: " + err.message);
+          window.location.href = "login.html";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
 
-        function countdownToNextFriday() {
-            const now = new Date();
-            const target = new Date(now);
-            const daysUntilFriday = (5 - now.getDay() + 7) % 7;
+    function countdownToNextFriday() {
+      const now = new Date();
+      const target = new Date(now);
+      const daysUntilFriday = (5 - now.getDay() + 7) % 7;
 
-            if (daysUntilFriday === 0 && (now.getHours() > 20 || (now.getHours() === 20 && now.getMinutes() >= 0))) {
-                target.setDate(now.getDate() + 7);
-            } else {
-                target.setDate(now.getDate() + daysUntilFriday);
-            }
+      if (daysUntilFriday === 0 && (now.getHours() > 20 || (now.getHours() === 20 && now.getMinutes() >= 0))) {
+        target.setDate(now.getDate() + 7);
+      } else {
+        target.setDate(now.getDate() + daysUntilFriday);
+      }
 
-            target.setHours(20, 0, 0, 0);
+      target.setHours(20, 0, 0, 0);
 
-            function updateCountdown() {
-                const now = new Date();
-                const timeLeft = target - now;
+      function updateCountdown() {
+        const now = new Date();
+        const timeLeft = target - now;
 
-                if (timeLeft <= 0) {
-                    target.setDate(target.getDate() + 7);
-                    document.getElementById("active-draw-timer").classList.add("flash");
-                    setTimeout(() => document.getElementById("active-draw-timer").classList.remove("flash"), 2000);
-                    updateCountdown();
-                    return;
-                }
-
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                document.getElementById("active-draw-timer").innerText =
-                    `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
-
-                setTimeout(updateCountdown, 1000);
-            }
-
-            updateCountdown();
+        if (timeLeft <= 0) {
+          target.setDate(target.getDate() + 7);
+          document.getElementById("active-draw-timer").classList.add("flash");
+          setTimeout(() => document.getElementById("active-draw-timer").classList.remove("flash"), 2000);
+          updateCountdown();
+          return;
         }
 
-        window.onload = function() {
-            countdownToNextFriday();
-        };
-    </script>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
+        document.getElementById("active-draw-timer").innerText =
+          `Kalan Süre: ${days}g ${hours}s ${minutes}d ${seconds}s`;
 
-        .container {
-            background: white;
-            border-radius: 16px;
-            padding: 30px 20px;
-            max-width: 100%;
-            width: 100%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            max-width: 500px;
-            box-sizing: border-box;
-        }
+        setTimeout(updateCountdown, 1000);
+      }
 
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+      updateCountdown();
+    }
 
-        p {
-            font-size: 16px;
-            color: #34495e;
-            line-height: 1.6;
-        }
+    window.onload = function () {
+      countdownToNextFriday();
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .button {
-            padding: 12px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
 
-        .button:hover {
-            background-color: #2980b9;
-        }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 30px 20px;
+      max-width: 100%;
+      width: 100%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      box-sizing: border-box;
+    }
 
-        .flash {
-            animation: flash 1s linear infinite;
-        }
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
 
-        @keyframes flash {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-        }
+    p {
+      font-size: 16px;
+      color: #34495e;
+      line-height: 1.6;
+    }
 
-        .menu-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-        }
+    .button {
+      padding: 12px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
 
-        .menu {
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            background-color: white;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            padding: 20px;
-            display: none;
-            flex-direction: column;
-            align-items: flex-start;
-            border-radius: 8px;
-        }
+    .button:hover {
+      background-color: #2980b9;
+    }
 
-        .menu a {
-            text-decoration: none;
-            color: #3498db;
-            margin: 10px 0;
-            font-size: 18px;
-        }
+    .flash {
+      animation: flash 1s linear infinite;
+    }
 
-        .menu a:hover {
-            color: #2980b9;
-        }
+    @keyframes flash {
+      0% {
+        opacity: 1;
+      }
 
-        .menu.show {
-            display: flex;
-        }
+      50% {
+        opacity: 0;
+      }
 
-        @media (max-width: 600px) {
-            h2 {
-                font-size: 20px;
-            }
+      100% {
+        opacity: 1;
+      }
+    }
 
-            p {
-                font-size: 15px;
-            }
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+    }
 
-            .container {
-                padding: 20px;
-            }
+    .menu {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background-color: white;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      border-radius: 8px;
+    }
 
-            .button {
-                width: 100%;
-                padding: 12px 0;
-            }
-        }
-    </style>
+    .menu a {
+      text-decoration: none;
+      color: #3498db;
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    .menu a:hover {
+      color: #2980b9;
+    }
+
+    .menu.show {
+      display: flex;
+    }
+
+    .bottom-button {
+      margin-top: 40px;
+      padding: 10px 16px;
+      font-size: 14px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .bottom-button:hover {
+      background-color: #27ae60;
+    }
+
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .button {
+        width: 100%;
+        padding: 12px 0;
+      }
+
+      .bottom-button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Hoşgeldiniz Mesajı Sayfanın En Üstünde -->
-    <h2 id="welcome-message">Hoşgeldiniz!</h2>
+  <!-- Hoşgeldiniz Mesajı Sayfanın En Üstünde -->
+  <h2 id="welcome-message">Hoşgeldiniz!</h2>
 
-    <div class="container">
-        <!-- Ana Sayfa Başlık ve Mesaj -->
-        <h2>Bu Hafta Şans Seninle Olabilir!</h2>
-        <p>Her hafta bir çekiliş.</p>
-        <p>Son katılım tarihi her Cuma 20:00'a kadar.</p>
-        <p>Görevleri tamamla çekilişe katıl.</p>
-        <p>Bu hafta şans seninle olabilir!</p>
-        
-        <!-- Aktif Çekiliş -->
-        <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
-        <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
-        <button class="button" onclick="window.location.href='tasks.html'">Sende Katıl</button>
-    </div>
+  <div class="container">
+    <!-- Ana Sayfa Başlık ve Mesaj -->
+    <h2>Bu Hafta Şans Seninle Olabilir!</h2>
+    <p>Her hafta bir çekiliş.</p>
+    <p>Son katılım tarihi her Cuma 20:00'a kadar.</p>
+    <p>Görevleri tamamla çekilişe katıl.</p>
+    <p>Bu hafta şans seninle olabilir!</p>
 
-    <!-- Menu Butonu -->
-    <div class="menu-button" onclick="toggleMenu()">☰</div>
+    <!-- Aktif Çekiliş -->
+    <h2 id="active-draw-title">Aktif Çekiliş: 500 ₺</h2>
+    <p id="active-draw-timer">Kalan Süre: 00:00:00</p>
+    <button class="button" onclick="window.location.href='tasks.html'">Sende Katıl</button>
+  </div>
 
-    <!-- Menü -->
-    <div class="menu" id="menu">
-        <a href="#">Profilim</a>
-        <a href="#">Görevlerim</a>
-        <a href="#">Ayarlar</a>
-        <a href="#">Destek ve Yardım</a>
-        <a href="#">Sık Sorulan Sorular</a>
-        <a href="#">Canlı Destek</a>
-        <a href="cekilisekatilanlar.html">Çekilişe Katılanlar</a>
-    </div>
+  <!-- Menü Butonu -->
+  <div class="menu-button" onclick="toggleMenu()">☰</div>
 
-    <script>
-        function toggleMenu() {
-            document.getElementById("menu").classList.toggle("show");
-        }
-    </script>
+  <!-- Menü -->
+  <div class="menu" id="menu">
+    <a href="#">Profilim</a>
+    <a href="#">Görevlerim</a>
+    <a href="#">Ayarlar</a>
+    <a href="#">Destek ve Yardım</a>
+    <a href="#">Sık Sorulan Sorular</a>
+    <a href="#">Canlı Destek</a>
+    <a href="cekilisekatilanlar.html">Çekilişe Katılanlar</a>
+  </div>
+
+  <!-- En alta eklenen Dashboard2 butonu -->
+  <button class="bottom-button" onclick="window.location.href='dashboard2.html'">Dashboard Sayfasına Git</button>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("menu").classList.toggle("show");
+    }
+  </script>
 </body>
 </html>
