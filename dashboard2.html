@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anasayfa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    .bakiye, .girisDurumu {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    .haftalikTakip {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .gun {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 2px;
+      font-weight: bold;
+      color: white;
+    }
+    .aktif {
+      background-color: #4CAF50; /* Yesil */
+    }
+    .pasif {
+      background-color: #333; /* Siyah */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hoş Geldiniz!</h1>
+    <p class="bakiye" id="bakiye">Mevcut Bakiye: Yükleniyor...</p>
+    <p class="girisDurumu" id="girisDurumu">Giriş kontrol ediliyor...</p>
+
+    <div class="haftalikTakip" id="haftalikTakip">
+      <div class="gun" id="gun-0">Pzt</div>
+      <div class="gun" id="gun-1">Sal</div>
+      <div class="gun" id="gun-2">Çar</div>
+      <div class="gun" id="gun-3">Per</div>
+      <div class="gun" id="gun-4">Cum</div>
+      <div class="gun" id="gun-5">Cmt</div>
+      <div class="gun" id="gun-6">Paz</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXbLpzgMa8wiiYcXhVDsOSRzVx_zdplXw",
+      authDomain: "cekilisveritabani.firebaseapp.com",
+      projectId: "cekilisveritabani",
+      storageBucket: "cekilisveritabani.firebasestorage.app",
+      messagingSenderId: "246236686196",
+      appId: "1:246236686196:web:d22a9b99140626cc04ae21",
+      measurementId: "G-YZ6MYCPK8G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function getTodayDate() {
+      const now = new Date();
+      return now.toISOString().split('T')[0];
+    }
+
+    function getWeekdayIndex(dateStr) {
+      const date = new Date(dateStr);
+      return (date.getDay() + 6) % 7; // Pazartesi 0, Pazar 6
+    }
+
+    function isNewWeek(lastDates) {
+      const now = new Date();
+      const lastDate = new Date(lastDates[lastDates.length - 1]);
+      const nowWeek = now.getWeek();
+      const lastWeek = lastDate.getWeek();
+      return nowWeek !== lastWeek;
+    }
+
+    Date.prototype.getWeek = function () {
+      const firstJan = new Date(this.getFullYear(), 0, 1);
+      const pastDays = (this - firstJan) / 86400000;
+      return Math.ceil((pastDays + firstJan.getDay() + 1) / 7);
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      let data;
+      if (!userSnap.exists()) {
+        data = { bakiye: 0, girisler: [] };
+        await setDoc(userRef, data);
+      } else {
+        data = userSnap.data();
+      }
+
+      const today = getTodayDate();
+      const alreadyCheckedIn = data.girisler.includes(today);
+
+      // Haftalık sıfırlama kontrolü
+      if (data.girisler.length > 0 && isNewWeek(data.girisler)) {
+        data.girisler = [];
+      }
+
+      if (!alreadyCheckedIn) {
+        data.bakiye = (data.bakiye || 0) + 0.2;
+        data.girisler.push(today);
+
+        if (data.girisler.length >= 7) {
+          data.bakiye += 0.5;
+          data.girisler = []; // Bonus sonrası sıfırla
+        }
+
+        await updateDoc(userRef, {
+          bakiye: data.bakiye,
+          girisler: data.girisler,
+        });
+
+        document.getElementById("girisDurumu").textContent = "Bugünkü giriş kaydedildi. 0.2₺ eklendi!";
+      } else {
+        document.getElementById("girisDurumu").textContent = "Bugün zaten giriş yaptınız.";
+      }
+
+      document.getElementById("bakiye").textContent = `Mevcut Bakiye: ${data.bakiye.toFixed(2)}₺`;
+
+      // Günlük giriş gösterimi
+      const girilenGunler = data.girisler.map(d => getWeekdayIndex(d));
+      for (let i = 0; i < 7; i++) {
+        const gun = document.getElementById(`gun-${i}`);
+        if (girilenGunler.includes(i)) {
+          gun.classList.add("aktif");
+        } else {
+          gun.classList.add("pasif");
+        }
+      }
+    });
+  </script>
+</body>
+</html>
